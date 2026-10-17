@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Feuerprobe: Frage-Antwort-Spiel für die Jugendfeuerwehr mit über 200 Fragen, nach Altersklassen sortiert, für Einzelspieler oder Teams.">
+<title>Feuerprobe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700;800&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+</style>
+<style>
+/* Layout: eine schmale Spalte wie ein Einsatzprotokoll. Einzige Auffälligkeit: der Warnstreifen (Absperrband) oben und auf der Fragekarte. */
+:root{
+  --bg-a:#FFD23F; --bg-b:#FF8A1F; --bg-c:#E5322D;
+  --panel:#F3F4F6; --surface:#FFFFFF; --ink:#14181D; --muted:#566069; --line:#C9D0D7;
+  --accent:#C8102E; --accent-ink:#FFFFFF;
+  --signal:#F0DC00; --signal-ink:#14181D;
+  --c-notruf:#C8102E; --c-brand:#C2410C; --c-technik:#1D4ED8; --c-schlauch:#0F766E; --c-ehilfe:#15803D; --c-wissen:#7E22CE; --c-gefahr:#A16207;
+  --c-klassen:#BE185D; --c-brennbar:#4D7C0F; --c-geraete:#0369A1; --c-knoten:#475569; --c-schutz:#0E7490; --c-jf:#4338CA;
+  --t0:#D7261E; --t0-ink:#FFFFFF; --t1:#1D5FD1; --t1-ink:#FFFFFF; --t2:#F2B705; --t2-ink:#14181D; --t3:#1A7F37; --t3-ink:#FFFFFF;
+  --good:#14783A; --good-soft:#DDF2E4; --bad:#B3261E; --bad-soft:#FBE3E0;
+  --stripe2:#FFFFFF;
+  --f-display:'Barlow Condensed','Arial Narrow','Roboto Condensed',sans-serif;
+  --f-body:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg-a:#16255A; --bg-b:#52206B; --bg-c:#B3261E; --panel:#0E1217; --surface:#171D24; --ink:#EEF1F4; --muted:#9AA5B0; --line:#2D3844;
+    --accent:#E5372A; --accent-ink:#FFFFFF;
+    --good:#4CD58A; --good-soft:#12301F; --bad:#FF7066; --bad-soft:#3A1814;
+    --stripe2:#0E1217; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg-a:#16255A; --bg-b:#52206B; --bg-c:#B3261E; --panel:#0E1217; --surface:#171D24; --ink:#EEF1F4; --muted:#9AA5B0; --line:#2D3844;
+  --accent:#E5372A; --accent-ink:#FFFFFF;
+  --good:#4CD58A; --good-soft:#12301F; --bad:#FF7066; --bad-soft:#3A1814;
+  --stripe2:#0E1217; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;position:relative;background-color:var(--bg-c);
+  background-image:linear-gradient(165deg,var(--bg-a) 0%,var(--bg-b) 48%,var(--bg-c) 100%);
+  color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.45;
+  padding-block:24px 140px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* Flammenfries am Seitenende */
+body::after{content:"";position:absolute;left:0;right:0;bottom:0;height:130px;pointer-events:none;z-index:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='110' viewBox='0 0 160 110'%3E%3Cpath d='M40 4c8 20 28 32 28 58 0 20-13 32-28 32S12 82 12 62c0-16 10-24 15-38 3 8 6 11 10 11-2-12-1-23 3-31z' fill='%23ffd23f' fill-opacity='.5'/%3E%3Cpath d='M112 22c6 16 22 26 22 46 0 16-10 26-22 26S90 84 90 68c0-12 8-19 12-30 2 6 5 8 8 8-2-9-1-17 2-24z' fill='%23ffffff' fill-opacity='.32'/%3E%3C/svg%3E") repeat-x left bottom/160px 110px}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:20px 18px 32px;background:var(--panel);
+  border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.28)}
+[hidden]{display:none!important}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+.stripe{height:14px;background:repeating-linear-gradient(-45deg,var(--accent) 0 12px,var(--stripe2) 12px 24px)}
+.hero{position:relative;margin:-20px -18px 0;padding:0 18px 22px;overflow:hidden;border-radius:10px 10px 0 0;
+  background:linear-gradient(120deg,var(--bg-a),var(--bg-b))}
+.hero .stripe{margin:0 -18px}
+.hero-flames{position:absolute;right:14px;bottom:0;width:clamp(70px,22vw,130px);height:auto}
+.hero-mascot{position:absolute;right:12px;bottom:4px;width:clamp(84px,26vw,150px);animation:wiggle 3.2s ease-in-out infinite;transform-origin:50% 100%}
+.mascot{display:block;width:100%;height:auto}
+.jf-badge{display:inline-block;margin:12px 0 0;padding:3px 10px;background:var(--signal);color:var(--signal-ink);font-family:var(--f-display);font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:1rem;border-radius:3px;transform:rotate(-2deg)}
+.motto{margin:6px 0 0;font-weight:600;font-size:.95rem;opacity:.9;max-width:60%}
+@keyframes wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.tipbox{display:flex;align-items:flex-end;gap:10px;margin:14px 0 0}
+.tipbox .mascot{width:56px;flex:none}
+.bubble{position:relative;background:var(--surface);border:2px solid var(--ink);border-radius:12px;padding:8px 12px;font-weight:600;font-size:.95rem}
+.res-mascot{width:96px;margin:14px 0 0}
+@media (prefers-reduced-motion:reduce){.hero-mascot{animation:none}}
+h1{margin:14px 0 0;font-family:var(--f-display);font-weight:800;text-transform:uppercase;
+  font-size:clamp(2.6rem,12.5vw,6rem);line-height:.88;letter-spacing:.01em}
+.sub{margin:8px 0 0;font-family:var(--f-display);font-weight:600;font-size:1.25rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.lead{margin:20px 0 0;max-width:60ch}
+
+.block{margin-top:28px;padding-top:18px;border-top:2px solid var(--line)}
+.label{display:block;margin:0 0 10px;font-family:var(--f-display);font-weight:700;font-size:1.15rem;letter-spacing:.08em;text-transform:uppercase}
+.hint{margin:8px 0 0;color:var(--muted);font-size:.95rem}
+
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg-btn,.chip{min-height:46px;padding:8px 16px;border:2px solid var(--line);background:var(--surface);border-radius:4px;cursor:pointer;font-weight:600}
+.seg-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip{border-left:8px solid var(--cc,var(--line))}
+.chip[aria-pressed="true"]{background:var(--cc,var(--accent));border-color:var(--cc,var(--accent));color:#fff}
+.chip small{font-weight:500;opacity:.8;margin-left:6px}
+
+.names{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.names label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted);min-width:0}
+.names input{min-height:46px;width:100%;min-width:0;padding:8px 12px;border:2px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font-size:1rem}
+
+.go{display:block;width:100%;margin-top:32px;min-height:64px;border:0;border-radius:4px;background:var(--accent);color:var(--accent-ink);
+  font-family:var(--f-display);font-weight:800;font-size:1.9rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.go.alt{background:var(--surface);color:var(--ink);border:2px solid var(--ink)}
+.go[disabled]{opacity:.45;cursor:not-allowed}
+.linkbtn{margin-top:8px;border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px 0}
+
+/* Spiel */
+.hud{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:6px}
+.count{font-family:var(--f-display);font-weight:700;font-size:1.3rem;letter-spacing:.06em;text-transform:uppercase}
+.quit{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px 0}
+.timer{margin-top:10px;height:10px;background:var(--line);border-radius:2px;overflow:hidden}
+.timer-fill{height:100%;width:100%;background:var(--accent);transition:width .1s linear}
+.timer-text{font-variant-numeric:tabular-nums;font-weight:600}
+.timer-text.low{color:var(--bad);font-weight:700}
+
+.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:14px}
+.t0{--tc:var(--t0);--tc-ink:var(--t0-ink)}
+.t1{--tc:var(--t1);--tc-ink:var(--t1-ink)}
+.t2{--tc:var(--t2);--tc-ink:var(--t2-ink)}
+.t3{--tc:var(--t3);--tc-ink:var(--t3-ink)}
+.team{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:8px 12px;border:2px solid var(--line);border-left:8px solid var(--tc,var(--accent));border-radius:4px;background:var(--surface);min-width:0}
+.team-name{font-weight:600;overflow-wrap:anywhere}
+.team-score{margin-left:auto;font-family:var(--f-display);font-weight:800;font-size:1.6rem;line-height:1;font-variant-numeric:tabular-nums}
+.team.is-active{background:var(--tc,var(--accent));border-color:var(--tc,var(--accent));color:var(--tc-ink,#fff)}
+.team-flag{flex-basis:100%;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+
+.qcard{margin-top:16px;background:var(--surface);border:3px solid var(--cat,var(--line));border-radius:4px;overflow:hidden}
+.qcard .stripe{height:8px}
+.qbody{padding:18px 18px 22px}
+.kw{margin:0;font-size:.8rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.kw b{display:inline-block;margin-left:4px;padding:2px 10px;border-radius:3px;background:var(--cat,var(--ink));color:#fff;letter-spacing:.06em}
+.q{margin:10px 0 0;font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,5vw,2.5rem);line-height:1.08;text-wrap:balance}
+
+.answers{display:grid;gap:10px;margin-top:16px}
+@media (min-width:680px){.answers{grid-template-columns:1fr 1fr}}
+.ans{display:flex;align-items:center;gap:12px;min-height:60px;padding:10px 12px;text-align:left;border:2px solid var(--line);border-radius:4px;background:var(--surface);cursor:pointer;min-width:0}
+.ans-key{flex:none;display:grid;place-items:center;width:40px;height:40px;background:var(--line);border-radius:2px;font-family:var(--f-display);font-weight:800;font-size:1.4rem}
+.ans-text{flex:1;min-width:0;font-weight:500;font-size:1.05rem;overflow-wrap:anywhere}
+.ans-mark{flex:none;font-weight:800;font-size:1.4rem}
+.ans.is-right{border-color:var(--good);background:var(--good-soft)}
+.ans.is-right .ans-mark{color:var(--good)}
+.ans.is-wrong{border-color:var(--bad);background:var(--bad-soft)}
+.ans.is-wrong .ans-mark{color:var(--bad)}
+.ans.is-dim{opacity:.55}
+.ans[aria-disabled="true"]{cursor:default}
+
+.fb{margin-top:16px;padding-top:14px;border-top:2px solid var(--line)}
+.verdict{margin:0;font-family:var(--f-display);font-weight:800;font-size:1.7rem;letter-spacing:.03em;text-transform:uppercase}
+.verdict.ok{color:var(--good)}
+.verdict.no{color:var(--bad)}
+.expl{margin:6px 0 0;max-width:62ch}
+
+/* Ergebnis */
+.res-title{margin:18px 0 0;font-family:var(--f-display);font-weight:800;font-size:clamp(2.4rem,10vw,4rem);line-height:.95;text-transform:uppercase}
+.rank{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:8px}
+.rank li{display:flex;align-items:center;gap:14px;padding:10px 14px;border:2px solid var(--line);border-left:10px solid var(--tc,var(--accent));border-radius:4px;background:var(--surface)}
+.rank li.first{background:var(--signal);color:var(--signal-ink);border-top-color:var(--signal);border-right-color:var(--signal);border-bottom-color:var(--signal)}
+.rank-n{flex:none;width:2ch;font-family:var(--f-display);font-weight:800;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.rank-name{flex:1;min-width:0;font-weight:600;font-size:1.1rem;overflow-wrap:anywhere}
+.rank-name small{display:block;font-weight:500;opacity:.8}
+.rank-pts{font-family:var(--f-display);font-weight:800;font-size:1.8rem;font-variant-numeric:tabular-nums}
+details{margin-top:24px;border-top:2px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-weight:600}
+.miss{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:14px}
+.miss b{display:block}
+.miss span{color:var(--muted);font-size:.95rem}
+.row2{display:grid;gap:10px;margin-top:28px}
+.row2 .go{margin-top:0}
+
+@media (prefers-reduced-motion:reduce){.timer-fill{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <div class="stripe" aria-hidden="true"></div>
+    <h1>Feuerprobe</h1>
+    <p class="sub">Das große Quiz</p>
+    <p class="motto">Retten · Löschen · Bergen · Schützen</p>
+    <span class="hero-mascot"><svg class="mascot" viewBox="0 0 120 140" role="img" aria-label="Flämmchen, das Maskottchen dieses Quiz">
+      <path d="M60 14c8 22 38 36 38 70 0 26-17 42-38 42S22 110 22 84c0-18 10-28 17-44 4 9 8 13 13 13-2-13 0-28 8-39z" fill="#E5372A"/>
+      <path d="M60 58c6 13 24 21 24 42 0 15-11 24-24 24S36 115 36 100c0-12 8-19 12-29 2 6 6 8 9 8-1-8-1-14 3-21z" fill="#FFD23F"/>
+      <ellipse cx="50" cy="88" rx="5" ry="7" fill="#14181D"/><ellipse cx="70" cy="88" rx="5" ry="7" fill="#14181D"/>
+      <circle cx="52" cy="85" r="1.8" fill="#fff"/><circle cx="72" cy="85" r="1.8" fill="#fff"/>
+      <path d="M50 102q10 10 20 0" fill="none" stroke="#14181D" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M32 54c0-20 12-32 28-32s28 12 28 32z" fill="#F0DC00" stroke="#14181D" stroke-width="3"/>
+      <rect x="28" y="52" width="64" height="9" rx="4" fill="#F0DC00" stroke="#14181D" stroke-width="3"/>
+      <rect x="52" y="30" width="16" height="12" rx="3" fill="#C8102E"/>
+    </svg></span>
+    <p class="jf-badge">Jugendfeuerwehr</p>
+    <svg class="hero-flames" hidden viewBox="0 0 100 120" aria-hidden="true"><path d="M50 4c9 24 36 38 36 72 0 24-17 40-36 40S14 100 14 76c0-20 12-30 18-46 4 10 8 14 13 14-2-14-1-27 5-40z" fill="#D7261E"/><path d="M50 52c6 14 22 22 22 42 0 14-10 22-22 22S28 108 28 94c0-12 7-18 11-28 2 6 5 8 8 8-1-8-1-15 3-24z" fill="#FFD23F"/></svg>
+  </header>
+
+  <!-- Einstellungen -->
+  <section id="screen-setup" aria-label="Einstellungen">
+    <p class="lead">Eine Person liest die Frage vor, das Team tippt die Antwort an. Das Handy kann reihum gehen oder am Beamer laufen.</p>
+
+    <div class="block">
+      <span class="label" id="lbl-teams">Wer spielt?</span>
+      <div class="seg" id="seg-teams" role="group" aria-labelledby="lbl-teams"></div>
+      <div class="names" id="names"></div>
+    </div>
+
+    <div class="block">
+      <span class="label" id="lbl-age">Altersklasse</span>
+      <div class="seg" id="seg-age" role="group" aria-labelledby="lbl-age"></div>
+      <p class="hint">Bei 6 bis 10 Jahren kommen leichtere Fragen, bei 11 bis 16 Jahren anspruchsvollere.</p>
+    </div>
+
+    <div class="block">
+      <span class="label" id="lbl-cats">Stichworte</span>
+      <div class="seg" id="seg-cats" role="group" aria-labelledby="lbl-cats"></div>
+      <button class="linkbtn" id="btn-allcats" type="button">Alle Stichworte auswählen</button>
+      <p class="hint" id="poolinfo"></p>
+    </div>
+
+    <div class="block">
+      <span class="label" id="lbl-count">Anzahl Einsätze</span>
+      <div class="seg" id="seg-count" role="group" aria-labelledby="lbl-count"></div>
+    </div>
+
+    <div class="block">
+      <span class="label" id="lbl-time">Zeit pro Frage</span>
+      <div class="seg" id="seg-time" role="group" aria-labelledby="lbl-time"></div>
+      <p class="hint">Mit Zeitlimit gibt es für schnelle richtige Antworten bis zu 5 Bonuspunkte.</p>
+    </div>
+
+    <button class="go" id="btn-start" type="button">Quiz starten</button>
+  </section>
+
+  <!-- Spiel -->
+  <section id="screen-game" hidden aria-label="Quiz">
+    <div class="hud">
+      <span class="count" id="hud-count"></span>
+      <span><span class="timer-text" id="timer-text"></span> <button class="quit" id="btn-quit" type="button">Beenden</button></span>
+    </div>
+    <div class="timer" id="timer" aria-hidden="true"><div class="timer-fill" id="timer-fill"></div></div>
+    <div class="board" id="board"></div>
+
+    <div class="qcard">
+      <div class="stripe" aria-hidden="true"></div>
+      <div class="qbody">
+        <p class="kw">Stichwort: <b id="kw"></b></p>
+        <h2 class="q" id="q"></h2>
+        <div class="answers" id="answers" role="group" aria-labelledby="q"></div>
+        <div class="fb" id="fb" hidden aria-live="polite">
+          <p class="verdict" id="verdict"></p>
+          <p class="expl" id="expl"></p>
+          <div class="tipbox" aria-hidden="true"><svg class="mascot" viewBox="0 0 120 140">
+      <path d="M60 14c8 22 38 36 38 70 0 26-17 42-38 42S22 110 22 84c0-18 10-28 17-44 4 9 8 13 13 13-2-13 0-28 8-39z" fill="#E5372A"/>
+      <path d="M60 58c6 13 24 21 24 42 0 15-11 24-24 24S36 115 36 100c0-12 8-19 12-29 2 6 6 8 9 8-1-8-1-14 3-21z" fill="#FFD23F"/>
+      <ellipse cx="50" cy="88" rx="5" ry="7" fill="#14181D"/><ellipse cx="70" cy="88" rx="5" ry="7" fill="#14181D"/>
+      <circle cx="52" cy="85" r="1.8" fill="#fff"/><circle cx="72" cy="85" r="1.8" fill="#fff"/>
+      <path d="M50 102q10 10 20 0" fill="none" stroke="#14181D" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M32 54c0-20 12-32 28-32s28 12 28 32z" fill="#F0DC00" stroke="#14181D" stroke-width="3"/>
+      <rect x="28" y="52" width="64" height="9" rx="4" fill="#F0DC00" stroke="#14181D" stroke-width="3"/>
+      <rect x="52" y="30" width="16" height="12" rx="3" fill="#C8102E"/>
+    </svg><p class="bubble" id="bubble"></p></div>
+          <button class="go" id="btn-next" type="button">Weiter</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="screen-result" hidden aria-label="Ergebnis">
+    <span class="res-mascot"><svg class="mascot" viewBox="0 0 120 140" aria-hidden="true">
+      <path d="M60 14c8 22 38 36 38 70 0 26-17 42-38 42S22 110 22 84c0-18 10-28 17-44 4 9 8 13 13 13-2-13 0-28 8-39z" fill="#E5372A"/>
+      <path d="M60 58c6 13 24 21 24 42 0 15-11 24-24 24S36 115 36 100c0-12 8-19 12-29 2 6 6 8 9 8-1-8-1-14 3-21z" fill="#FFD23F"/>
+      <ellipse cx="50" cy="88" rx="5" ry="7" fill="#14181D"/><ellipse cx="70" cy="88" rx="5" ry="7" fill="#14181D"/>
+      <circle cx="52" cy="85" r="1.8" fill="#fff"/><circle cx="72" cy="85" r="1.8" fill="#fff"/>
+      <path d="M50 102q10 10 20 0" fill="none" stroke="#14181D" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M32 54c0-20 12-32 28-32s28 12 28 32z" fill="#F0DC00" stroke="#14181D" stroke-width="3"/>
+      <rect x="28" y="52" width="64" height="9" rx="4" fill="#F0DC00" stroke="#14181D" stroke-width="3"/>
+      <rect x="52" y="30" width="16" height="12" rx="3" fill="#C8102E"/>
+    </svg></span>
+    <h2 class="res-title" id="res-title"></h2>
+    <p class="lead" id="res-sub"></p>
+    <ol class="rank" id="rank"></ol>
+    <details id="review" hidden>
+      <summary id="review-sum"></summary>
+      <ul class="miss" id="miss"></ul>
+    </details>
+    <div class="row2">
+      <button class="go" id="btn-again" type="button">Nochmal spielen</button>
+      <button class="go alt" id="btn-setup" type="button">Einstellungen ändern</button>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+'use strict';
+
+var CATS = {
+  notruf:'Notruf & Verhalten',
+  brand:'Brandlehre',
+  technik:'Fahrzeuge & Geräte',
+  schlauch:'Schlauch & Technik',
+  ehilfe:'Erste Hilfe',
+  wissen:'Feuerwehrwissen',
+  gefahr:'Gefahren & Umwelt',
+  klassen:'Brandklassen',
+  brennbar:'Brennbare Stoffe',
+  geraete:'Feuerwehrgeräte',
+  knoten:'Knoten & Bunde',
+  schutz:'Schutzausrüstung',
+  jf:'Jugendfeuerwehr'
+};
+
+/* a[0] ist immer die richtige Antwort. Die Reihenfolge wird beim Spielen gemischt. */
+var QUESTIONS = [
+  // Notruf & Verhalten
+  {c:'notruf',g:1,q:'Welche Notrufnummer wählst du für Feuerwehr und Rettungsdienst?',a:['112','110','115','116 117'],e:'Die 112 ist der europaweite Notruf für Feuerwehr und Rettungsdienst. Die 110 erreicht die Polizei.'},
+  {c:'notruf',g:2,q:'Was gehört NICHT zu den fünf W-Fragen beim Notruf?',a:['Wer hat es verursacht?','Wo ist es passiert?','Was ist passiert?','Wie viele Personen sind betroffen?'],e:'Die fünf W: Wo? Was? Wie viele Betroffene? Welche Art von Verletzungen? Warten auf Rückfragen. Wer schuld ist, spielt für den Notruf keine Rolle.'},
+  {c:'notruf',g:2,q:'Wann legst du nach einem Notruf auf?',a:['Wenn die Leitstelle das Gespräch beendet','Sobald du den Ort genannt hast','Nach 30 Sekunden','Sobald du Danke gesagt hast'],e:'Du wartest auf Rückfragen. Die Leitstelle entscheidet, wann alle wichtigen Angaben vorliegen.'},
+  {c:'notruf',g:1,q:'Was tust du bei einem Feuer im Haus zuerst?',a:['Ruhe bewahren, andere warnen und in Sicherheit gehen','Wertsachen aus der Wohnung holen','Das Feuer allein löschen, egal wie groß es ist','Fenster öffnen und abwarten'],e:'Menschenleben gehen vor. Danach rufst du die 112 an. Nur kleine Entstehungsbrände versuchst du zu löschen, und nur wenn du dich nicht in Gefahr bringst.'},
+  {c:'notruf',g:2,q:'Warum benutzt du bei Feuer im Gebäude nicht den Aufzug?',a:['Er kann ausfallen und dich im Rauch einsperren','Er ist zu langsam','Er darf nur von Feuerwehrleuten benutzt werden','Er fährt bei Feuer immer nach oben'],e:'Bei Feuer kann der Strom ausfallen und der Aufzug stecken bleiben. Nimm das Treppenhaus, solange es rauchfrei ist.'},
+  {c:'notruf',g:1,q:'Wo ist die Luft in einem verrauchten Raum am besten?',a:['Nah am Boden','Unter der Decke','In der Raummitte','Direkt am Fenster oben'],e:'Heißer Rauch steigt nach oben. Am Boden ist mehr Luft zum Atmen und die Sicht ist besser. Deshalb bleibst du bei Rauch tief.'},
+  {c:'notruf',g:2,q:'Warum schließt du beim Verlassen eines brennenden Raums die Tür?',a:['Damit sich Feuer und Rauch langsamer ausbreiten','Damit das Feuer mehr Sauerstoff bekommt','Damit der Rauch schneller abzieht','Damit die Feuerwehr nicht klingeln muss'],e:'Eine geschlossene Tür hält Rauch und Hitze eine Weile zurück und gibt dir und anderen mehr Zeit zur Flucht.'},
+  {c:'notruf',g:2,q:'Wie oft sollte ein Rauchmelder mindestens auf Funktion geprüft werden?',a:['Einmal im Jahr','Alle zehn Jahre','Nur wenn er piept','Nie, er prüft sich selbst'],e:'Teste ihn mindestens einmal im Jahr mit dem Prüfknopf. Meist wird ein Rauchmelder nach etwa zehn Jahren ausgetauscht.'},
+
+  // Brandlehre
+  {c:'brand',g:1,q:'Was braucht ein Feuer, damit es brennt?',a:['Brennbarer Stoff, Sauerstoff und Zündenergie','Wasser, Luft und Holz','Wind, Funken und Gas','Nur Hitze'],e:'Das ist das Verbrennungsdreieck. Fehlt eine der drei Seiten, geht das Feuer aus.'},
+  {c:'brand',g:1,q:'Was bewirkt eine Löschdecke auf einem kleinen Feuer?',a:['Sie nimmt dem Feuer den Sauerstoff','Sie kühlt das Feuer ab','Sie entfernt den brennbaren Stoff','Sie verdünnt die Flammen'],e:'Das Feuer erstickt, weil kein Sauerstoff mehr herankommt. Die Decke bleibt liegen, bis alles abgekühlt ist.'},
+  {c:'brand',g:2,q:'Welche Brandklasse steht für feste Stoffe wie Holz und Papier?',a:['Klasse A','Klasse B','Klasse C','Klasse D'],e:'A: feste Stoffe. B: flüssige Stoffe. C: Gase. D: Metalle. F: Speisefette und Speiseöle.'},
+  {c:'brand',g:2,q:'Welche Brandklasse steht für brennende Flüssigkeiten wie Benzin?',a:['Klasse B','Klasse A','Klasse C','Klasse D'],e:'Klasse B umfasst flüssige oder flüssig werdende Stoffe, zum Beispiel Benzin oder Öl.'},
+  {c:'brand',g:1,q:'Warum darfst du einen Fettbrand niemals mit Wasser löschen?',a:['Das Wasser verdampft schlagartig und schleudert brennendes Fett hoch','Wasser ist zu kalt für Fett','Das Wasser macht das Fett giftig','Das Feuer würde nur kurz kleiner werden'],e:'Es kommt zu einer Fettexplosion mit riesiger Stichflamme. Besser: Deckel oder Löschdecke auflegen und den Herd ausschalten.'},
+  {c:'brand',g:2,q:'Welche Brandklasse steht für brennende Gase wie Erdgas?',a:['Klasse C','Klasse A','Klasse B','Klasse F'],e:'Klasse C steht für Gase. Bei Gasbränden wird wenn möglich zuerst die Gaszufuhr gestoppt.'},
+  {c:'brand',g:1,q:'Was ist die wichtigste Löschwirkung von Wasser?',a:['Kühlen','Ersticken','Brennstoff wegtragen','Sauerstoff erzeugen'],e:'Wasser nimmt dem brennenden Material Wärme weg und kühlt es unter die Zündtemperatur.'},
+  {c:'brand',g:2,q:'Für welche Stoffe steht die Brandklasse D?',a:['Metalle, zum Beispiel Magnesium','Speisefette und Speiseöle','Feste Stoffe wie Holz','Gase wie Propan'],e:'Brennende Leichtmetalle brauchen spezielles Metallbrandpulver. Wasser kann hier gefährlich reagieren.'},
+
+  // Fahrzeuge & Geräte
+  {c:'technik',g:2,q:'Wofür steht die Abkürzung LF bei Feuerwehrfahrzeugen?',a:['Löschgruppenfahrzeug','Leiterfahrzeug','Leitstellenfahrzeug','Löschfunkwagen'],e:'Das LF ist das klassische Löschfahrzeug mit Pumpe, Wassertank und Platz für eine ganze Gruppe.'},
+  {c:'technik',g:1,q:'Was bedeutet die Abkürzung DLK?',a:['Drehleiter mit Korb','Doppelte Löschkraft','Dienstleitungskabel','Dach-Löschkran'],e:'Mit der Drehleiter mit Korb rettet die Feuerwehr Menschen aus großer Höhe und löscht von oben.'},
+  {c:'technik',g:2,q:'Was zeichnet ein Tanklöschfahrzeug (TLF) aus?',a:['Ein besonders großer Löschwassertank','Eine Drehleiter auf dem Dach','Ein Rettungsboot','Eine Kranvorrichtung'],e:'Das TLF bringt viel Wasser mit. Das hilft dort, wo es keinen Hydranten gibt, zum Beispiel bei Wald- und Flächenbränden.'},
+  {c:'technik',g:2,q:'Wofür steht die Abkürzung MTW?',a:['Mannschaftstransportwagen','Mehrzweck-Tank-Wagen','Mobiler Technikwagen','Maschinisten-Trainingswagen'],e:'Mit dem MTW kommen Einsatzkräfte oder die Jugendfeuerwehr zu Einsatz, Übung oder Wettkampf.'},
+  {c:'technik',g:1,q:'Wofür nutzt die Feuerwehr hydraulische Schere und Spreizer?',a:['Um eingeklemmte Personen nach Unfällen zu befreien','Um Bäume zu fällen','Um Schläuche zuzuschneiden','Um Absperrzäune aufzubauen'],e:'Das hydraulische Rettungsgerät schneidet und spreizt Fahrzeugteile, damit Eingeklemmte befreit werden können.'},
+  {c:'technik',g:2,q:'Welche zwei Hydrantenarten gibt es?',a:['Überflurhydrant und Unterflurhydrant','Hochhydrant und Tiefhydrant','Standhydrant und Kellerhydrant','Rothydrant und Gelbhydrant'],e:'Der Überflurhydrant steht sichtbar über dem Boden. Der Unterflurhydrant sitzt unter einer Abdeckung in der Straße. Ein Schild daneben zeigt, wo er liegt.'},
+  {c:'technik',g:2,q:'Wofür steht die Abkürzung ELW?',a:['Einsatzleitwagen','Eillöschwagen','Elektro-Lastwagen','Erster-Leiter-Wagen'],e:'Im ELW sitzt die Einsatzleitung. Hier laufen Informationen und Funk zusammen.'},
+  {c:'technik',g:1,q:'Was kann eine Wärmebildkamera?',a:['Wärmequellen sichtbar machen, auch im Rauch','Röntgenbilder durch Wände machen','Gefährliche Gase messen','Die Entfernung zum Hydranten anzeigen'],e:'Die Kamera zeigt Temperaturunterschiede. So findet man Personen und Glutnester, auch wenn man im Rauch nichts sieht. Durch Wände sieht sie nicht.'},
+
+  // Schlauch & Technik
+  {c:'schlauch',g:2,q:'Welche Kupplung nutzt die Feuerwehr in Deutschland für Schläuche?',a:['Storz-Kupplung','Gardena-Kupplung','Klemmkupplung','Schnappkupplung'],e:'Die Storz-Kupplung hat zwei gleiche Hälften. Sie werden mit einer Vierteldrehung verbunden.'},
+  {c:'schlauch',g:2,q:'Welchen Innendurchmesser hat ein B-Schlauch?',a:['75 mm','25 mm','42 mm','110 mm'],e:'Je weiter vorn der Buchstabe, desto dicker der Schlauch: A 110 mm, B 75 mm, C 42 mm, D 25 mm.'},
+  {c:'schlauch',g:2,q:'Welchen Innendurchmesser hat ein C-Schlauch?',a:['42 mm','25 mm','75 mm','110 mm'],e:'C-Schläuche sind handlich und leistungsstark. Sie werden am häufigsten für den Löschangriff genutzt.'},
+  {c:'schlauch',g:2,q:'Mit welchem Knoten verbindest du zwei Leinen gleicher Stärke?',a:['Kreuzknoten','Mastwurf','Palstek','Achterknoten'],e:'Der Kreuzknoten verbindet zwei Leinen gleicher Stärke. Für unterschiedlich dicke Leinen nimmt man besser den Schotstek.'},
+  {c:'schlauch',g:1,q:'Wozu dient das Strahlrohr?',a:['Es formt den Wasserstrahl und regelt die Wassermenge','Es saugt Wasser an','Es verbindet zwei Schläuche','Es misst den Wasserdruck'],e:'Am Strahlrohr öffnest und schließt du das Wasser und stellst zwischen Vollstrahl und Sprühstrahl um.'},
+  {c:'schlauch',g:1,q:'Wofür braucht man Saugschlauch und Saugkorb?',a:['Um Wasser aus Teich oder Bach anzusaugen','Um Rauch abzusaugen','Um Verletzte zu tragen','Um Hydranten zu spülen'],e:'Der Saugkorb hält groben Schmutz zurück. Die Pumpe saugt das Wasser an und gibt es unter Druck in die Schläuche.'},
+  {c:'schlauch',g:2,q:'Welches Teil bringt das Löschwasser im Fahrzeug auf Druck?',a:['Die Feuerlöschkreiselpumpe','Der Verteiler','Das Strahlrohr','Der Saugkorb'],e:'Die Kreiselpumpe wird vom Maschinisten bedient. Sie erzeugt den Druck, mit dem das Wasser durch die Schläuche strömt.'},
+  {c:'schlauch',g:2,q:'Was macht ein Verteiler in der Schlauchleitung?',a:['Er teilt eine Leitung auf mehrere Schläuche auf','Er erhöht den Wasserdruck','Er filtert das Wasser','Er trocknet die Schläuche'],e:'Am Verteiler wird zum Beispiel ein B-Schlauch auf mehrere C-Schläuche verteilt. Die Abgänge lassen sich einzeln auf- und zudrehen.'},
+
+  // Erste Hilfe
+  {c:'ehilfe',g:1,q:'Was kommt bei einem Unfall zuerst?',a:['Dich selbst schützen und die Stelle absichern','Fotos machen','Verletzte sofort wegtragen','Den Unfallverursacher suchen'],e:'Wenn du selbst verletzt wirst, kannst du nicht mehr helfen. Warnweste, Warndreieck und Abstand zum Verkehr gehören dazu. Danach Notruf und Erste Hilfe.'},
+  {c:'ehilfe',g:2,q:'Wann bringst du jemanden in die stabile Seitenlage?',a:['Wenn die Person bewusstlos ist, aber normal atmet','Wenn die Person Schmerzen hat','Wenn die Person nicht atmet','Wenn die Person friert'],e:'In der stabilen Seitenlage bleiben die Atemwege frei. Atmet die Person nicht normal, beginnst du stattdessen mit der Wiederbelebung.'},
+  {c:'ehilfe',g:2,q:'Wie prüfst du bei einer bewusstlosen Person die Atmung?',a:['Kopf überstrecken, hören, fühlen und den Brustkorb beobachten','Den Puls am Handgelenk suchen','Die Person schütteln und laut rufen','Ein Taschentuch vor den Mund halten'],e:'Der Kopf wird nackenwärts überstreckt, damit die Atemwege frei sind. Du schaust, hörst und fühlst bis zu zehn Sekunden lang.'},
+  {c:'ehilfe',g:2,q:'Wie schnell drückst du bei der Herzdruckmassage?',a:['100 bis 120 Mal pro Minute','30 Mal pro Minute','60 Mal pro Minute','Über 200 Mal pro Minute'],e:'Das sind etwa zwei Drückbewegungen pro Sekunde. Drücke fest in die Mitte des Brustkorbs.'},
+  {c:'ehilfe',g:2,q:'Wie ist bei Erwachsenen das Verhältnis von Herzdruckmassage zu Beatmung?',a:['30 : 2','2 : 30','10 : 10','5 : 1'],e:'30 Mal drücken, 2 Mal beatmen, dann wieder von vorn. Ein Defibrillator (AED) wird sofort eingesetzt, sobald er da ist.'},
+  {c:'ehilfe',g:1,q:'Wie versorgst du eine Verbrennung am Arm richtig?',a:['Mit kühlem bis lauwarmem, fließendem Wasser kühlen','Mit Eiswürfeln direkt kühlen','Mit Mehl bestreuen','Mit Butter einreiben'],e:'Eis kann die Haut zusätzlich schädigen, Mehl und Butter verschmutzen die Wunde. Danach keimfrei abdecken. Bei großen Verbrennungen sofort die 112 rufen.'},
+  {c:'ehilfe',g:1,q:'Was tust du bei einer stark blutenden Wunde am Arm?',a:['Einen Druckverband anlegen','Die Wunde offen lassen','Ein Pflaster aufkleben','Nur Eis auflegen'],e:'Schutzhandschuhe anziehen, ein Druckpolster auflegen und fest verbinden. Bei starker Blutung auch den Notruf wählen.'},
+  {c:'ehilfe',g:1,q:'Wie hilfst du bei Nasenbluten?',a:['Kopf leicht nach vorn, Nasenflügel zusammendrücken','Den Kopf weit in den Nacken legen','Flach hinlegen','Ein Taschentuch tief in die Nase stecken'],e:'Mit dem Kopf im Nacken liefe das Blut in den Rachen. Beuge dich nach vorn, drücke die Nase zu und lege einen kühlen Lappen in den Nacken.'},
+
+  // Feuerwehrwissen
+  {c:'wissen',g:1,q:'Wie viele Stufen hat die Jugendflamme?',a:['Drei','Zwei','Vier','Fünf'],e:'Die Jugendflamme gibt es in den Stufen 1 bis 3. Sie ist ein Abzeichen der Deutschen Jugendfeuerwehr.'},
+  {c:'wissen',g:1,q:'Wer ist der Schutzpatron der Feuerwehrleute?',a:['Der heilige Florian','Der heilige Nikolaus','Der heilige Martin','Der heilige Christophorus'],e:'Florian von Lorch gilt als Schutzpatron der Feuerwehrleute. Sein Gedenktag ist der 4. Mai.'},
+  {c:'wissen',g:2,q:'Wie heißt der Dachverband der Jugendfeuerwehren in Deutschland?',a:['Deutsche Jugendfeuerwehr','Bundesjugendwehr','Feuerwehr-Jugendring','Deutsche Löschjugend'],e:'Die Deutsche Jugendfeuerwehr (DJF) ist der Jugendverband im Deutschen Feuerwehrverband.'},
+  {c:'wissen',g:2,q:'Welcher Funkrufname gehört zur Feuerwehr?',a:['Florian','Rotkreuz','Akkon','Christoph'],e:'Florian steht für die Feuerwehr. Rotkreuz gehört zum DRK, Akkon zu den Johannitern und Christoph zur Luftrettung.'},
+  {c:'wissen',g:2,q:'Aus wie vielen Einsatzkräften besteht eine Löschgruppe?',a:['Neun','Sechs','Drei','Zwölf'],e:'Die Gruppe besteht aus dem Gruppenführer und acht weiteren Einsatzkräften. Die kleinere Staffel hat sechs.'},
+  {c:'wissen',g:1,q:'Wer bedient im Löschfahrzeug die Pumpe?',a:['Der Maschinist','Der Melder','Der Gruppenführer','Der Schlauchtruppführer'],e:'Der Maschinist fährt das Fahrzeug und bedient an der Einsatzstelle die Pumpe.'},
+  {c:'wissen',g:2,q:'Wofür steht die Abkürzung THL?',a:['Technische Hilfeleistung','Tragkraftspritzen-Lehrgang','Tank- und Hydrantenleitung','Tragbare Hochleiter'],e:'THL umfasst Einsätze wie Verkehrsunfälle, Sturmschäden oder umgestürzte Bäume, also mehr als nur Brände.'},
+  {c:'wissen',g:1,q:'Warum tragen Feuerwehrleute im Brandeinsatz ein Atemschutzgerät?',a:['Rauch und Brandgase sind giftig','Der Helm sitzt sonst schlecht','Wegen des Lärms','Um den Funk besser zu hören'],e:'Brandrauch enthält giftige Gase wie Kohlenmonoxid. Schon wenige Atemzüge können gefährlich sein. Geh deshalb nie in verrauchte Räume.'},
+
+  // Notruf & Verhalten (mehr)
+  {c:'notruf',g:1,q:'Was bedeutet das grüne Schild mit dem laufenden Männchen?',a:['Hier geht es zum Notausgang','Hier beginnt ein Spielplatz','Hier ist der Eingang für Gäste','Hier ist Rennen erlaubt'],e:'Grüne Rettungszeichen zeigen Fluchtwege und Notausgänge. Halte diese Wege immer frei.'},
+  {c:'notruf',g:2,q:'Welche Farbe haben Brandschutzzeichen, zum Beispiel für den Feuerlöscher?',a:['Rot','Grün','Blau','Gelb'],e:'Brandschutzzeichen sind rot mit weißem Symbol. Du findest sie an Feuerlöschern, Brandmeldern und Wandhydranten.'},
+  {c:'notruf',g:1,q:'Wohin gehst du, wenn ein Gebäude geräumt wird?',a:['Zum Sammelplatz','Zurück ins Gebäude, um etwas zu holen','Nach Hause, ohne Bescheid zu sagen','Hinter das Gebäude zum Zuschauen'],e:'Am Sammelplatz wird gezählt, ob alle draußen sind. Wer ohne Bescheid verschwindet, löst unnötige Suchaktionen aus.'},
+  {c:'notruf',g:1,q:'Deine Kleidung fängt Feuer. Was tust du?',a:['Nicht rennen, hinlegen und auf dem Boden rollen','Schnell wegrennen','Mit den Armen wedeln','Das Fenster aufreißen'],e:'Beim Rennen bekommen die Flammen mehr Sauerstoff. Rollen auf dem Boden oder eine Decke ersticken das Feuer.'},
+  {c:'notruf',g:2,q:'Du bist in einem Zimmer eingeschlossen und der Flur ist verraucht. Was tust du?',a:['Tür geschlossen lassen, Ritzen abdichten und am Fenster auf dich aufmerksam machen','Durch den Rauch ins Treppenhaus rennen','Aus dem Fenster springen','Dich unter dem Bett verstecken'],e:'Ist der Fluchtweg verraucht, ist es im Zimmer meist sicherer. Mach dich am Fenster bemerkbar und rufe die 112.'},
+  {c:'notruf',g:2,q:'Was ist die Leitstelle?',a:['Die Stelle, die Notrufe annimmt und Einsatzkräfte alarmiert','Der Raum, in dem die Fahrzeuge gewaschen werden','Das Lager für Löschmittel','Die Schule der Feuerwehr'],e:'Die Leitstelle nimmt den Notruf an, schickt die passenden Einsatzkräfte los und bleibt mit der Einsatzstelle in Verbindung.'},
+  {c:'notruf',g:1,q:'Was kostet ein Notruf über die 112?',a:['Nichts, er ist kostenlos','50 Cent pro Minute','Einen Euro pro Anruf','Er geht nur mit Guthaben'],e:'Der Notruf ist von jedem Telefon aus kostenlos. Ein Missbrauch, also ein Anruf ohne Notfall, ist aber strafbar.'},
+  {c:'notruf',g:2,q:'Was ist ein Entstehungsbrand?',a:['Ein Brand am Anfang, der sich noch mit einfachen Mitteln löschen lässt','Ein Brand, der absichtlich gelegt wurde','Ein Feuer, das nur Fahrzeuge betrifft','Ein Brand im Freien'],e:'Bei einem kleinen Entstehungsbrand helfen Feuerlöscher oder Löschdecke, solange du dich nicht in Gefahr bringst.'},
+
+  // Brandlehre (mehr)
+  {c:'brand',g:2,q:'Woran sterben die meisten Menschen bei Wohnungsbränden?',a:['An giftigem Rauch','An Verbrennungen','An einstürzenden Wänden','An Explosionen'],e:'Die meisten Brandopfer sterben an Rauchgasen, nicht an den Flammen. Schon wenige Atemzüge können bewusstlos machen.'},
+  {c:'brand',g:2,q:'Welches Gas im Brandrauch ist farb- und geruchlos und besonders gefährlich?',a:['Kohlenmonoxid','Wasserdampf','Sauerstoff','Löschschaum'],e:'Kohlenmonoxid (CO) kannst du weder sehen noch riechen. Es verdrängt im Blut den Sauerstoff.'},
+  {c:'brand',g:2,q:'Wohin richtest du den Strahl eines Feuerlöschers?',a:['Auf die Basis der Flammen','Auf die Rauchwolke','Oben in die Flammen','An die Zimmerdecke'],e:'Greife die Flammen an der Basis an, mit dem Wind im Rücken. Bei Flächenbränden arbeitest du dich von vorn nach hinten.'},
+  {c:'brand',g:2,q:'Welche Brandklasse steht für Speisefette und Speiseöle?',a:['Klasse F','Klasse A','Klasse C','Klasse D'],e:'Klasse F gilt für brennende Speisefette und Speiseöle, zum Beispiel in Fritteusen.'},
+  {c:'brand',g:2,q:'Wie wirkt Löschschaum hauptsächlich?',a:['Er deckt den Brandstoff ab und trennt ihn vom Sauerstoff','Er macht das Feuer heißer','Er verdampft sofort','Er saugt die Flammen an'],e:'Schaum legt sich wie eine Decke auf brennende Flüssigkeiten, erstickt die Flammen und kühlt zusätzlich.'},
+  {c:'brand',g:2,q:'Warum sind Spraydosen und Gasflaschen im Brandfall gefährlich?',a:['Hitze lässt den Druck steigen, sie können platzen','Sie schmelzen und tropfen','Sie ziehen Blitze an','Sie setzen Wasser frei'],e:'In der Hitze steigt der Druck. Spraydosen und Gasflaschen können platzen oder explodieren. Halte Abstand und sage der Feuerwehr, wo sie stehen.'},
+  {c:'brand',g:2,q:'Was ist bei einer Brandschutztür wichtig?',a:['Sie darf nicht mit einem Keil offen gehalten werden','Sie muss immer abgeschlossen sein','Sie darf nur von der Feuerwehr geöffnet werden','Sie muss bei Feuer aufgerissen werden'],e:'Brandschutztüren halten Feuer und Rauch eine Zeit lang auf. Das klappt nur, wenn sie geschlossen sind.'},
+  {c:'brand',g:2,q:'Um wie viel dehnt sich Wasser beim Verdampfen etwa aus?',a:['Etwa 1700-fach','Etwa 2-fach','Etwa 10-fach','Gar nicht'],e:'Aus einem Liter Wasser werden rund 1700 Liter Wasserdampf. Das kühlt stark. Deshalb gehen Einsatzkräfte im Gebäude vorsichtig mit Wasser um.'},
+
+  // Fahrzeuge & Geräte (mehr)
+  {c:'technik',g:2,q:'Wofür steht die Abkürzung RW?',a:['Rüstwagen','Rettungswagen','Rauchwagen','Rohrwagen'],e:'Der Rüstwagen bringt schweres Gerät zur technischen Hilfe mit, zum Beispiel Hebekissen, Seilwinde und Rettungsgerät.'},
+  {c:'technik',g:2,q:'Wofür steht die Abkürzung HLF?',a:['Hilfeleistungslöschfahrzeug','Hochleistungs-Leiterfahrzeug','Hydranten-Löschfahrzeug','Hilfs-Löschfahrrad'],e:'Das HLF verbindet ein Löschfahrzeug mit Geräten für technische Hilfe, etwa bei Verkehrsunfällen.'},
+  {c:'technik',g:2,q:'Was ist eine Tragkraftspritze?',a:['Eine tragbare Feuerlöschpumpe mit eigenem Motor','Ein Hochdruckreiniger für Fahrzeuge','Ein Handfeuerlöscher','Ein Schlauchwagen'],e:'Die Tragkraftspritze fördert Wasser auch dort, wo kein Fahrzeug hinkommt, zum Beispiel aus einem Bach.'},
+  {c:'technik',g:2,q:'Wozu dient ein Hebekissen?',a:['Um schwere Lasten anzuheben','Um Verletzte weich zu lagern','Um Schläuche zu schützen','Um Löschschaum zu erzeugen'],e:'Hebekissen werden unter eine Last gelegt und mit Luft gefüllt. So lassen sich Fahrzeuge oder Trümmer anheben.'},
+  {c:'technik',g:2,q:'Wofür nutzt die Feuerwehr einen Überdrucklüfter?',a:['Um Rauch aus einem Gebäude zu blasen','Um Wasser zu kühlen','Um Fahrzeuge zu trocknen','Um den Funk zu verstärken'],e:'Der Lüfter erzeugt Überdruck im Gebäude. So werden Rauch und Hitze durch eine Abluftöffnung nach draußen gedrückt.'},
+  {c:'technik',g:1,q:'Was bedeutet es, wenn ein Feuerwehrfahrzeug Blaulicht und Martinshorn einschaltet?',a:['Alle anderen müssen sofort freie Bahn schaffen','Die Ampel schaltet automatisch auf Grün','Alle dürfen schneller fahren','Das Fahrzeug darf überall ohne Rücksicht parken'],e:'Mit Blaulicht und Einsatzhorn hat die Feuerwehr Wegerecht. Trotzdem fahren Einsatzfahrer mit besonderer Vorsicht.'},
+  {c:'technik',g:2,q:'Wozu dient die Steckleiter?',a:['Als tragbare Leiter aus mehreren Teilen','Als Rettungsrutsche','Als Wassertank','Als Sitzbank im Fahrzeug'],e:'Die Steckleiter besteht aus mehreren Teilen, die zusammengesteckt werden. Sie dient zur Rettung und als Zugang zu Fenstern und Dächern.'},
+  {c:'technik',g:2,q:'Was ist ein Sprungretter?',a:['Ein Luftkissen, das einen Sprung aus der Höhe abfangen kann','Ein Gerät zum Anheben von Fahrzeugen','Eine Rettungsrutsche aus Metall','Eine Matte zum Aufwärmen'],e:'Der Sprungretter ist die letzte Möglichkeit, wenn es keinen anderen Rettungsweg gibt.'},
+
+  // Schlauch & Technik (mehr)
+  {c:'schlauch',g:2,q:'Mit welchem Knoten befestigst du eine Leine an einem Pfosten oder Geländer?',a:['Mastwurf','Kreuzknoten','Achterknoten','Schlaufenknoten'],e:'Der Mastwurf hält an Pfosten, Rohren und Geländern, solange die Leine unter Zug steht. Er lässt sich schnell binden und lösen.'},
+  {c:'schlauch',g:2,q:'Wofür nutzt man den Schotstek?',a:['Um zwei Leinen unterschiedlicher Stärke zu verbinden','Um eine Leine an einem Pfosten zu befestigen','Um eine feste Schlaufe zu knoten','Um Schläuche zu kuppeln'],e:'Der Schotstek verbindet auch Leinen mit verschiedener Dicke sicher miteinander.'},
+  {c:'schlauch',g:2,q:'Was zeigt das Manometer an der Pumpe?',a:['Den Wasserdruck','Die Wassermenge','Die Wassertemperatur','Den Füllstand des Tanks'],e:'Am Manometer liest der Maschinist den Druck ab, mit dem das Wasser in die Schläuche geschickt wird.'},
+  {c:'schlauch',g:1,q:'Was bedeutet das Kommando „Wasser halt!“?',a:['Die Wasserabgabe wird beendet','Das Wasser wird aufgedreht','Der Schlauch wird aufgerollt','Der Hydrant wird gesucht'],e:'Der Maschinist stellt dann das Wasser ab. Das Gegenstück ist „Wasser marsch!“.'},
+  {c:'schlauch',g:2,q:'Wozu dient ein Standrohr?',a:['Um Wasser aus einem Unterflurhydranten zu entnehmen','Um Rauch abzuleiten','Um Schläuche zu trocknen','Um Löschschaum zu mischen'],e:'Das Standrohr wird auf den Unterflurhydranten gesetzt. An den Abgängen schließt man dann die Schläuche an.'},
+  {c:'schlauch',g:1,q:'Was passiert mit den Schläuchen nach dem Einsatz?',a:['Sie werden gereinigt, geprüft und trocken gelagert','Sie werden nass aufgerollt und weggestellt','Sie werden sofort weggeworfen','Sie werden mit Farbe gekennzeichnet'],e:'So bleiben die Schläuche einsatzbereit. Beschädigte Schläuche werden aussortiert.'},
+  {c:'schlauch',g:2,q:'Wofür ist eine Blindkupplung da?',a:['Sie verschließt einen offenen Schlauchanschluss','Sie verbindet zwei Schläuche','Sie misst den Druck','Sie filtert das Wasser'],e:'Mit der Blindkupplung wird ein offener Abgang dicht verschlossen, zum Beispiel am Verteiler.'},
+  {c:'schlauch',g:2,q:'Wofür nutzt man den Sprühstrahl am Strahlrohr besonders?',a:['Zum Kühlen und als Schutz vor Hitze','Für die größte Wurfweite','Zum Ansaugen von Wasser','Zum Befüllen von Tanks'],e:'Der Sprühstrahl verteilt das Wasser in feine Tropfen. Er kühlt stark und schützt Einsatzkräfte vor Hitze. Der Vollstrahl reicht weiter.'},
+
+  // Erste Hilfe (mehr)
+  {c:'ehilfe',g:1,q:'Wie prüfst du, ob eine Person bei Bewusstsein ist?',a:['Laut ansprechen und vorsichtig an den Schultern rütteln','Kaltes Wasser ins Gesicht schütten','Fest ins Gesicht schlagen','Kneifen und anschreien'],e:'Reagiert die Person nicht, rufst du um Hilfe, öffnest die Atemwege und prüfst die Atmung.'},
+  {c:'ehilfe',g:2,q:'Was ist ein AED?',a:['Ein Defibrillator, der bei Herzstillstand helfen kann','Ein Blutdruckmessgerät','Ein Beatmungsbeutel','Ein Fieberthermometer'],e:'Der AED spricht mit dir und sagt dir, was zu tun ist. Er gibt nur einen Stromstoß ab, wenn es nötig ist.'},
+  {c:'ehilfe',g:1,q:'Wie versorgst du eine kleine, saubere Schnittwunde?',a:['Mit Pflaster oder Verband keimfrei abdecken','Mit Hausmitteln einreiben','Offen an der Luft lassen','Immer sofort nähen lassen'],e:'Wunden werden nicht mit Hausmitteln behandelt. Ein Pflaster oder steriler Verband schützt vor Keimen.'},
+  {c:'ehilfe',g:1,q:'Was ist bei Verdacht auf einen Knochenbruch richtig?',a:['Die Stelle ruhig halten und Hilfe holen','Den Knochen wieder einrenken','Das Körperteil kräftig bewegen','Heiße Umschläge machen'],e:'Die verletzte Stelle bleibt möglichst ruhig, so wie sie ist. Du polsterst sie, beruhigst die Person und rufst bei Bedarf die 112.'},
+  {c:'ehilfe',g:2,q:'Eine Wespe sticht jemanden in den Mund. Was tust du?',a:['Kühlen, zum Beispiel Eis lutschen lassen, und die 112 rufen','Abwarten','Salz essen lassen','Heißen Tee trinken lassen'],e:'Ein Stich im Mund oder Rachen kann die Atemwege zuschwellen lassen. Das ist ein Notfall.'},
+  {c:'ehilfe',g:2,q:'Wie hilfst du bei Unterkühlung?',a:['Aus der Kälte holen und langsam mit Decken wärmen','Mit heißem Wasser übergießen','Mit Schnee abreiben','Alkohol zu trinken geben'],e:'Wärme die Person langsam und schütze sie vor weiterem Wärmeverlust. Alkohol hilft nicht, er verschlechtert die Lage.'},
+  {c:'ehilfe',g:1,q:'Was ziehst du an, bevor du eine blutende Wunde versorgst?',a:['Einmalhandschuhe','Gartenhandschuhe','Wollhandschuhe','Nichts'],e:'Einmalhandschuhe schützen dich und die verletzte Person vor Krankheitserregern.'},
+  {c:'ehilfe',g:2,q:'Jemand verschluckt sich und kann nicht mehr husten. Was tust du?',a:['Bis zu fünf Schläge zwischen die Schulterblätter geben','Ein Glas Wasser zu trinken geben','Den Kopf in den Nacken legen','Abwarten, bis es von allein vorbeigeht'],e:'Hilft das nicht, folgen bis zu fünf Oberbauchstöße. Wähle dabei die 112.'},
+
+  // Feuerwehrwissen (mehr)
+  {c:'wissen',g:1,q:'Wofür steht die Abkürzung FF?',a:['Freiwillige Feuerwehr','Feuerfeste Fahrzeuge','Feuerwehr-Fahrschule','Flammenfreie Fläche'],e:'Die meisten Feuerwehren in Deutschland sind Freiwillige Feuerwehren. Ehrenamtliche helfen dort neben Schule und Beruf.'},
+  {c:'wissen',g:1,q:'Wie heißt die Feuerwehr, in der Einsatzkräfte hauptberuflich arbeiten?',a:['Berufsfeuerwehr','Freiwillige Feuerwehr','Pflichtfeuerwehr','Jugendfeuerwehr'],e:'Berufsfeuerwehren gibt es vor allem in größeren Städten. Dort arbeiten die Feuerwehrleute im Schichtdienst.'},
+  {c:'wissen',g:2,q:'Welche Aufgabe hat der Melder in der Löschgruppe?',a:['Er unterstützt den Gruppenführer und übermittelt Meldungen','Er bedient die Pumpe','Er führt den Angriffstrupp','Er fährt das Fahrzeug'],e:'Der Melder ist der Helfer des Gruppenführers. Er hält Verbindung, überbringt Meldungen und hilft bei der Erkundung.'},
+  {c:'wissen',g:1,q:'Welche vier Grundaufgaben hat die Feuerwehr?',a:['Retten, Löschen, Bergen, Schützen','Bauen, Löschen, Jagen, Streiten','Fahren, Funken, Löschen, Putzen','Wachen, Warten, Zählen, Löschen'],e:'Die Feuerwehr rettet Menschen und Tiere, löscht Brände, birgt Gegenstände und schützt Menschen und Umwelt vor Gefahren.'},
+  {c:'wissen',g:1,q:'Wie wird die Freiwillige Feuerwehr im Einsatzfall alarmiert?',a:['Per Funkmelder, Handy-App oder Sirene','Per Brief','Per Zeitungsanzeige','Per Postkarte'],e:'Die Leitstelle löst den Alarm aus. Die Einsatzkräfte erfahren es meist über Funkmelder oder App, teils auch über die Sirene.'},
+  {c:'wissen',g:2,q:'Was ist ein Pressluftatmer?',a:['Ein Atemschutzgerät mit Atemluft aus einer Flasche','Ein Kompressor für Autoreifen','Ein Lüfter zur Raumkühlung','Ein Funkgerät'],e:'Der Pressluftatmer versorgt Trupps mit Atemluft aus einer Druckluftflasche. Atemschutz dürfen nur ausgebildete Erwachsene tragen.'},
+  {c:'wissen',g:2,q:'Was ist die Leistungsspange?',a:['Die höchste Auszeichnung der Deutschen Jugendfeuerwehr','Ein Gürtel für Atemschutzgeräte','Ein Dienstgrad für Gruppenführer','Ein Schlüssel für Kupplungen'],e:'Dazu gehören zum Beispiel ein Löschangriff, Kugelstoßen, ein Staffellauf und Wissensfragen.'},
+  {c:'wissen',g:1,q:'Wer leitet und betreut die Jugendfeuerwehr vor Ort?',a:['Der Jugendwart oder die Jugendwartin','Der Bürgermeister','Der Maschinist','Der Hausmeister'],e:'Der Jugendwart oder die Jugendwartin plant Dienste, Übungen und Ausflüge gemeinsam mit den Betreuern.'},
+
+  // Notruf & Verhalten (Runde 3)
+  {c:'notruf',g:1,q:'Was gehört zu einer guten Fluchtplanung zu Hause?',a:['Zwei Fluchtwege und einen Treffpunkt draußen festlegen','Nur einen Fluchtweg über den Aufzug planen','Jeder sucht sich spontan einen Weg','Alle warten im Flur auf die Feuerwehr'],e:'Besprecht Fluchtwege und einen Treffpunkt vor dem Haus. So merkt ihr schnell, ob jemand fehlt.'},
+  {c:'notruf',g:1,q:'Warum sollst du bei einem Notruf ruhig und deutlich sprechen?',a:['Damit die Leitstelle alles richtig versteht','Damit der Anruf kürzer als 10 Sekunden bleibt','Damit die Feuerwehr nicht zu schnell kommt','Damit niemand mithören kann'],e:'Wichtig sind Ort, Geschehen und Betroffene. Wenn du aufgeregt bist, atme einmal durch und beantworte die Fragen der Leitstelle.'},
+  {c:'notruf',g:2,q:'Du kennst den Straßennamen nicht. Was hilft der Leitstelle?',a:['Auffällige Orientierungspunkte wie Kreuzungen oder Gebäude nennen','Einfach auflegen','Raten','Nur sagen: Es brennt irgendwo'],e:'Beschreibe, was du siehst: Gebäude, Straßen, Haltestellen. Bleib am Telefon, bis die Leitstelle Bescheid gibt.'},
+  {c:'notruf',g:2,q:'Was tust du, wenn die Tür zum Flur heiß ist?',a:['Nicht öffnen, im Zimmer bleiben und am Fenster rufen','Sofort aufreißen und losrennen','Gegen die Tür treten','Mit einem nassen Tuch aufreißen'],e:'Eine heiße Tür bedeutet Feuer dahinter. Du bleibst im Raum, dichtest Ritzen ab und machst dich bemerkbar.'},
+  {c:'notruf',g:2,q:'Was machst du mit der Wohnungstür, wenn du bei einem Brand die Wohnung verlässt?',a:['Zuziehen, aber nicht abschließen','Weit offen lassen','Zweimal abschließen','Aus den Angeln heben'],e:'Zugezogen hält die Tür Rauch zurück. Nicht abgeschlossen kommt die Feuerwehr schnell hinein.'},
+  {c:'notruf',g:1,q:'Wann ist ein Anruf bei der 112 richtig?',a:['Bei Feuer, Unfällen und Lebensgefahr','Wenn du die Uhrzeit wissen willst','Wenn die Nachbarn laut sind','Wenn ein Fahrrad kaputt ist'],e:'Die 112 ist nur für Notfälle da. Bei Krankheit ohne Lebensgefahr hilft der ärztliche Bereitschaftsdienst unter 116 117.'},
+
+  // Brandlehre (Runde 3)
+  {c:'brand',g:2,q:'Was bezeichnet man als Flashover?',a:['Das plötzliche Durchzünden eines heißen, verrauchten Raums','Ein Löschverfahren mit Schaum','Das Ausschalten der Hauptsicherung','Einen Fehlalarm der Brandmeldeanlage'],e:'Brandgase und Gegenstände heizen sich auf, bis alles fast gleichzeitig zündet. Deshalb dürfen nur ausgebildete Einsatzkräfte mit Schutzausrüstung in brennende Räume.'},
+  {c:'brand',g:2,q:'Womit löschst du einen Brand an einem elektrischen Gerät unter Spannung?',a:['Mit einem CO2- oder Pulverlöscher','Mit einem vollen Wasserstrahl','Mit einem Eimer Wasser','Mit Schaum'],e:'Wasser leitet Strom und kann zum Stromschlag führen. Wenn möglich, schaltest du zuerst den Strom ab.'},
+  {c:'brand',g:2,q:'Warum können sich feuchtes Heu oder ölige Lappen selbst entzünden?',a:['Weil sich bei der Zersetzung Wärme staut','Weil sie magnetisch sind','Weil sie Strom leiten','Weil sie Sonnenlicht verstärken'],e:'Im Heu entsteht durch Kleinstlebewesen Wärme, ölige Lappen oxidieren. Staut sich die Wärme, kann es zur Selbstentzündung kommen.'},
+  {c:'brand',g:2,q:'Wie wirkt Kohlendioxid (CO2) als Löschmittel?',a:['Es verdrängt den Sauerstoff und kühlt etwas','Es verbrennt den Brennstoff','Es macht Rauch sichtbar','Es verflüssigt Fett'],e:'CO2 ist schwerer als Luft und legt sich über das Feuer. In kleinen, geschlossenen Räumen besteht Erstickungsgefahr, setze es dort nur vorsichtig ein.'},
+  {c:'brand',g:2,q:'Wie nennt man die Temperatur, ab der sich ein Stoff von allein entzündet?',a:['Zündtemperatur','Kältepunkt','Löschpunkt','Siedepunkt'],e:'Die Zündtemperatur ist je nach Stoff verschieden. Unterhalb davon zündet ein Stoff ohne Zündquelle nicht von selbst.'},
+  {c:'brand',g:2,q:'Was ist ein Glutnest?',a:['Eine versteckte Glutstelle, die wieder aufflammen kann','Ein Vogelnest in der Nähe des Feuers','Ein Löschmittellager','Ein Teil der Schutzkleidung'],e:'Deshalb kontrolliert die Feuerwehr nach dem Löschen zum Beispiel mit der Wärmebildkamera und lässt bei Bedarf eine Brandwache zurück.'},
+
+  // Fahrzeuge & Geräte (Runde 3)
+  {c:'technik',g:2,q:'Wofür steht die Abkürzung GW?',a:['Gerätewagen','Gruppenwagen','Großwasserwagen','Gefahrenwagen'],e:'Ein Gerätewagen transportiert besondere Ausrüstung, zum Beispiel für Gefahrgut, Atemschutz oder Logistik.'},
+  {c:'technik',g:1,q:'Wofür nutzt die Feuerwehr eine Motorsäge?',a:['Um umgestürzte Bäume zu zerlegen','Um Türen zu öffnen','Um Wasserleitungen zu kappen','Um Löschschaum zu verteilen'],e:'Nach Stürmen räumt die Feuerwehr Straßen frei. Motorsägen bedienen nur Einsatzkräfte mit Sägelehrgang.'},
+  {c:'technik',g:2,q:'Wozu dient der Stromerzeuger auf vielen Feuerwehrfahrzeugen?',a:['Für Licht und Geräte, wenn kein Strom da ist','Um Wasser zu erhitzen','Um Hydranten zu öffnen','Um die Sirene zu betreiben'],e:'Er versorgt Scheinwerfer, Lüfter und elektrisches Rettungsgerät mit Strom.'},
+  {c:'technik',g:2,q:'Was zeigt eine orange Warntafel mit Zahlen an einem Lastwagen?',a:['Dass der Lkw Gefahrgut transportiert','Dass er zur Feuerwehr gehört','Dass er langsam fährt','Dass er leer ist'],e:'Die Zahlen verraten der Feuerwehr, welcher Stoff geladen ist und wie gefährlich er ist.'},
+  {c:'technik',g:2,q:'Wozu dient Ölbindemittel?',a:['Um ausgelaufene Flüssigkeiten aufzusaugen','Um Brände zu löschen','Um Rauch zu binden','Um Schläuche abzudichten'],e:'Bei Verkehrsunfällen verhindert Bindemittel, dass Öl oder Kraftstoff in die Kanalisation läuft.'},
+  {c:'technik',g:1,q:'Wozu dient ein Schlauchwagen?',a:['Zum Verlegen langer Schlauchleitungen','Zum Transport von Verletzten','Zum Löschen von Waldbränden','Zum Abschleppen von Fahrzeugen'],e:'Ein Schlauchwagen bringt viele Schläuche mit, damit Wasser über weite Strecken zur Einsatzstelle gefördert werden kann.'},
+
+  // Schlauch & Technik (Runde 3)
+  {c:'schlauch',g:2,q:'Welchen Innendurchmesser hat ein D-Schlauch?',a:['25 mm','42 mm','75 mm','110 mm'],e:'Zur Erinnerung: A 110 mm, B 75 mm, C 42 mm, D 25 mm.'},
+  {c:'schlauch',g:2,q:'Wie nennt man den Schlauch, der aufgerollt am Fahrzeug schon an der Pumpe angeschlossen ist?',a:['Schnellangriff','Saugschlauch','Reserveschlauch','Verteilerschlauch'],e:'Der Schnellangriff liegt aufgerollt auf einer Haspel am Fahrzeug und ist in Sekunden einsatzbereit.'},
+  {c:'schlauch',g:2,q:'Wie verbindest du zwei Storz-Kupplungen?',a:['Zusammenführen und eine Vierteldrehung machen','Bis zum Anschlag zusammenschrauben','Mit einer Zange zusammenklemmen','Einfach zusammenstecken'],e:'Durch die Vierteldrehung geht das Kuppeln schnell, auch mit Handschuhen.'},
+  {c:'schlauch',g:1,q:'Wofür nutzt die Feuerwehr die Feuerwehrleine?',a:['Zum Sichern von Personen und Geräten','Als Absperrband','Zum Binden von Schläuchen am Fahrzeug','Zum Messen von Entfernungen'],e:'Die Feuerwehrleine ist ein belastbares Seil und gehört zur Standardausrüstung eines Löschfahrzeugs.'},
+  {c:'schlauch',g:2,q:'Was macht der Wassertrupp in der Löschgruppe?',a:['Er stellt die Wasserversorgung her','Er geht mit dem Strahlrohr vor','Er bedient die Pumpe','Er führt die Gruppe'],e:'Der Wassertrupp baut die Verbindung zum Hydranten oder zur offenen Wasserentnahme auf. Der Angriffstrupp geht mit dem Strahlrohr vor.'},
+  {c:'schlauch',g:2,q:'Was verraten die Zahlen auf einem Hydrantenschild?',a:['Wo der Hydrant liegt und wie groß die Wasserleitung ist','Wann er zuletzt gewartet wurde','Wie kalt das Wasser ist','Wer ihn bezahlt hat'],e:'Die Zahlen geben Abstände zum Hydranten an und den Durchmesser der Wasserleitung in Millimetern.'},
+
+  // Erste Hilfe (Runde 3)
+  {c:'ehilfe',g:1,q:'Wie lautet die Merkregel für die Wiederbelebung?',a:['Prüfen, Rufen, Drücken','Warten, Hoffen, Gehen','Fragen, Filmen, Fahren','Sehen, Schweigen, Stehen'],e:'Prüfe, ob die Person reagiert und atmet, wähle den Notruf und drücke fest in die Mitte des Brustkorbs.'},
+  {c:'ehilfe',g:2,q:'Wie hilfst du bei einer Ohnmacht, wenn die Person normal atmet?',a:['Hinlegen und die Beine hochlagern','Aufstellen und herumführen','Kalt abduschen','Kräftig schütteln'],e:'So fließt mehr Blut zum Kopf. Kommt die Person nicht schnell zu sich oder atmet nicht normal, rufst du die 112.'},
+  {c:'ehilfe',g:1,q:'Wie hilfst du bei einem Sonnenstich?',a:['In den Schatten bringen, Kopf kühlen, Oberkörper leicht hochlagern','In die pralle Sonne legen','Heißen Tee eingeben','Mit Eiswasser übergießen'],e:'Kühle Umschläge am Kopf und im Nacken helfen. Bei Bewusstlosigkeit oder starken Beschwerden rufst du die 112.'},
+  {c:'ehilfe',g:2,q:'Wofür steht die PECH-Regel bei Verstauchungen?',a:['Pause, Eis, Compression, Hochlagern','Pflaster, Eis, Creme, Hilfe','Pause, Essen, Chat, Hilfe','Putzen, Eis, Kleben, Heilen'],e:'Das Gelenk ruhig stellen, kühlen, mit einem Verband leicht abstützen und hochlagern. Eis nie direkt auf die Haut legen.'},
+  {c:'ehilfe',g:2,q:'Wie lagerst du jemanden mit Atemnot?',a:['Mit erhöhtem Oberkörper, möglichst aufrecht','Flach auf dem Rücken','Mit dem Kopf nach unten','In der stabilen Seitenlage'],e:'Mit hochgelagertem Oberkörper fällt das Atmen leichter. Bewahre Ruhe, sorge für frische Luft und rufe bei Bedarf die 112.'},
+  {c:'ehilfe',g:2,q:'Du vermutest eine Vergiftung. Wen kannst du anrufen?',a:['Die 112 oder die Giftnotrufzentrale','Den Postboten','Den Hausmeister','Niemanden'],e:'Sage, was verschluckt wurde und wann. Löse kein Erbrechen aus, außer ein Arzt sagt es ausdrücklich.'},
+
+  // Feuerwehrwissen (Runde 3)
+  {c:'wissen',g:2,q:'Wofür steht die Abkürzung DFV?',a:['Deutscher Feuerwehrverband','Dienstfahrzeug-Verband','Digitaler Funkverkehr','Deutsche Feuerwehr-Versicherung'],e:'Der DFV ist der Dachverband der Feuerwehren in Deutschland. Die Deutsche Jugendfeuerwehr gehört dazu.'},
+  {c:'wissen',g:1,q:'Welche Farbe haben Feuerwehrfahrzeuge in Deutschland meistens?',a:['Feuerrot','Knallgelb','Dunkelblau','Grün'],e:'Feuerwehrfahrzeuge sind meist feuerrot lackiert. Die Farbe fällt im Straßenverkehr gut auf.'},
+  {c:'wissen',g:1,q:'Wer leitet einen Feuerwehreinsatz an der Einsatzstelle?',a:['Der Einsatzleiter','Der Maschinist','Der Melder','Der Jugendwart'],e:'Der Einsatzleiter entscheidet, was getan wird, und teilt die Kräfte ein. Die anderen führen seine Befehle aus.'},
+  {c:'wissen',g:2,q:'Was ist eine Brandwache?',a:['Einsatzkräfte bleiben nach dem Löschen und kontrollieren die Stelle','Ein Turm zum Beobachten von Waldbränden','Ein Wachdienst am Gerätehaus','Eine Uhr im Fahrzeug'],e:'Damit Glutnester nicht unbemerkt wieder aufflammen, bleibt oft eine Brandwache an der Einsatzstelle.'},
+  {c:'wissen',g:1,q:'Wozu trägt die Feuerwehr einen Schutzhelm?',a:['Zum Schutz des Kopfes vor herabfallenden Teilen und Hitze','Zur Zierde','Um besser zu hören','Um im Dunkeln zu leuchten'],e:'Zur Schutzausrüstung gehören außerdem Jacke, Hose, Handschuhe und Stiefel.'},
+  {c:'wissen',g:2,q:'Wie heißt die Grundausbildung bei der Feuerwehr?',a:['Truppmannausbildung','Gruppenführerlehrgang','Maschinistenlehrgang','Atemschutzlehrgang'],e:'In der Truppmannausbildung lernen Neue die Grundlagen für den Einsatz. Die Jugendfeuerwehr bereitet gut darauf vor.'},
+  {c:'wissen',g:2,q:'Wofür steht ABC bei ABC-Einsätzen?',a:['Atomare, biologische und chemische Gefahren','Alarm, Brand, Chaos','Atemschutz, Brandschutz, Chemie','Absperren, Benachrichtigen, Calmieren'],e:'ABC-Einsätze betreffen gefährliche Stoffe. Dafür gibt es besonders ausgebildete Einheiten und spezielle Schutzanzüge.'},
+
+  // Gefahren & Umwelt (neues Stichwort)
+  {c:'gefahr',g:1,q:'Wie verhältst du dich bei einem Gewitter im Freien?',a:['Schutz in Gebäude oder Auto suchen, Bäume meiden','Unter einem einzelnen Baum Schutz suchen','Mit dem Schirm auf dem Feld stehen bleiben','Ins Wasser gehen'],e:'Einzelne Bäume und offenes Gelände sind gefährlich. Ein Gebäude oder ein Auto schützt am besten.'},
+  {c:'gefahr',g:2,q:'Wie viele Sekunden zwischen Blitz und Donner entsprechen etwa einem Kilometer Entfernung?',a:['Etwa 3 Sekunden','Etwa 1 Sekunde','Etwa 10 Sekunden','Etwa 30 Sekunden'],e:'Schall legt etwa 330 Meter pro Sekunde zurück. Je kürzer die Zeit, desto näher ist das Gewitter.'},
+  {c:'gefahr',g:1,q:'Warum ist ein Lagerfeuer im Wald bei großer Trockenheit gefährlich?',a:['Funken können einen Waldbrand auslösen','Es zieht Wildschweine an','Der Rauch färbt Bäume','Es verbraucht zu viel Holz'],e:'In Trockenzeiten reicht ein Funke. Offenes Feuer im Wald ist ohnehin nur an erlaubten Stellen gestattet.'},
+  {c:'gefahr',g:1,q:'Warum sind überflutete Straßen bei Hochwasser so gefährlich?',a:['Man sieht nicht, wie tief das Wasser ist und was darunter liegt','Das Wasser ist immer sehr warm','Die Straße ist dann trockener','Man wird sofort nass'],e:'Schon wenig strömendes Wasser kann Menschen und Autos mitreißen. Geh nie in überflutete Bereiche.'},
+  {c:'gefahr',g:2,q:'Was bedeutet das Gefahrensymbol mit einer Flamme über einem Kreis?',a:['Brandfördernd, der Stoff kann ein Feuer verstärken','Giftig','Ätzend','Umweltgefährlich'],e:'Die Flamme über einem Kreis steht für oxidierende Stoffe. Die einfache Flamme steht für entzündbare Stoffe.'},
+  {c:'gefahr',g:1,q:'Was bedeutet der Totenkopf auf einem Gefahrensymbol?',a:['Giftig','Ätzend','Umweltgefährlich','Explosiv'],e:'Der Totenkopf warnt vor akut giftigen Stoffen, die schon in kleinen Mengen gefährlich sind.'},
+  {c:'gefahr',g:1,q:'Was darfst du bei Gasgeruch in der Wohnung NICHT tun?',a:['Lichtschalter betätigen oder mit offenem Feuer hantieren','Fenster öffnen','Das Haus verlassen','Von draußen die 112 anrufen'],e:'Ein Funke kann das Gas entzünden. Öffne Fenster, verlasse das Haus und rufe von draußen die 112 an.'},
+  {c:'gefahr',g:2,q:'Warum sind Kohlenmonoxid-Warnmelder bei Heizungen und Kaminen sinnvoll?',a:['Sie warnen vor dem unsichtbaren, geruchlosen Gas','Sie machen Rauch sichtbar','Sie löschen kleine Brände','Sie messen die Raumtemperatur'],e:'Kohlenmonoxid entsteht bei unvollständiger Verbrennung. Ein CO-Melder schlägt Alarm, bevor Menschen es bemerken.'},
+  {c:'gefahr',g:2,q:'Was tust du bei einer heruntergefallenen Stromleitung?',a:['Großen Abstand halten, mit kleinen Schritten entfernen und die 112 rufen','Die Leitung wegziehen','Mit einem Besen wegschieben','Darüberspringen'],e:'Am Boden kann Spannung herrschen. Geh in kleinen Schritten weg und warne andere.'},
+  {c:'gefahr',g:2,q:'Was bedeutet der einminütige auf- und abschwellende Heulton der Sirene bei der Bevölkerungswarnung?',a:['Gefahr: Radio oder Warn-App einschalten','Entwarnung','Der Strom fällt aus','Es ist Mittag'],e:'Schalte Radio oder Warn-App ein. Der einminütige Dauerton bedeutet bei der Bevölkerungswarnung Entwarnung.'},
+  {c:'gefahr',g:2,q:'Wie heißt die Warn-App des Bundes?',a:['NINA','FLORIAN','BRANDI','RETTO'],e:'NINA ist die Notfall-Informations- und Nachrichten-App des Bundes. Sie warnt zum Beispiel vor Hochwasser oder Großbränden.'},
+  {c:'gefahr',g:2,q:'Wie viel Trinkwasser empfiehlt der Bevölkerungsschutz pro Person und Tag für den Notvorrat?',a:['Etwa 2 Liter','Etwa 20 Liter','Einen Liter pro Woche','Gar keins'],e:'Empfohlen wird ein Vorrat für etwa zehn Tage, auch für Lebensmittel. So bist du bei Stromausfall oder Hochwasser vorbereitet.'},
+
+  // Brandklassen
+  {c:'klassen',g:1,q:'Welchen Feuerlöscher nimmst du für ein Feuer mit Holz, Papier und Stoff?',a:['Einen Wasser- oder Schaumlöscher','Einen Metallbrandlöscher','Einen Fettbrandlöscher','Gar keinen'],e:'Für Klasse A sind Wasser, Schaum und ABC-Pulver geeignet.'},
+  {c:'klassen',g:2,q:'Welche Brandklassen bekämpft ein ABC-Pulverlöscher?',a:['A, B und C','Nur D','Nur F','Nur C'],e:'ABC-Pulver deckt feste Stoffe, Flüssigkeiten und Gase ab. Es hinterlässt aber viel Pulver und nimmt die Sicht.'},
+  {c:'klassen',g:2,q:'Für welche Brandklassen eignet sich ein Schaumlöscher hauptsächlich?',a:['A und B','C und D','Nur D','Nur C'],e:'Schaum erstickt brennende Flüssigkeiten und kühlt feste Stoffe. Bei elektrischen Anlagen gelten besondere Mindestabstände.'},
+  {c:'klassen',g:2,q:'Wofür ist ein CO2-Löscher besonders beliebt?',a:['Für elektrische Geräte und Flüssigkeitsbrände, weil er keine Rückstände hinterlässt','Für Metallbrände','Für Waldbrände','Für Fettbrände in der Fritteuse'],e:'CO2 verdrängt den Sauerstoff und hinterlässt keine Rückstände. In kleinen, geschlossenen Räumen besteht Erstickungsgefahr.'},
+  {c:'klassen',g:2,q:'Warum stoppt man bei einem Gasbrand wenn möglich zuerst die Gaszufuhr?',a:['Sonst strömt weiter Gas aus und kann sich nach dem Löschen wieder entzünden','Damit das Feuer heißer wird','Damit weniger Rauch entsteht','Damit die Flamme blau bleibt'],e:'Ein Gas-Luft-Gemisch kann explodieren. Deshalb wird die Gaszufuhr abgestellt, bevor man das Feuer löscht.'},
+  {c:'klassen',g:2,q:'Warum darf Wasser nicht auf brennendes Magnesium?',a:['Es entsteht brennbarer Wasserstoff und das Feuer wird heftiger','Das Feuer erlischt sofort','Es entsteht Schaum','Das Metall wird zu Eis'],e:'Magnesium reagiert mit Wasser und setzt Wasserstoff frei. Metallbrände löscht man mit speziellem Metallbrandpulver.'},
+  {c:'klassen',g:2,q:'Was bedeuten die Buchstaben A, B oder C auf einem Feuerlöscher?',a:['Für welche Brandklassen er geeignet ist','Wie viele Liter er enthält','Wie alt er ist','Wer ihn hergestellt hat'],e:'Auf dem Etikett steht, für welche Brandklassen der Löscher zugelassen ist. Lies das Etikett vorher, nicht erst im Brandfall.'},
+  {c:'klassen',g:2,q:'Wie oft wird ein Feuerlöscher in der Regel von einer Fachkraft geprüft?',a:['Etwa alle zwei Jahre','Jeden Tag','Alle 50 Jahre','Nie'],e:'Regelmäßige Prüfung stellt sicher, dass der Löscher im Ernstfall funktioniert.'},
+  {c:'klassen',g:2,q:'Warum darfst du Wasser nicht auf brennendes Benzin gießen?',a:['Benzin schwimmt auf dem Wasser und das Feuer breitet sich aus','Wasser macht Benzin schwerer','Das Wasser verdampft sofort und das Feuer ist aus','Benzin löst sich in Wasser auf'],e:'Benzin ist leichter als Wasser. Es treibt oben und brennt weiter, oft auf größerer Fläche. Besser eignen sich Schaum oder Pulver.'},
+  {c:'klassen',g:1,q:'Was machst du als Erstes, wenn du einen Feuerlöscher benutzen willst?',a:['Den Sicherungsstift herausziehen','Den Löscher aufs Feuer werfen','Den Löscher auf den Kopf stellen','Den Schlauch abschneiden'],e:'Danach richtest du den Strahl auf die Basis der Flammen und drückst den Hebel. Üb das am besten einmal mit der Feuerwehr.'},
+  {c:'klassen',g:2,q:'Zu welcher Brandklasse gehört brennender Spiritus?',a:['Klasse B','Klasse A','Klasse D','Klasse F'],e:'Spiritus ist eine brennbare Flüssigkeit. Gieße nie Spiritus in ein brennendes Feuer, es gibt eine Stichflamme.'},
+  {c:'klassen',g:1,q:'Wo sollte ein Feuerlöscher hängen?',a:['Gut sichtbar und leicht erreichbar','Hinter einem Schrank','Im Keller eingeschlossen','Unter Werkzeug in der Garage'],e:'Ein Feuerlöscher gehört an einen Platz, den jeder kennt, zum Beispiel im Flur oder in der Nähe der Küche.'},
+  {c:'klassen',g:2,q:'Wie viele Brandklassen gibt es in Deutschland?',a:['Fünf: A, B, C, D und F','Drei: A, B und C','Zwei: heiß und kalt','Zehn'],e:'A: feste Stoffe. B: Flüssigkeiten. C: Gase. D: Metalle. F: Speisefette und Speiseöle.'},
+
+  // Brennbare Stoffe
+  {c:'brennbar',g:1,q:'Welcher Stoff brennt NICHT?',a:['Sand','Papier','Holz','Stroh'],e:'Sand, Stein und Beton brennen nicht. Papier, Holz und Stroh brennen gut.'},
+  {c:'brennbar',g:1,q:'Warum brennt dünnes Papier schneller als ein dicker Holzklotz?',a:['Es hat im Verhältnis mehr Oberfläche, an die Sauerstoff kommt','Es ist schwerer','Es ist nasser','Es enthält Benzin'],e:'Je feiner ein Stoff verteilt ist, desto schneller brennt er. Deshalb zündet man Holz mit dünnen Spänen an.'},
+  {c:'brennbar',g:1,q:'Was passiert, wenn du Benzin oder Spiritus in ein Feuer gießt?',a:['Es gibt eine gefährliche Stichflamme','Das Feuer geht aus','Das Feuer wird kleiner','Nichts'],e:'Flüssige Brandbeschleuniger verdampfen und entzünden sich schlagartig. Deshalb passieren beim Grillen schwere Verbrennungsunfälle.'},
+  {c:'brennbar',g:2,q:'Wie nennt man die niedrigste Temperatur, bei der sich über einer Flüssigkeit zündfähige Dämpfe bilden?',a:['Flammpunkt','Gefrierpunkt','Taupunkt','Schmelzpunkt'],e:'Je niedriger der Flammpunkt, desto gefährlicher ist die Flüssigkeit. Benzin hat einen sehr niedrigen Flammpunkt.'},
+  {c:'brennbar',g:2,q:'Warum ist Propangas besonders in Kellern gefährlich?',a:['Es ist schwerer als Luft und sammelt sich am Boden','Es ist leichter als Luft und steigt zur Decke','Es ist unsichtbar und kalt','Es ist nicht brennbar'],e:'Propan sinkt nach unten und kann Mulden und Keller füllen. Dort reicht ein Funke zur Entzündung.'},
+  {c:'brennbar',g:2,q:'Wie verhält sich Erdgas gegenüber Luft?',a:['Es ist leichter und steigt nach oben','Es ist schwerer und sinkt nach unten','Es ist genauso schwer wie Wasser','Es lässt sich nicht entzünden'],e:'Erdgas zieht im Raum nach oben. Bei Gasgeruch trotzdem sofort lüften und das Haus verlassen.'},
+  {c:'brennbar',g:2,q:'Warum können Mehlstaub oder Holzstaub explodieren?',a:['Feiner Staub in der Luft verbrennt blitzartig','Mehl ist magnetisch','Staub leitet Strom','Staub enthält Wasser'],e:'Je feiner der Staub, desto größer die Oberfläche. In Mühlen, Bäckereien und Holzwerkstätten wird Staub deshalb regelmäßig entfernt.'},
+  {c:'brennbar',g:2,q:'Wo lagerst du Benzin oder Grillanzünder am besten?',a:['Kühl, gut belüftet und in zugelassenen Behältern','Im Wohnzimmer neben der Heizung','Im Auto in der Sonne','Neben der Kerze'],e:'Die Dämpfe sind brennbar und können sich entzünden. Bewahre solche Stoffe sicher und nicht im Wohnraum auf.'},
+  {c:'brennbar',g:1,q:'Was tust du, wenn die Grillkohle nicht richtig brennt?',a:['Geduldig neu anzünden und nie Spiritus nachgießen','Spiritus nachgießen','Benzin darübergießen','Mit einer Spraydose nachhelfen'],e:'Flüssige Brandbeschleuniger verursachen Stichflammen und schwere Verbrennungen. Nutze feste Grillanzünder.'},
+  {c:'brennbar',g:2,q:'Was passiert mit vielen Kunststoffen im Feuer?',a:['Sie schmelzen, brennen weiter und setzen giftige Gase frei','Sie lösen sich in Luft auf','Sie werden zu Wasser','Sie brennen nie'],e:'Brennende Kunststoffe erzeugen oft dichten, schwarzen Rauch. Geh sofort in Sicherheit.'},
+  {c:'brennbar',g:1,q:'Warum dürfen Kerzen nie unbeaufsichtigt brennen?',a:['Sie können umfallen oder Gegenstände entzünden','Sie verbrauchen zu viel Wachs','Sie machen Lärm','Sie ziehen Mücken an'],e:'Besonders im Advent kommt es oft zu Zimmerbränden. Stelle Kerzen auf feuerfeste Unterlagen und lösche sie beim Verlassen des Raums.'},
+  {c:'brennbar',g:2,q:'Was sind Brandgase?',a:['Gase, die bei einem Feuer entstehen und oft giftig sind','Gase, mit denen man Feuer löscht','Gas aus der Gasflasche','Dampf aus dem Wasserkocher'],e:'Bei jeder Verbrennung entstehen Brandgase. Kohlenmonoxid und andere Stoffe sind lebensgefährlich.'},
+  {c:'brennbar',g:2,q:'Was versteht man unter einem Brandbeschleuniger?',a:['Einen Stoff wie Benzin oder Spiritus, der ein Feuer stark anfacht','Ein Löschmittel','Ein Fahrzeug der Feuerwehr','Einen Schutzanzug'],e:'Brandbeschleuniger sind schnell entzündbar. Man benutzt sie nicht zum Anzünden.'},
+  {c:'brennbar',g:1,q:'Wohin gehört die Asche aus Grill oder Kamin?',a:['In einen Metalleimer mit Deckel, erst wenn sie ganz kalt ist','Sofort in die Mülltonne','In einen Pappkarton','Unter den Gartenstrauch'],e:'Asche kann viele Stunden glühen. Sammle sie in Metall und lass sie vollständig abkühlen.'},
+
+  // Feuerwehrgeräte
+  {c:'geraete',g:1,q:'Wozu dient eine Feuerpatsche?',a:['Zum Ausschlagen kleiner Brände auf Wiese oder Waldboden','Zum Reinigen von Fahrzeugen','Zum Kuppeln von Schläuchen','Zum Anzünden von Fackeln'],e:'Mit der Feuerpatsche schlägt man Flammen am Boden aus, zum Beispiel bei Vegetationsbränden.'},
+  {c:'geraete',g:2,q:'Wofür braucht man einen Kupplungsschlüssel?',a:['Um Storz-Kupplungen fest anzuziehen oder zu lösen','Um das Fahrzeug zu starten','Um das Gerätehaus aufzuschließen','Um Wasserhähne aufzudrehen'],e:'Wenn sich eine Kupplung von Hand nicht lösen oder schließen lässt, hilft der Schlüssel.'},
+  {c:'geraete',g:1,q:'Wofür ist eine Schlauchbrücke da?',a:['Damit Fahrzeuge über Schläuche fahren können, ohne sie zu beschädigen','Damit Schläuche schneller trocknen','Damit Schläuche länger werden','Damit das Wasser kälter wird'],e:'Die Brücke schützt Schläuche an Straßen, damit der Verkehr weiterrollen kann.'},
+  {c:'geraete',g:2,q:'Was ist eine Kübelspritze?',a:['Eine Handpumpe mit Wassereimer für kleine Brände','Ein Wasserwerfer auf dem Dach','Ein Schlauchwagen','Ein Löschroboter'],e:'Die Kübelspritze wird per Hand gepumpt und eignet sich für Entstehungsbrände.'},
+  {c:'geraete',g:2,q:'Wozu dient eine Hakenleiter?',a:['Sie wird oben eingehängt, zum Beispiel an einem Fensterbrett','Sie fährt automatisch aus','Sie ersetzt den Schlauch','Sie hilft beim Kuppeln'],e:'Mit dem Haken oben wird die Leiter an Fenster, Brüstung oder Dach festgemacht.'},
+  {c:'geraete',g:2,q:'Wozu dient ein Schlauchhalter?',a:['Er befestigt den Schlauch an Leiter oder Geländer, damit er nicht rutscht','Er misst den Druck','Er filtert das Wasser','Er trocknet Schläuche'],e:'Der Halter sichert die Leitung und entlastet die Kupplungen.'},
+  {c:'geraete',g:1,q:'Wozu dient ein Handscheinwerfer?',a:['Zum Ausleuchten im Dunkeln','Zum Messen der Temperatur','Zum Löschen von Bränden','Zum Warnen vor Rauch'],e:'Bei Nacht oder im Keller sorgt er für Licht und Sicht.'},
+  {c:'geraete',g:2,q:'Was zeigt ein Gasmessgerät an?',a:['Gefährliche Gase und Sauerstoffmangel','Die Außentemperatur','Die Wassermenge im Tank','Die Entfernung zum Hydranten'],e:'Mit dem Messgerät erkennt die Feuerwehr unsichtbare Gefahren, bevor jemand einen Raum betritt.'},
+  {c:'geraete',g:2,q:'Wofür wird eine Schleifkorbtrage genutzt?',a:['Zum Retten und Transportieren von Verletzten, auch über Treppen','Zum Transport von Schläuchen','Zum Ablegen von Helmen','Zum Lagern von Leinen'],e:'Die Trage hält die Person sicher und lässt sich auch über Treppen und durch enge Stellen ziehen.'},
+  {c:'geraete',g:1,q:'Wozu dient der Schlauchtragekorb?',a:['Zum Tragen und schnellen Auslegen von Schläuchen','Zum Waschen von Schläuchen','Zum Aufbewahren von Helmen','Zum Verkaufen von Zubehör'],e:'In den Korb werden Schläuche gelegt und beim Gehen ausgelegt.'},
+  {c:'geraete',g:1,q:'Wozu benutzt die Feuerwehr ein Handfunkgerät?',a:['Um Verbindung zwischen den Einsatzkräften zu halten','Um Musik zu hören','Um Fotos zu machen','Um Wasser zu messen'],e:'Funk ist im Einsatz wichtig, weil Einsatzkräfte weit voneinander entfernt arbeiten.'},
+  {c:'geraete',g:2,q:'Was macht ein Sammelstück?',a:['Es führt mehrere Schlauchleitungen zu einer zusammen','Es teilt eine Leitung auf mehrere auf','Es misst den Druck','Es saugt Wasser an'],e:'Das Sammelstück ist das Gegenstück zum Verteiler. Es wird gebraucht, wenn Wasser aus mehreren Leitungen gebündelt wird.'},
+  {c:'geraete',g:2,q:'Welches Gerät schneidet im Notfall Sicherheitsgurte durch?',a:['Das Gurtmesser','Der Kupplungsschlüssel','Das Strahlrohr','Der Saugkorb'],e:'Mit dem Gurtmesser befreit die Feuerwehr eingeklemmte Personen aus Gurten.'},
+  {c:'geraete',g:2,q:'Wozu dient ein Schlauchschoner?',a:['Er schützt Schläuche an scharfen Kanten vor Scheuern','Er misst den Wasserdruck','Er kuppelt Schläuche','Er hält Wasser warm'],e:'Der Schoner liegt dort, wo ein Schlauch an Kanten scheuern könnte, zum Beispiel an Fensterbänken.'},
+
+  // Knoten & Bunde
+  {c:'knoten',g:2,q:'Worauf musst du beim Kreuzknoten achten?',a:['Die kurzen Enden müssen auf derselben Seite liegen','Er muss möglichst viele Schlingen haben','Die Enden müssen verknotet werden','Er braucht Klebeband'],e:'Liegen die kurzen Enden auf verschiedenen Seiten, läuft der Knoten schon bei geringer Belastung auf.'},
+  {c:'knoten',g:2,q:'Wofür nutzt man den Achterknoten?',a:['Als Stopper am Leinenende','Zum Verbinden von Schläuchen','Zum Befestigen am Pfosten','Zum Retten von Personen'],e:'Er verhindert, dass die Leine durch eine Öffnung rutscht, und lässt sich leicht wieder lösen.'},
+  {c:'knoten',g:2,q:'Wie heißt der Rettungsknoten noch?',a:['Palstek, auch Pfahlstich oder Bowline','Kreuzknoten','Schotstek','Mastwurf'],e:'Er bildet eine feste Schlinge und dient zum Anseilen und Retten.'},
+  {c:'knoten',g:2,q:'Wo darf der Rettungsknoten belastet werden?',a:['Nur am langen, abgehenden Leinenende','An beiden Enden gleichzeitig','Nur am kurzen Ende','Egal wo'],e:'Wird er am falschen Ende belastet, kann er umklappen und sich öffnen.'},
+  {c:'knoten',g:2,q:'Was ist ein Brustbund?',a:['Eine straff um die Brust gelegte Leine, die eine Person sichert','Ein Gürtel für den Helm','Ein Verband für die Brust','Ein Schlauchband'],e:'Der Brustbund wird mit dem Rettungsknoten gebunden und muss möglichst straff sitzen.'},
+  {c:'knoten',g:2,q:'Wofür wird der Zimmermannsschlag genutzt?',a:['Zum Ziehen oder Halten langer Gegenstände wie Balken und Holme','Zum Verbinden zweier Schläuche','Zum Verschließen von Säcken','Zum Retten von Personen'],e:'Die Leine wird mehrfach um den Gegenstand gewickelt und zugezogen.'},
+  {c:'knoten',g:1,q:'Wozu braucht die Feuerwehr Knoten?',a:['Um Leinen zu verbinden und Geräte oder Personen zu sichern','Nur zur Dekoration','Um Schläuche zu zählen','Um Funksprüche zu verschlüsseln'],e:'Knoten müssen schnell gebunden und sicher sein. Deshalb übt die Jugendfeuerwehr sie regelmäßig.'},
+  {c:'knoten',g:1,q:'Woran erkennst du einen sicheren Knoten?',a:['Er hält unter Belastung und die Leinenenden stehen noch genug über','Er sieht besonders schön aus','Er ist besonders dick','Er hat möglichst viele Schlingen'],e:'Nach dem Binden wird der Knoten geprüft. Bei Personen kontrolliert zusätzlich eine zweite Person.'},
+  {c:'knoten',g:1,q:'Wo wird die Feuerwehrleine am Fahrzeug aufbewahrt?',a:['Im Leinenbeutel','In einem Schlauch','In der Helmtasche','Im Tank'],e:'Im Leinenbeutel liegt die Leine geordnet und lässt sich schnell und ohne Verheddern ausgeben.'},
+  {c:'knoten',g:2,q:'Wie sichert man einen Mastwurf, damit er sich nicht löst?',a:['Mit einem Halbschlag oder Spierenstich','Mit Klebeband','Mit einer Büroklammer','Gar nicht'],e:'Die Sicherung verhindert, dass sich der Mastwurf bei wechselnder Belastung öffnet.'},
+  {c:'knoten',g:1,q:'Warum sollen Leinen trocken und sauber gelagert werden?',a:['Schmutz und Nässe schwächen das Material','Damit sie besser riechen','Damit sie dicker werden','Damit sie leuchten'],e:'Beschädigte oder verschmutzte Leinen können reißen. Sie werden regelmäßig geprüft.'},
+  {c:'knoten',g:1,q:'Was prüfst du vor dem Gebrauch an einer Leine?',a:['Ob sie beschädigt oder durchgescheuert ist','Ob sie eine schöne Farbe hat','Wie lang ihr Name ist','Ob sie nach Rauch riecht'],e:'Eine beschädigte Leine darf nicht zum Sichern benutzt werden.'},
+
+  // Schutzausrüstung
+  {c:'schutz',g:1,q:'Warum soll der Kinnriemen am Feuerwehrhelm geschlossen sein?',a:['Damit der Helm nicht verrutscht oder herunterfällt','Damit der Helm leuchtet','Damit man besser hört','Damit der Helm leichter wird'],e:'Ein sicher sitzender Helm schützt den Kopf auch bei Bewegungen und beim Bücken.'},
+  {c:'schutz',g:2,q:'Wozu dient die Flammschutzhaube?',a:['Sie schützt Kopf, Hals und Ohren unter dem Helm vor Hitze und Flammen','Sie hält die Haare ordentlich','Sie verbessert den Funk','Sie dient als Mütze für kalte Tage'],e:'Sie wird unter dem Helm getragen, vor allem bei Einsätzen mit Atemschutz.'},
+  {c:'schutz',g:1,q:'Warum haben Einsatzjacken reflektierende Streifen?',a:['Damit Einsatzkräfte im Dunkeln und im Verkehr gut gesehen werden','Damit die Jacke teurer aussieht','Damit sie leichter ist','Damit sie wärmer ist'],e:'Die Streifen leuchten im Licht von Scheinwerfern und erhöhen die Sicherheit.'},
+  {c:'schutz',g:1,q:'Wovor schützen Feuerwehrstiefel mit Stahlkappe und fester Sohle?',a:['Vor herabfallenden Teilen und spitzen Gegenständen wie Nägeln','Vor Regen','Vor Müdigkeit','Vor Lärm'],e:'Stiefel schützen die Füße auch vor Hitze und Nässe.'},
+  {c:'schutz',g:1,q:'Wozu tragen Einsatzkräfte Schutzhandschuhe?',a:['Zum Schutz vor Hitze, Schnitten und Schmutz','Damit die Hände schöner aussehen','Damit man leiser arbeitet','Damit man besser telefonieren kann'],e:'Handschuhe schützen bei Arbeiten mit Schläuchen, Leitern und scharfem Gerät.'},
+  {c:'schutz',g:2,q:'Wozu dient der Haltegurt der Feuerwehr?',a:['An seiner Öse lässt sich die Feuerwehrleine einhängen','Er hält die Hose fest','Er hält die Atemmaske','Er wärmt den Rücken'],e:'Der Haltegurt sitzt um die Hüfte. Mit ihm sichert man sich zum Beispiel bei Arbeiten in der Höhe.'},
+  {c:'schutz',g:1,q:'Wofür trägt man bei der Arbeit mit der Motorsäge einen Gehörschutz?',a:['Zum Schutz vor Lärm','Damit man den Funk besser hört','Damit die Ohren warm bleiben','Um Musik zu hören'],e:'Zur Motorsägenausrüstung gehören auch Helm mit Gesichtsschutz, Handschuhe und Schnittschutzhose.'},
+  {c:'schutz',g:1,q:'Wozu trägt man eine Schutzbrille?',a:['Zum Schutz der Augen vor Funken, Splittern und Staub','Damit man besser sieht','Damit man sich nicht erkältet','Zur Zierde'],e:'Bei Arbeiten mit Trennschleifer, Säge oder Rettungsgerät fliegen Funken und Späne.'},
+  {c:'schutz',g:2,q:'Warum wird Schutzkleidung nach einem Brandeinsatz gereinigt?',a:['Rauch und Ruß enthalten gefährliche Stoffe, die sich im Stoff festsetzen','Damit sie wieder neu riecht','Damit sie dünner wird','Damit sie leichter brennt'],e:'Brandrückstände können die Gesundheit gefährden. Schutzkleidung wird deshalb nach dem Einsatz gesäubert und geprüft.'},
+  {c:'schutz',g:1,q:'Warum ist die Schutzjacke immer ganz zu schließen?',a:['Nur geschlossen schützt sie vor Hitze, Funken und Nässe','Damit sie schöner aussieht','Damit man schneller läuft','Damit der Helm hält'],e:'Offene Stellen sind Einfallstore für Hitze und Funken.'},
+  {c:'schutz',g:2,q:'Was sagt das CE-Zeichen auf Schutzausrüstung?',a:['Der Hersteller erklärt, dass die europäischen Anforderungen erfüllt sind','Sie wurde in Europa hergestellt','Sie darf nur bei Gewitter getragen werden','Sie ist besonders billig'],e:'CE steht nicht für Made in Europe, sondern für die Konformität mit europäischen Vorschriften.'},
+  {c:'schutz',g:1,q:'Was gehört in der Jugendfeuerwehr bei einer Übung zur Schutzkleidung?',a:['Helm, Jacke, Hose, Handschuhe und Stiefel','Badehose und Sandalen','Nur eine Mütze','Ein Skianzug'],e:'Die Ausrüstung richtet sich nach der Übung und den Vorgaben deiner Jugendfeuerwehr. Frag im Zweifel deine Betreuer.'},
+
+  // Die fünf W-Fragen beim Notruf
+  {c:'notruf',g:1,q:'Wofür stehen die fünf W-Fragen beim Notruf?',a:['Wo? Was? Wie viele? Welche Verletzungen? Warten auf Rückfragen','Wer? Wann? Warum? Wieso? Weshalb?','Wetter, Wind, Wasser, Wärme, Wald','Wache, Wagen, Wasser, Weg, Werkzeug'],e:'Mit den fünf W weiß die Leitstelle schnell, wohin sie wen schicken muss.'},
+  {c:'notruf',g:1,q:'Welche ist die erste der fünf W-Fragen beim Notruf?',a:['Wo ist es passiert?','Was ist passiert?','Wie viele Personen sind betroffen?','Warten auf Rückfragen'],e:'Zuerst nennst du den Ort, damit die Hilfe sofort losfahren kann.'},
+  {c:'notruf',g:1,q:'Welche Angaben gehören zur Frage „Wo ist es passiert?“',a:['Ort, Straße, Hausnummer und wenn nötig Orientierungspunkte','Dein Lieblingsessen','Die Farbe vom Auto des Nachbarn','Die Uhrzeit vom letzten Mal'],e:'Je genauer der Ort ist, desto schneller findet dich die Feuerwehr. Auch Stockwerk oder Eingang helfen.'},
+  {c:'notruf',g:1,q:'Was sagst du bei der Frage „Was ist passiert?“',a:['Kurz, was geschehen ist, zum Beispiel Brand, Unfall oder Sturz','Wer daran schuld ist','Was du gestern gemacht hast','Wie das Wetter ist'],e:'Ein kurzer Satz reicht, zum Beispiel: In der Küche brennt es.'},
+  {c:'notruf',g:1,q:'Was nennst du bei „Wie viele Betroffene?“',a:['Wie viele Menschen verletzt oder in Gefahr sind','Wie viele Fahrzeuge kommen sollen','Wie viele Fenster das Haus hat','Wie alt das Haus ist'],e:'Die Leitstelle plant danach, wie viele Rettungskräfte und Fahrzeuge nötig sind.'},
+  {c:'notruf',g:2,q:'Was gehört zur Frage „Welche Art von Verletzungen oder Erkrankungen?“',a:['Zum Beispiel bewusstlos, starke Blutung oder Atemnot','Welche Schuhe die Person trägt','Welche Hobbys sie hat','Wie spät es ist'],e:'Diese Angaben zeigen, wie dringend Hilfe nötig ist und welche Hilfe gebraucht wird.'},
+  {c:'notruf',g:1,q:'Wofür steht das letzte W beim Notruf?',a:['Warten auf Rückfragen','Wegrennen','Wasser holen','Winken'],e:'Du bleibst am Telefon, bis die Leitstelle das Gespräch beendet. Vielleicht braucht sie noch Angaben von dir.'},
+  {c:'notruf',g:2,q:'In welcher Reihenfolge werden die fünf W-Fragen genannt?',a:['Wo, Was, Wie viele, Welche Verletzungen, Warten auf Rückfragen','Was, Wie viele, Wo, Warten auf Rückfragen, Welche Verletzungen','Warten auf Rückfragen, Wo, Was, Wie viele, Welche Verletzungen','Wie viele, Welche Verletzungen, Wo, Was, Warten auf Rückfragen'],e:'Merke dir: Wo? Was? Wie viele? Welche? Warten! Die Leitstelle fragt aber auch nach, wenn du etwas vergisst.'},
+  {c:'notruf',g:2,q:'Warum fragt die Leitstelle nach den fünf W?',a:['Damit die passenden Einsatzkräfte und Fahrzeuge losgeschickt werden können','Damit der Anruf länger dauert','Damit die Nachbarn mithören können','Damit du eine Pause hast'],e:'Aus den Antworten erkennt die Leitstelle, welche Hilfe nötig ist und wohin sie fahren muss.'},
+  {c:'notruf',g:2,q:'Welche Meldung passt zu den fünf W-Fragen?',a:['Verkehrsunfall an der Kreuzung Hauptstraße und Bahnhofstraße, zwei Verletzte, einer ist bewusstlos, ich warte auf Rückfragen','Hilfe, kommt schnell, hier ist was','Ich glaube, da war irgendwas, ich muss jetzt auflegen','Da hat jemand Schuld, ruft die Polizei'],e:'Die Meldung nennt Ort, Geschehen, Anzahl und Art der Verletzungen und endet mit Warten auf Rückfragen.'},
+  {c:'notruf',g:1,q:'Welche Nummer ruft man für die Polizei an?',a:['110','112','115','911'],e:'Die 110 ist der Polizeinotruf. Die 112 gilt für Feuerwehr und Rettungsdienst.'},
+  {c:'notruf',g:1,q:'Wie viele Zahlen hat die europäische Notrufnummer?',a:['Drei','Zwei','Vier','Fünf'],e:'Die 112 besteht aus drei Zahlen und gilt in ganz Europa.'},
+  {c:'notruf',g:1,q:'Wer darf die 112 anrufen?',a:['Jeder, der Hilfe braucht oder einen Notfall sieht','Nur Erwachsene','Nur Feuerwehrleute','Nur Lehrer'],e:'Auch Kinder dürfen und sollen bei einem Notfall die 112 wählen.'},
+  {c:'notruf',g:1,q:'Wann legst du nach dem Notruf auf?',a:['Wenn die Leitstelle das Gespräch beendet','Sofort nach dem Wort „Feuer“','Nach zehn Sekunden','Wenn dir langweilig wird'],e:'Die Leitstelle hat vielleicht noch Fragen. Du legst erst auf, wenn sie es sagt.'},
+  {c:'notruf',g:1,q:'Wo triffst du dich bei einer Räumung mit deiner Gruppe?',a:['Am Sammelplatz','Im Keller','Im obersten Stock','Wieder in deinem Zimmer'],e:'Am Sammelplatz wird gezählt, ob alle in Sicherheit sind.'},
+  {c:'notruf',g:1,q:'Was machst du, wenn der Rauchmelder piept?',a:['Nachsehen, ob es brennt, und im Notfall das Haus verlassen','Die Batterie sofort herausnehmen','Die Ohren zuhalten','Die Decke über den Kopf ziehen'],e:'Ein Rauchmelder warnt dich. Nimm die Warnung ernst und hole bei einem Brand Hilfe.'},
+  {c:'brand',g:1,q:'Welche Farbe hat die Flamme meistens, wenn es sehr heiß ist?',a:['Blau oder weiß','Grün','Lila','Schwarz'],e:'Sehr heiße Flammen sind eher blau oder weiß. Rot und gelb sind kühler.'},
+  {c:'brand',g:1,q:'Was entsteht bei einem Feuer, das besonders gefährlich ist?',a:['Rauch','Regenbogen','Eis','Nebel aus Wasser'],e:'Brandrauch ist giftig und die häufigste Todesursache bei Bränden.'},
+  {c:'brand',g:1,q:'Womit löschst du ein kleines Lagerfeuer am sichersten?',a:['Mit Wasser und Sand, bis nichts mehr glüht','Mit Benzin','Mit Papier','Gar nicht, es geht von allein aus'],e:'Wasser und Sand löschen die Glut. Lasse niemals ein Feuer unbeaufsichtigt.'},
+  {c:'brand',g:1,q:'Was ist ein Löschmittel?',a:['Etwas, das ein Feuer löscht, zum Beispiel Wasser oder Schaum','Ein Tuch zum Händetrocknen','Ein Werkzeug zum Holzhacken','Ein Feuerzeug'],e:'Löschmittel entziehen dem Feuer Wärme oder Sauerstoff.'},
+  {c:'brand',g:1,q:'Wer darf mit Streichhölzern und Feuerzeug spielen?',a:['Niemand, sie sind kein Spielzeug','Alle Kinder','Nur wenn keiner schaut','Nur im Kinderzimmer'],e:'Feuerzeuge und Streichhölzer gehören nicht in Kinderhände. Viele Brände entstehen durch Spielen mit Feuer.'},
+  {c:'technik',g:1,q:'Was bedeutet die Abkürzung LF?',a:['Löschfahrzeug','Leiterfeuer','Lange Feuerwehr','Licht und Feuer'],e:'Ein Löschfahrzeug bringt Wasser, Schläuche und Geräte zum Einsatz.'},
+  {c:'technik',g:1,q:'Wozu dient die Drehleiter?',a:['Um hoch gelegene Stellen zu erreichen und Menschen zu retten','Um Bäume zu pflanzen','Um Wasser zu kochen','Um Schläuche zu waschen'],e:'Mit der Drehleiter erreicht die Feuerwehr Fenster und Dächer in großer Höhe.'},
+  {c:'technik',g:1,q:'Wozu ist der Tank im Löschfahrzeug da?',a:['Er enthält Löschwasser für den ersten Einsatz','Er enthält Limonade','Er enthält Benzin für die Schläuche','Er ist leer'],e:'Der Wassertank erlaubt es, sofort mit dem Löschen zu beginnen.'},
+  {c:'technik',g:1,q:'Wie nennt man das Haus, in dem die Feuerwehrfahrzeuge stehen?',a:['Feuerwehrhaus oder Gerätehaus','Kirche','Schwimmhalle','Bahnhof'],e:'Im Feuerwehrhaus stehen Fahrzeuge, Ausrüstung und Umkleiden.'},
+  {c:'schlauch',g:1,q:'Welcher Teil der Feuerwehr spritzt das Wasser aufs Feuer?',a:['Das Strahlrohr am Ende des Schlauchs','Der Helm','Die Leine','Das Funkgerät'],e:'Aus dem Strahlrohr kommt der Wasserstrahl.'},
+  {c:'schlauch',g:1,q:'Wie nennt man die Verbindung zweier Schläuche?',a:['Kupplung','Knoten','Naht','Pfeife'],e:'Schläuche werden mit Kupplungen verbunden. Die gängigen sind Storz-Kupplungen.'},
+  {c:'schlauch',g:1,q:'Wie sollen Schläuche beim Ausrollen liegen?',a:['Ohne Knicke','Möglichst verknotet','Als Haufen','Um einen Baum gewickelt'],e:'Knicke im Schlauch hemmen das Wasser und können den Schlauch beschädigen.'},
+  {c:'schlauch',g:1,q:'Wohin fließt das Wasser aus dem Hydranten?',a:['In den Schlauch','In den Himmel','Zurück in die Erde','In den Helm'],e:'Am Hydranten schließt man einen Schlauch an und bekommt Löschwasser aus dem Wassernetz.'},
+  {c:'ehilfe',g:1,q:'Was gehört in einen Verbandkasten?',a:['Pflaster, Verbandsmaterial und Schere','Süßigkeiten','Spielzeug','Batterien'],e:'Der Verbandkasten enthält Material zur Wundversorgung.'},
+  {c:'ehilfe',g:1,q:'Wie kühlst du eine kleine Verbrennung?',a:['Mit lauwarmem, fließendem Wasser','Mit Butter','Mit Zahnpasta','Mit Mehl'],e:'Wasser kühlt und lindert den Schmerz. Hausmittel wie Butter schaden.'},
+  {c:'ehilfe',g:1,q:'Was tust du, wenn sich ein Kamerad am Knie aufschürft?',a:['Wunde sauber halten und ein Pflaster aufkleben','Sand hineinstreuen','Nichts, das heilt von allein','Das Knie fest abbinden'],e:'Eine saubere Wunde mit Pflaster heilt am besten.'},
+  {c:'ehilfe',g:1,q:'Was tust du, wenn jemand nicht mehr aufwacht?',a:['Laut um Hilfe rufen und den Notruf 112 wählen lassen','Wegrennen','Schütteln, bis er aufwacht','Nichts tun'],e:'Wer nicht reagiert, braucht schnell Hilfe. Hole Erwachsene und lasse den Notruf absetzen.'},
+  {c:'wissen',g:1,q:'Wie nennt man den Chef einer Feuerwehr in der Gemeinde?',a:['Wehrleiter oder Gemeindebrandmeister','Bürgermeister','Pfarrer','Trainer'],e:'Die Bezeichnung ist je nach Bundesland unterschiedlich.'},
+  {c:'wissen',g:1,q:'Welche Aufgabe hat ein Atemschutzgeräteträger?',a:['Er löscht und rettet in verrauchten Räumen mit Atemgerät','Er fährt das Auto','Er schreibt den Bericht','Er spielt Musik'],e:'Atemschutzgeräteträger dürfen erst nach einer besonderen Ausbildung in verrauchte Bereiche.'},
+  {c:'wissen',g:1,q:'Was ist die Jugendfeuerwehr?',a:['Die Feuerwehr für Kinder und Jugendliche','Eine Schule','Ein Sportverein für Fußball','Eine Berufsfeuerwehr'],e:'In der Jugendfeuerwehr lernen Kinder und Jugendliche spielerisch alles über die Feuerwehr.'},
+  {c:'wissen',g:1,q:'Welches Tier ist oft das Maskottchen der Feuerwehr?',a:['Feuerwehrdalmatiner','Pinguin','Giraffe','Känguru'],e:'Der Dalmatiner begleitete früher die Pferdekutschen der Feuerwehr.'},
+  {c:'wissen',g:1,q:'Wie nennt man einen Feuerwehrmann oder eine Feuerwehrfrau im Allgemeinen?',a:['Kamerad oder Kameradin','Kunde','Gast','Schüler'],e:'In der Feuerwehr spricht man sich mit Kamerad und Kameradin an.'},
+  {c:'gefahr',g:1,q:'Was tust du, wenn du Rauch in der Wohnung riechst?',a:['Wohnung verlassen und Hilfe holen','Fenster zumachen und warten','Weiter fernsehen','Unter das Bett kriechen'],e:'Rauch ist giftig. Hole Hilfe und gehe nach draußen.'},
+  {c:'gefahr',g:1,q:'Was machst du, wenn du Feuerwerk findest, das nicht losgegangen ist?',a:['Nicht anfassen und Erwachsene informieren','Mit nach Hause nehmen','Anzünden','Als Spielzeug nutzen'],e:'Blindgänger können noch explodieren. Fasse sie niemals an.'},
+  {c:'gefahr',g:1,q:'Warum darfst du nie auf zugefrorenen Teichen spielen?',a:['Das Eis kann brechen','Das Eis ist zu glatt für Kinder','Das Wasser ist zu warm','Fische beißen'],e:'Eisflächen tragen oft nicht. Es besteht Lebensgefahr.'},
+  {c:'gefahr',g:1,q:'Wo darfst du auf keinen Fall an Steckdosen herumspielen?',a:['Nirgends, Strom ist gefährlich','Nur im Keller','Nur in der Küche','Nur im Garten'],e:'Strom kann tödlich sein. Steckdosen sind kein Spielzeug.'},
+  {c:'klassen',g:1,q:'Welche Farbe haben die meisten Feuerlöscher?',a:['Rot','Blau','Grün','Gelb'],e:'Feuerlöscher sind meist rot, damit man sie schnell erkennt.'},
+  {c:'brennbar',g:1,q:'Welcher dieser Stoffe brennt gut?',a:['Holz','Stein','Glas','Wasser'],e:'Holz ist brennbar, Stein, Glas und Wasser nicht.'},
+  {c:'brennbar',g:1,q:'Warum soll man Spraydosen nicht ins Feuer werfen?',a:['Sie können explodieren','Sie riechen schlecht','Sie sind zu schwer','Sie löschen das Feuer'],e:'Der Druck in der Dose steigt in der Hitze und sie kann platzen.'},
+  {c:'geraete',g:1,q:'Wozu dient die Schlauchhaspel?',a:['Zum Aufrollen und Transport von Schlauch','Zum Fahren','Zum Funken','Zum Kochen'],e:'Eine Haspel hält den Schlauch aufgerollt, damit er schnell ausgerollt werden kann.'},
+  {c:'geraete',g:1,q:'Wozu dient die Feuerwehraxt?',a:['Zum Öffnen von Türen oder Durchbrüchen in Notfällen','Zum Holzhacken für das Lagerfeuer','Zum Gartenarbeiten','Zum Brotschneiden'],e:'Die Axt ist ein Rettungswerkzeug für den Notfall.'},
+  {c:'geraete',g:1,q:'Wozu dient die Tragkraftspritze?',a:['Sie pumpt Wasser aus Teichen oder Hydranten','Sie spritzt Farbe','Sie macht Musik','Sie schneidet Holz'],e:'Die tragbare Pumpe kann auch ohne Fahrzeug Wasser fördern.'},
+  {c:'knoten',g:1,q:'Wie heißt der Knoten, mit dem man zwei Seile verbindet?',a:['Kreuzknoten','Schleifenknoten','Mausknoten','Wurfknoten'],e:'Der Kreuzknoten ist ein einfacher Knoten zum Verbinden zweier Seile.'},
+  {c:'knoten',g:1,q:'Wie heißt der Knoten, mit dem man ein Seil an einem Pfahl befestigt?',a:['Mastwurf','Kreuzknoten','Achterknoten','Palstek'],e:'Der Mastwurf hält ein Seil an Pfählen, Stangen und Leitern.'},
+  {c:'knoten',g:1,q:'Wozu ist ein Achterknoten am Seilende gut?',a:['Das Seil rutscht nicht durch','Das Seil wird länger','Das Seil wird bunt','Er macht Musik'],e:'Der Achterknoten ist ein Stopperknoten.'},
+  {c:'schutz',g:1,q:'Welche Schutzkleidung trägt man auf dem Kopf?',a:['Helm','Mütze aus Wolle','Schal','Haarband'],e:'Der Helm schützt den Kopf vor herabfallenden Dingen und Hitze.'},
+  {c:'schutz',g:1,q:'Was trägt man an den Händen im Feuerwehreinsatz?',a:['Schutzhandschuhe','Gar nichts','Gummibänder','Armbänder'],e:'Handschuhe schützen vor Hitze und Verletzungen.'},
+  {c:'schutz',g:1,q:'Warum trägt die Feuerwehr bunte, leuchtende Kleidung?',a:['Damit sie gut gesehen wird','Weil es schön aussieht','Damit es wärmer ist','Weil es billig ist'],e:'Leuchtfarben und Reflexstreifen machen Einsatzkräfte im Straßenverkehr sichtbar.'},
+  // Jugendfeuerwehr
+  {c:'jf',g:1,q:'Was macht man in der Jugendfeuerwehr?',a:['Feuerwehr kennenlernen, üben, spielen und Gemeinschaft erleben','Nur Hausaufgaben machen','Nur Fußball spielen','Echte Brände löschen'],e:'In der Jugendfeuerwehr lernst du spielerisch, wie die Feuerwehr arbeitet, und hast Spaß mit deiner Gruppe.'},
+  {c:'jf',g:1,q:'Dürfen Mitglieder der Jugendfeuerwehr zu echten Einsätzen mitfahren?',a:['Nein, Einsätze sind für ausgebildete Erwachsene','Ja, immer','Ja, wenn sie ihren Helm dabeihaben','Ja, bei jedem Alarm'],e:'Jugendliche üben, helfen aber nicht bei echten Einsätzen. Erst später in der Einsatzabteilung geht das.'},
+  {c:'jf',g:1,q:'Wie heißt die Gruppe der Feuerwehr, die zu Einsätzen ausrückt?',a:['Einsatzabteilung','Spielabteilung','Kochabteilung','Bastelgruppe'],e:'Wer alt genug und ausgebildet ist, wechselt aus der Jugendfeuerwehr in die Einsatzabteilung.'},
+  {c:'jf',g:1,q:'Wie nennt man die Betreuer der Jugendfeuerwehr?',a:['Jugendwart und Betreuer','Schiedsrichter','Lehrer','Trainer vom Fußball'],e:'Jugendwarte und Betreuer planen die Dienste und passen auf, dass alles sicher abläuft.'},
+  {c:'jf',g:1,q:'Wie heißt das Maskottchen der Deutschen Jugendfeuerwehr?',a:['Grisou','Floriano','Flammi','Brandi'],e:'Grisou begleitet die Jugendfeuerwehren in ganz Deutschland. Vielleicht hat er bei euch auch schon vorbeigeschaut!'},
+  {c:'jf',g:1,q:'Was ist ein Berufsfeuerwehrtag?',a:['Ein Tag, an dem Jugendliche den Alltag einer Feuerwehr erleben','Ein Tag zum Ausschlafen','Ein Feiertag der Berufsfeuerwehr','Ein Tag ohne Übung'],e:'Beim Berufsfeuerwehrtag erlebt ihr zum Beispiel Übungsalarme, Essen im Team und den Dienst im Gerätehaus.'},
+  {c:'jf',g:1,q:'Was ist beim Zeltlager der Jugendfeuerwehr besonders wichtig?',a:['Gemeinschaft, Spiele und Rücksicht aufeinander','Möglichst lange wach bleiben','Alleine bleiben','Feuer machen ohne Aufsicht'],e:'Zeltlager stärken die Gemeinschaft. Mit Feuer geht man dort immer nur unter Aufsicht um.'},
+  {c:'jf',g:1,q:'Wie begrüßt man sich in der Feuerwehr gern?',a:['Mit „Gut Wehr!“','Mit „Ahoi!“','Mit „Servus Chef!“','Mit „Hallo Welt!“'],e:'„Gut Wehr!“ ist ein traditioneller Feuerwehrgruß. Er wird je nach Region unterschiedlich benutzt.'},
+  {c:'jf',g:1,q:'Wofür steht die Jugendflamme?',a:['Für ein Abzeichen, das man durch Üben und Lernen erwirbt','Für ein Lagerfeuer','Für einen Feuerwehrhelm','Für einen Wettkampfpokal'],e:'Die Jugendflamme gibt es in drei Stufen mit steigendem Schwierigkeitsgrad.'},
+  {c:'jf',g:1,q:'Was trägst du bei einer Übung in der Jugendfeuerwehr als Erstes an?',a:['Die vorgeschriebene Schutzkleidung der Jugendfeuerwehr','Badesachen','Flip-Flops','Gar nichts Besonderes'],e:'Schutzkleidung gehört bei jeder Übung dazu. Sie schützt dich und macht dich sichtbar.'},
+  {c:'jf',g:1,q:'Was ist wichtig, wenn ihr in der Jugendfeuerwehr übt?',a:['Zuhören und auf Kommandos der Betreuer achten','Wettrennen ohne Regeln','Allein weglaufen','Die Betreuer ignorieren'],e:'Auf Kommandos zu hören und aufeinander aufzupassen ist die Grundlage jeder Übung.'},
+  {c:'jf',g:1,q:'Was bedeutet Kameradschaft?',a:['Einer hilft dem anderen und alle halten zusammen','Jeder kämpft allein','Der Stärkste bestimmt','Nur Freunde zählen'],e:'In der Feuerwehr verlässt man sich aufeinander. Das nennt man Kameradschaft.'},
+  {c:'jf',g:1,q:'Wo trifft sich deine Jugendfeuerwehr meistens?',a:['Im Feuerwehrhaus oder Gerätehaus','Im Kino','Im Schwimmbad','Im Supermarkt'],e:'Im Gerätehaus findet der Übungsdienst statt und dort stehen auch die Fahrzeuge.'},
+  {c:'jf',g:2,q:'Wie nennt man die höchste Auszeichnung der Deutschen Jugendfeuerwehr?',a:['Leistungsspange','Jugendflamme 1','Feuerwehrorden','Goldener Helm'],e:'Die Leistungsspange wird nach einem Wettbewerb mit Löschangriff, Sport und Wissensfragen vergeben.'},
+  {c:'jf',g:2,q:'Was gehört zur Leistungsspange?',a:['Löschangriff, Kugelstoßen, Staffellauf und Fragen','Nur ein Quiz','Nur Schwimmen','Nur Schach'],e:'Die Leistungsspange prüft Feuerwehrkönnen, Sport und Wissen im Team.'},
+  {c:'jf',g:2,q:'Was lernst du für die Jugendflamme Stufe 1?',a:['Zum Beispiel Knoten, Erste Hilfe und Gerätekunde','Autofahren','Pumpe bedienen im Einsatz','Atemschutz tragen'],e:'In Stufe 1 lernst du Grundlagen. Atemschutz und Maschinistenaufgaben kommen erst später.'},
+  {c:'jf',g:2,q:'Wer vertritt die Interessen der Jugendlichen in der Jugendfeuerwehr?',a:['Der Jugendsprecher oder die Jugendsprecherin','Der Bürgermeister','Der Maschinist','Der Wehrleiter allein'],e:'Der Jugendsprecher wird von den Jugendlichen gewählt und bringt ihre Ideen ein.'},
+  {c:'jf',g:2,q:'Welche Aufgabe hat die Jugendfeuerwehr außer dem Feuerwehrwissen?',a:['Jugendarbeit mit Spiel, Sport, Ausflügen und Umweltschutz','Stromversorgung','Straßenreinigung','Müllabfuhr'],e:'Die Jugendfeuerwehr bildet nicht nur aus. Sie bietet Freizeit, Gemeinschaft und soziale Verantwortung.'},
+  {c:'jf',g:2,q:'Was ist ein Wettbewerb der Jugendfeuerwehr?',a:['Ein Wettkampf, bei dem Gruppen Feuerwehraufgaben und Sport zeigen','Ein Schönheitswettbewerb','Ein Kochwettbewerb','Ein Fahrradrennen'],e:'Im Wettbewerb zählen Teamgeist, Genauigkeit und Schnelligkeit.'},
+  {c:'jf',g:2,q:'Was zeichnet einen guten Löschangriff beim Wettbewerb aus?',a:['Zusammenarbeit, richtige Reihenfolge und Fehlerfreiheit','Möglichst laut sein','Lange brauchen','Jeder macht was er will'],e:'Beim Löschangriff müssen alle ihre Aufgabe kennen und exakt arbeiten.'},
+  {c:'jf',g:2,q:'Wie läuft der Übergang von der Jugendfeuerwehr in die Einsatzabteilung meist ab?',a:['Ab einem bestimmten Alter mit Ausbildung und Prüfung','Automatisch mit dem Geburtstag ohne Ausbildung','Nur durch Los','Gar nicht möglich'],e:'Das genaue Alter ist je nach Bundesland verschieden. Vorher bereitet die Jugendfeuerwehr schon darauf vor.'},
+  {c:'jf',g:2,q:'Was ist ein Kommando bei Übungen?',a:['Eine klare Anweisung, die alle befolgen','Ein Wunsch','Ein Vorschlag','Ein Spiel'],e:'Kommandos sind kurz und eindeutig. So weiß jeder sofort, was zu tun ist.'},
+  {c:'jf',g:2,q:'Was macht die Deutsche Jugendfeuerwehr auf Bundesebene?',a:['Sie vertritt die Jugendfeuerwehren und organisiert Aktionen und Wettbewerbe','Sie fährt die Einsätze','Sie baut Feuerwehrautos','Sie verkauft Feuerzeuge'],e:'Die Deutsche Jugendfeuerwehr ist der Jugendverband im Deutschen Feuerwehrverband.'},
+  {c:'jf',g:2,q:'Wie stark sollte der Umgang mit Feuer bei Übungen geregelt sein?',a:['Immer unter Aufsicht und nach klaren Regeln','Jeder darf mal','Nur nachts','Gar nicht geregelt'],e:'Sicherheit geht vor. Feuer wird nur mit Erlaubnis und Aufsicht der Betreuer genutzt.'},
+  {c:'jf',g:1,q:'Was tust du, wenn du bei einer Übung etwas nicht verstehst?',a:['Nachfragen','So tun, als wüsstest du es','Weglaufen','Warten, bis es jemand merkt'],e:'Nachfragen ist völlig in Ordnung. Nur wer versteht, kann sicher mitmachen.'},
+  {c:'jf',g:1,q:'Was bedeutet „Wir sind ein Team“?',a:['Wir helfen uns gegenseitig und achten aufeinander','Jeder spielt für sich','Nur die Besten zählen','Verlierer gehen nach Hause'],e:'Das Team ist in der Feuerwehr das Wichtigste. Gemeinsam schafft ihr mehr.'},
+  {c:'jf',g:2,q:'Wieso ist Nachwuchsarbeit für die Freiwillige Feuerwehr wichtig?',a:['Damit es auch in Zukunft genug ausgebildete Einsatzkräfte gibt','Damit die Autos sauber bleiben','Weil Jugendliche billig sind','Damit Kinder beschäftigt sind'],e:'Die Feuerwehr lebt vom Ehrenamt. Die Jugendfeuerwehr sichert den Nachwuchs.'},
+  {c:'jf',g:2,q:'Wofür steht die Abkürzung DJF?',a:['Deutsche Jugendfeuerwehr','Deutscher Jagdfeuerverband','Dienstjahr Feuerwehr','Digitale Jugendfunk'],e:'Die DJF ist der Jugendverband im Deutschen Feuerwehrverband.'}
+];
+
+function $(s){return document.querySelector(s);}
+function el(tag,cls,txt){var n=document.createElement(tag);if(cls)n.className=cls;if(txt!=null)n.textContent=txt;return n;}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+var KEY='feuerprobe-einstellungen-2';
+var DEF_NAMES=['Team Rot','Team Blau','Team Gelb','Team Grün'];
+var cfg={teams:1,names:['','','',''],cats:Object.keys(CATS),count:10,time:0,age:0};
+try{
+  var saved=JSON.parse(localStorage.getItem(KEY)||'null');
+  if(saved&&typeof saved==='object'){
+    if([1,2,3,4].indexOf(saved.teams)>-1)cfg.teams=saved.teams;
+    if(Array.isArray(saved.names))cfg.names=[0,1,2,3].map(function(i){return String(saved.names[i]||'').slice(0,24);});
+    if(Array.isArray(saved.cats)){var cc=saved.cats.filter(function(k){return CATS[k];});if(cc.length)cfg.cats=cc;}
+    if([10,20,30,50,100,999].indexOf(saved.count)>-1)cfg.count=saved.count;
+    if([0,1,2].indexOf(saved.age)>-1)cfg.age=saved.age;
+    if([0,20,30].indexOf(saved.time)>-1)cfg.time=saved.time;
+  }
+}catch(e){}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(cfg));}catch(e){}}
+
+var G=null;
+
+function show(name){
+  ['setup','game','result'].forEach(function(n){$('#screen-'+n).hidden=(n!==name);});
+  window.scrollTo(0,0);
+}
+
+/* ---------- Einstellungen ---------- */
+function seg(host,options,current,onPick){
+  host.replaceChildren();
+  options.forEach(function(o){
+    var b=el('button','seg-btn',o[1]);b.type='button';
+    b.setAttribute('aria-pressed',String(o[0]===current));
+    b.addEventListener('click',function(){onPick(o[0]);});
+    host.appendChild(b);
+  });
+}
+function ageOk(q){return !cfg.age||q.g===cfg.age;}
+function inScope(q){return cfg.cats.indexOf(q.c)>-1&&ageOk(q);}
+function poolSize(){return QUESTIONS.filter(inScope).length;}
+function plannedCount(){
+  var n=Math.min(cfg.count,poolSize());
+  if(cfg.teams>1&&n>=cfg.teams)n-=n%cfg.teams;
+  return n;
+}
+function renderTeams(){
+  seg($('#seg-teams'),[[1,'Einzeln'],[2,'2 Teams'],[3,'3 Teams'],[4,'4 Teams']],cfg.teams,function(v){cfg.teams=v;persist();renderTeams();renderInfo();});
+  var host=$('#names');host.replaceChildren();
+  for(var i=0;i<cfg.teams;i++){(function(i){
+    var l=el('label',null,cfg.teams===1?'Dein Name':'Name von Team '+(i+1));
+    var inp=document.createElement('input');
+    inp.type='text';inp.id='name-'+i;inp.maxLength=24;inp.autocomplete='off';
+    inp.placeholder=cfg.teams===1?'Du':DEF_NAMES[i];
+    inp.value=cfg.names[i]||'';
+    inp.addEventListener('input',function(){cfg.names[i]=inp.value;persist();});
+    l.appendChild(inp);host.appendChild(l);
+  })(i);}
+}
+function renderCats(){
+  var host=$('#seg-cats');host.replaceChildren();
+  Object.keys(CATS).forEach(function(k){
+    var n=QUESTIONS.filter(function(q){return q.c===k&&ageOk(q);}).length;
+    var b=el('button','chip',CATS[k]);b.type='button';
+    b.style.setProperty('--cc','var(--c-'+k+')');
+    b.appendChild(el('small',null,String(n)));
+    b.setAttribute('aria-pressed',String(cfg.cats.indexOf(k)>-1));
+    b.addEventListener('click',function(){
+      var i=cfg.cats.indexOf(k);
+      if(i>-1){if(cfg.cats.length>1)cfg.cats.splice(i,1);}else cfg.cats.push(k);
+      persist();renderCats();renderInfo();
+    });
+    host.appendChild(b);
+  });
+}
+function renderCount(){seg($('#seg-count'),[[10,'10 Fragen'],[20,'20 Fragen'],[30,'30 Fragen'],[50,'50 Fragen'],[100,'100 Fragen'],[999,'Alle Fragen']],cfg.count,function(v){cfg.count=v;persist();renderCount();renderInfo();});}
+function renderTime(){seg($('#seg-time'),[[0,'Aus'],[20,'20 Sekunden'],[30,'30 Sekunden']],cfg.time,function(v){cfg.time=v;persist();renderTime();});}
+function renderAge(){
+  seg($('#seg-age'),[[0,'Alle'],[1,'6 bis 10 Jahre'],[2,'11 bis 16 Jahre']],cfg.age,function(v){cfg.age=v;persist();renderAge();renderCats();renderInfo();});
+}
+function renderInfo(){
+  var p=poolSize(),n=plannedCount(),ok=n>=Math.max(1,cfg.teams);
+  $('#poolinfo').textContent=ok
+    ?p+' Fragen passen zu diesen Einstellungen. Gespielt werden '+n+(cfg.teams>1?', gleichmäßig auf die Teams verteilt.':'.')
+    :'Zu diesen Einstellungen gibt es zu wenige Fragen. Wähle mehr Stichworte oder eine andere Altersklasse.';
+  $('#btn-start').disabled=!ok;
+}
+function renderSetup(){renderTeams();renderAge();renderCats();renderCount();renderTime();renderInfo();}
+
+/* ---------- Spiel ---------- */
+/* Fragen auswählen: neue Fragen zuerst, alle Stichworte gleichmäßig gemischt */
+var SEEN_KEY='feuerprobe-gesehen';
+function loadSeen(){try{var a=JSON.parse(localStorage.getItem(SEEN_KEY)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
+function saveSeen(a){try{localStorage.setItem(SEEN_KEY,JSON.stringify(a));}catch(e){}}
+function pickQuestions(n){
+  var seen=loadSeen();
+  var groups={};
+  shuffle(QUESTIONS.filter(inScope)).forEach(function(q){(groups[q.c]=groups[q.c]||[]).push(q);});
+  var keys=Object.keys(groups);
+  keys.forEach(function(k){
+    var fresh=groups[k].filter(function(q){return seen.indexOf(q.q)<0;});
+    var old=groups[k].filter(function(q){return seen.indexOf(q.q)>-1;});
+    groups[k]=fresh.concat(old);
+  });
+  var out=[];
+  while(out.length<n){
+    var any=false;
+    shuffle(keys).forEach(function(k){
+      if(out.length<n&&groups[k].length){out.push(groups[k].shift());any=true;}
+    });
+    if(!any)break;
+  }
+  var all=seen.filter(function(s){return QUESTIONS.some(function(q){return q.q===s;});});
+  out.forEach(function(q){if(all.indexOf(q.q)<0)all.push(q.q);});
+  if(all.length>=QUESTIONS.length)all=out.map(function(q){return q.q;});
+  saveSeen(all);
+  return out;
+}
+function start(){
+  if(plannedCount()<Math.max(1,cfg.teams))return;
+  var T=cfg.teams;
+  var teams=[];
+  for(var i=0;i<T;i++){
+    var nm=(cfg.names[i]||'').trim()||(T===1?'Du':DEF_NAMES[i]);
+    teams.push({name:nm,score:0,right:0});
+  }
+  var n=plannedCount();
+  G={teams:teams,qs:pickQuestions(n),i:0,cur:0,locked:false,miss:[],timer:null,deadline:0,opts:[],quitArmed:null};
+  show('game');
+  renderQ();
+}
+function renderBoard(){
+  var host=$('#board');host.replaceChildren();
+  G.teams.forEach(function(t,i){
+    var d=el('div','team t'+(i%4)+(i===G.cur?' is-active':''));
+    d.appendChild(el('span','team-name',t.name));
+    d.appendChild(el('span','team-score',String(t.score)));
+    if(G.teams.length>1&&i===G.cur)d.appendChild(el('span','team-flag','am Zug'));
+    host.appendChild(d);
+  });
+}
+function renderQ(){
+  var q=G.qs[G.i];
+  G.locked=false;
+  G.cur=G.i%G.teams.length;
+  var tries=0,right=0;
+  do{
+    G.opts=shuffle(q.a.map(function(t,k){return {t:t,ok:k===0};}));
+    G.opts.forEach(function(o,j){if(o.ok)right=j;});
+    tries++;
+  }while(tries<8&&right===G.lastRight);
+  G.lastRight=right;
+  $('#hud-count').textContent='Einsatz '+(G.i+1)+' von '+G.qs.length;
+  $('#kw').textContent=CATS[q.c];
+  $('.qcard').style.setProperty('--cat','var(--c-'+q.c+')');
+  $('#q').textContent=q.q;
+  $('#fb').hidden=true;
+  renderBoard();
+  var host=$('#answers');host.replaceChildren();
+  G.opts.forEach(function(o,k){
+    var b=el('button','ans');b.type='button';
+    b.appendChild(el('span','ans-key','ABCD'.charAt(k)));
+    b.appendChild(el('span','ans-text',o.t));
+    var mk=el('span','ans-mark');mk.setAttribute('aria-hidden','true');b.appendChild(mk);
+    b.addEventListener('click',function(){pick(k);});
+    host.appendChild(b);
+  });
+  clearInterval(G.timer);
+  var timed=cfg.time>0;
+  $('#timer').hidden=!timed;$('#timer-text').hidden=!timed;
+  if(timed){
+    G.deadline=Date.now()+cfg.time*1000;
+    tick();
+    G.timer=setInterval(tick,100);
+  }
+  window.scrollTo(0,0);
+}
+function tick(){
+  var left=Math.max(0,(G.deadline-Date.now())/1000);
+  $('#timer-fill').style.width=(100*left/cfg.time)+'%';
+  var tt=$('#timer-text');
+  tt.textContent=Math.ceil(left)+' s';
+  tt.classList.toggle('low',left<=5);
+  if(left<=0){pick(-1);}
+}
+function pick(k){
+  if(G.locked)return;
+  G.locked=true;
+  clearInterval(G.timer);
+  var q=G.qs[G.i],team=G.teams[G.cur];
+  var ok=k>=0&&G.opts[k].ok;
+  var right=0;G.opts.forEach(function(o,j){if(o.ok)right=j;});
+  var pts=0;
+  if(ok){
+    var left=cfg.time?Math.max(0,(G.deadline-Date.now())/1000):0;
+    pts=10+(cfg.time?Math.round(5*left/cfg.time):0);
+    team.score+=pts;team.right++;
+  }else{
+    G.miss.push({q:q.q,a:q.a[0],team:team.name,c:q.c});
+  }
+  var btns=$('#answers').children;
+  for(var j=0;j<btns.length;j++){
+    var b=btns[j];b.setAttribute('aria-disabled','true');
+    var mk=b.querySelector('.ans-mark');
+    if(j===right){b.classList.add('is-right');mk.textContent='✓';}
+    else if(j===k){b.classList.add('is-wrong');mk.textContent='✕';}
+    else b.classList.add('is-dim');
+  }
+  var v=$('#verdict');
+  v.className='verdict '+(ok?'ok':'no');
+  v.textContent=ok?('Richtig! +'+pts+' Punkte'):(k<0?'Zeit abgelaufen.':'Leider falsch.');
+  $('#expl').textContent=q.e;
+  var SAY_OK=['Super gemacht, Kameraden!','Gut Wehr! Das saß.','Starke Teamarbeit!','Profi-Niveau!','Das war heiß!'];
+  var SAY_NO=['Nicht schlimm, beim nächsten Mal klappt es!','Üben macht den Meister.','Aus Fehlern lernt man.','Gemeinsam schaffen wir das!'];
+  var sayList=ok?SAY_OK:SAY_NO;
+  $('#bubble').textContent=sayList[Math.floor(Math.random()*sayList.length)];
+  var last=G.i+1>=G.qs.length;
+  var T=G.teams.length;
+  $('#btn-next').textContent=last?'Ergebnis ansehen':(T>1?'Weiter: '+G.teams[(G.i+1)%T].name:'Nächste Frage');
+  renderBoard();
+  var fb=$('#fb');fb.hidden=false;
+  $('#btn-next').focus({preventScroll:true});
+  fb.scrollIntoView({block:'nearest'});
+}
+function next(){
+  if(!G.locked)return;
+  if(G.i+1>=G.qs.length){finish();return;}
+  G.i++;renderQ();
+}
+
+/* ---------- Ergebnis ---------- */
+function finish(){
+  clearInterval(G.timer);
+  show('result');
+  var total=G.qs.length,T=G.teams.length;
+  var sorted=G.teams.map(function(t,i){return {t:t,i:i};}).sort(function(a,b){return b.t.score-a.t.score||a.i-b.i;});
+  var top=sorted[0].t.score;
+  var winners=sorted.filter(function(x){return x.t.score===top;});
+  var title,sub;
+  if(T===1){
+    var r=G.teams[0].right,pct=total?r/total:0;
+    title=pct>=0.9?'Leistungsspange in Gold':pct>=0.7?'Jugendflamme Stufe 3':pct>=0.5?'Jugendflamme Stufe 2':'Jugendflamme Stufe 1, weiter üben';
+    sub=r+' von '+total+' Fragen richtig, '+G.teams[0].score+' Punkte.';
+  }else if(winners.length===1){
+    title='Sieg für '+winners[0].t.name;
+    sub=total+' Fragen gespielt, '+top+' Punkte vorn.';
+  }else{
+    title='Unentschieden';
+    sub=winners.map(function(w){return w.t.name;}).join(' und ')+' liegen mit '+top+' Punkten gleichauf.';
+  }
+  $('#res-title').textContent=title;
+  $('#res-sub').textContent=sub;
+  var ol=$('#rank');ol.replaceChildren();
+  var rank=0,prev=null;
+  sorted.forEach(function(x,idx){
+    if(x.t.score!==prev){rank=idx+1;prev=x.t.score;}
+    var li=el('li',(rank===1?'first ':'')+'t'+(x.i%4));
+    li.appendChild(el('span','rank-n',String(rank)));
+    var nm=el('span','rank-name',x.t.name);
+    var per=Math.ceil(total/T);
+    nm.appendChild(el('small',null,x.t.right+' richtig'+(T>1?' von '+per:' von '+total)));
+    li.appendChild(nm);
+    li.appendChild(el('span','rank-pts',String(x.t.score)));
+    ol.appendChild(li);
+  });
+  var rv=$('#review'),ul=$('#miss');ul.replaceChildren();
+  if(G.miss.length){
+    rv.hidden=false;rv.open=false;
+    $('#review-sum').textContent='Nochmal nachlesen ('+G.miss.length+' '+(G.miss.length===1?'Frage':'Fragen')+')';
+    G.miss.forEach(function(m){
+      var li=el('li');
+      li.appendChild(el('b',null,m.q));
+      li.appendChild(el('span',null,'Richtig: '+m.a+(T>1?' (Frage an '+m.team+')':'')));
+      ul.appendChild(li);
+    });
+  }else{
+    rv.hidden=true;
+  }
+}
+
+/* ---------- Bedienung ---------- */
+$('#btn-start').addEventListener('click',start);
+$('#btn-allcats').addEventListener('click',function(){cfg.cats=Object.keys(CATS);persist();renderCats();renderInfo();});
+$('#btn-next').addEventListener('click',next);
+$('#btn-again').addEventListener('click',start);
+$('#btn-setup').addEventListener('click',function(){show('setup');});
+$('#btn-quit').addEventListener('click',function(){
+  var b=$('#btn-quit');
+  if(G.quitArmed){clearTimeout(G.quitArmed);G.quitArmed=null;clearInterval(G.timer);b.textContent='Beenden';show('setup');return;}
+  b.textContent='Wirklich beenden?';
+  G.quitArmed=setTimeout(function(){G.quitArmed=null;b.textContent='Beenden';},3000);
+});
+document.addEventListener('keydown',function(e){
+  if($('#screen-game').hidden||!G||e.ctrlKey||e.metaKey||e.altKey)return;
+  var k=e.key.toLowerCase();
+  var idx='1234'.indexOf(k);if(idx<0)idx='abcd'.indexOf(k);
+  if(idx>-1&&idx<G.opts.length&&!G.locked){e.preventDefault();pick(idx);}
+});
+
+renderSetup();
+})();
+</script>
+</body>
+</html>
