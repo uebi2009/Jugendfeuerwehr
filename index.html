@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Feuerprobe: Frage-Antwort-Spiel für die Jugendfeuerwehr mit 96 Fragen, für Einzelspieler oder Teams.">
+<title>Feuerprobe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700;800&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+</style>
+<style>
+/* Layout: eine schmale Spalte wie ein Einsatzprotokoll. Einzige Auffälligkeit: der Warnstreifen (Absperrband) oben und auf der Fragekarte. */
+:root{
+  --bg-a:#FFD23F; --bg-b:#FF8A1F; --bg-c:#E5322D;
+  --panel:#F3F4F6; --surface:#FFFFFF; --ink:#14181D; --muted:#566069; --line:#C9D0D7;
+  --accent:#C8102E; --accent-ink:#FFFFFF;
+  --signal:#F0DC00; --signal-ink:#14181D;
+  --c-notruf:#C8102E; --c-brand:#C2410C; --c-technik:#1D4ED8; --c-schlauch:#0F766E; --c-ehilfe:#15803D; --c-wissen:#7E22CE;
+  --t0:#D7261E; --t0-ink:#FFFFFF; --t1:#1D5FD1; --t1-ink:#FFFFFF; --t2:#F2B705; --t2-ink:#14181D; --t3:#1A7F37; --t3-ink:#FFFFFF;
+  --good:#14783A; --good-soft:#DDF2E4; --bad:#B3261E; --bad-soft:#FBE3E0;
+  --stripe2:#FFFFFF;
+  --f-display:'Barlow Condensed','Arial Narrow','Roboto Condensed',sans-serif;
+  --f-body:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg-a:#16255A; --bg-b:#52206B; --bg-c:#B3261E; --panel:#0E1217; --surface:#171D24; --ink:#EEF1F4; --muted:#9AA5B0; --line:#2D3844;
+    --accent:#E5372A; --accent-ink:#FFFFFF;
+    --good:#4CD58A; --good-soft:#12301F; --bad:#FF7066; --bad-soft:#3A1814;
+    --stripe2:#0E1217; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg-a:#16255A; --bg-b:#52206B; --bg-c:#B3261E; --panel:#0E1217; --surface:#171D24; --ink:#EEF1F4; --muted:#9AA5B0; --line:#2D3844;
+  --accent:#E5372A; --accent-ink:#FFFFFF;
+  --good:#4CD58A; --good-soft:#12301F; --bad:#FF7066; --bad-soft:#3A1814;
+  --stripe2:#0E1217; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;position:relative;background-color:var(--bg-c);
+  background-image:linear-gradient(165deg,var(--bg-a) 0%,var(--bg-b) 48%,var(--bg-c) 100%);
+  color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.45;
+  padding-block:24px 140px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* Flammenfries am Seitenende */
+body::after{content:"";position:absolute;left:0;right:0;bottom:0;height:130px;pointer-events:none;z-index:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='110' viewBox='0 0 160 110'%3E%3Cpath d='M40 4c8 20 28 32 28 58 0 20-13 32-28 32S12 82 12 62c0-16 10-24 15-38 3 8 6 11 10 11-2-12-1-23 3-31z' fill='%23ffd23f' fill-opacity='.5'/%3E%3Cpath d='M112 22c6 16 22 26 22 46 0 16-10 26-22 26S90 84 90 68c0-12 8-19 12-30 2 6 5 8 8 8-2-9-1-17 2-24z' fill='%23ffffff' fill-opacity='.32'/%3E%3C/svg%3E") repeat-x left bottom/160px 110px}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:20px 18px 32px;background:var(--panel);
+  border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.28)}
+[hidden]{display:none!important}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+.stripe{height:14px;background:repeating-linear-gradient(-45deg,var(--accent) 0 12px,var(--stripe2) 12px 24px)}
+.hero{position:relative;margin:-20px -18px 0;padding:0 18px 22px;overflow:hidden;border-radius:10px 10px 0 0;
+  background:linear-gradient(120deg,var(--bg-a),var(--bg-b))}
+.hero .stripe{margin:0 -18px}
+.hero-flames{position:absolute;right:14px;bottom:0;width:clamp(70px,22vw,130px);height:auto}
+h1{margin:14px 0 0;font-family:var(--f-display);font-weight:800;text-transform:uppercase;
+  font-size:clamp(3.4rem,15vw,6rem);line-height:.88;letter-spacing:.01em}
+.sub{margin:8px 0 0;font-family:var(--f-display);font-weight:600;font-size:1.25rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.lead{margin:20px 0 0;max-width:60ch}
+
+.block{margin-top:28px;padding-top:18px;border-top:2px solid var(--line)}
+.label{display:block;margin:0 0 10px;font-family:var(--f-display);font-weight:700;font-size:1.15rem;letter-spacing:.08em;text-transform:uppercase}
+.hint{margin:8px 0 0;color:var(--muted);font-size:.95rem}
+
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg-btn,.chip{min-height:46px;padding:8px 16px;border:2px solid var(--line);background:var(--surface);border-radius:4px;cursor:pointer;font-weight:600}
+.seg-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip{border-left:8px solid var(--cc,var(--line))}
+.chip[aria-pressed="true"]{background:var(--cc,var(--accent));border-color:var(--cc,var(--accent));color:#fff}
+.chip small{font-weight:500;opacity:.8;margin-left:6px}
+
+.names{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.names label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted);min-width:0}
+.names input{min-height:46px;width:100%;min-width:0;padding:8px 12px;border:2px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font-size:1rem}
+
+.go{display:block;width:100%;margin-top:32px;min-height:64px;border:0;border-radius:4px;background:var(--accent);color:var(--accent-ink);
+  font-family:var(--f-display);font-weight:800;font-size:1.9rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.go.alt{background:var(--surface);color:var(--ink);border:2px solid var(--ink)}
+
+/* Spiel */
+.hud{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:6px}
+.count{font-family:var(--f-display);font-weight:700;font-size:1.3rem;letter-spacing:.06em;text-transform:uppercase}
+.quit{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px 0}
+.timer{margin-top:10px;height:10px;background:var(--line);border-radius:2px;overflow:hidden}
+.timer-fill{height:100%;width:100%;background:var(--accent);transition:width .1s linear}
+.timer-text{font-variant-numeric:tabular-nums;font-weight:600}
+.timer-text.low{color:var(--bad);font-weight:700}
+
+.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:14px}
+.t0{--tc:var(--t0);--tc-ink:var(--t0-ink)}
+.t1{--tc:var(--t1);--tc-ink:var(--t1-ink)}
+.t2{--tc:var(--t2);--tc-ink:var(--t2-ink)}
+.t3{--tc:var(--t3);--tc-ink:var(--t3-ink)}
+.team{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:8px 12px;border:2px solid var(--line);border-left:8px solid var(--tc,var(--accent));border-radius:4px;background:var(--surface);min-width:0}
+.team-name{font-weight:600;overflow-wrap:anywhere}
+.team-score{margin-left:auto;font-family:var(--f-display);font-weight:800;font-size:1.6rem;line-height:1;font-variant-numeric:tabular-nums}
+.team.is-active{background:var(--tc,var(--accent));border-color:var(--tc,var(--accent));color:var(--tc-ink,#fff)}
+.team-flag{flex-basis:100%;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+
+.qcard{margin-top:16px;background:var(--surface);border:3px solid var(--cat,var(--line));border-radius:4px;overflow:hidden}
+.qcard .stripe{height:8px}
+.qbody{padding:18px 18px 22px}
+.kw{margin:0;font-size:.8rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.kw b{display:inline-block;margin-left:4px;padding:2px 10px;border-radius:3px;background:var(--cat,var(--ink));color:#fff;letter-spacing:.06em}
+.q{margin:10px 0 0;font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,5vw,2.5rem);line-height:1.08;text-wrap:balance}
+
+.answers{display:grid;gap:10px;margin-top:16px}
+@media (min-width:680px){.answers{grid-template-columns:1fr 1fr}}
+.ans{display:flex;align-items:center;gap:12px;min-height:60px;padding:10px 12px;text-align:left;border:2px solid var(--line);border-radius:4px;background:var(--surface);cursor:pointer;min-width:0}
+.ans-key{flex:none;display:grid;place-items:center;width:40px;height:40px;background:var(--line);border-radius:2px;font-family:var(--f-display);font-weight:800;font-size:1.4rem}
+.ans-text{flex:1;min-width:0;font-weight:500;font-size:1.05rem;overflow-wrap:anywhere}
+.ans-mark{flex:none;font-weight:800;font-size:1.4rem}
+.ans.is-right{border-color:var(--good);background:var(--good-soft)}
+.ans.is-right .ans-mark{color:var(--good)}
+.ans.is-wrong{border-color:var(--bad);background:var(--bad-soft)}
+.ans.is-wrong .ans-mark{color:var(--bad)}
+.ans.is-dim{opacity:.55}
+.ans[aria-disabled="true"]{cursor:default}
+
+.fb{margin-top:16px;padding-top:14px;border-top:2px solid var(--line)}
+.verdict{margin:0;font-family:var(--f-display);font-weight:800;font-size:1.7rem;letter-spacing:.03em;text-transform:uppercase}
+.verdict.ok{color:var(--good)}
+.verdict.no{color:var(--bad)}
+.expl{margin:6px 0 0;max-width:62ch}
+
+/* Ergebnis */
+.res-title{margin:18px 0 0;font-family:var(--f-display);font-weight:800;font-size:clamp(2.4rem,10vw,4rem);line-height:.95;text-transform:uppercase}
+.rank{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:8px}
+.rank li{display:flex;align-items:center;gap:14px;padding:10px 14px;border:2px solid var(--line);border-left:10px solid var(--tc,var(--accent));border-radius:4px;background:var(--surface)}
+.rank li.first{background:var(--signal);color:var(--signal-ink);border-top-color:var(--signal);border-right-color:var(--signal);border-bottom-color:var(--signal)}
+.rank-n{flex:none;width:2ch;font-family:var(--f-display);font-weight:800;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.rank-name{flex:1;min-width:0;font-weight:600;font-size:1.1rem;overflow-wrap:anywhere}
+.rank-name small{display:block;font-weight:500;opacity:.8}
+.rank-pts{font-family:var(--f-display);font-weight:800;font-size:1.8rem;font-variant-numeric:tabular-nums}
+details{margin-top:24px;border-top:2px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-weight:600}
+.miss{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:14px}
+.miss b{display:block}
+.miss span{color:var(--muted);font-size:.95rem}
+.row2{display:grid;gap:10px;margin-top:28px}
+.row2 .go{margin-top:0}
+
+@media (prefers-reduced-motion:reduce){.timer-fill{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <div class="stripe" aria-hidden="true"></div>
+    <h1>Feuerprobe</h1>
+    <p class="sub">Das Quiz für die Jugendfeuerwehr</p>
+    <svg class="hero-flames" viewBox="0 0 100 120" aria-hidden="true"><path d="M50 4c9 24 36 38 36 72 0 24-17 40-36 40S14 100 14 76c0-20 12-30 18-46 4 10 8 14 13 14-2-14-1-27 5-40z" fill="#D7261E"/><path d="M50 52c6 14 22 22 22 42 0 14-10 22-22 22S28 108 28 94c0-12 7-18 11-28 2 6 5 8 8 8-1-8-1-15 3-24z" fill="#FFD23F"/></svg>
+  </header>
+
+  <!-- Einstellungen -->
+  <section id="screen-setup" aria-label="Einstellungen">
+    <p class="lead">Eine Person liest die Frage vor, das Team tippt die Antwort an. Das Handy kann reihum gehen oder am Beamer laufen.</p>
+
+    <div class="block">
+      <span class="label" id="lbl-teams">Wer spielt?</span>
+      <div class="seg" id="seg-teams" role="group" aria-labelledby="lbl-teams"></div>
+      <div class="names" id="names"></div>
+    </div>
+
+    <div class="block">
+      <span class="label" id="lbl-cats">Stichworte</span>
+      <div class="seg" id="seg-cats" role="group" aria-labelledby="lbl-cats"></div>
+      <p class="hint" id="poolinfo"></p>
+    </div>
+
+    <div class="block">
+      <span class="label" id="lbl-count">Anzahl Einsätze</span>
+      <div class="seg" id="seg-count" role="group" aria-labelledby="lbl-count"></div>
+    </div>
+
+    <div class="block">
+      <span class="label" id="lbl-time">Zeit pro Frage</span>
+      <div class="seg" id="seg-time" role="group" aria-labelledby="lbl-time"></div>
+      <p class="hint">Mit Zeitlimit gibt es für schnelle richtige Antworten bis zu 5 Bonuspunkte.</p>
+    </div>
+
+    <button class="go" id="btn-start" type="button">Quiz starten</button>
+  </section>
+
+  <!-- Spiel -->
+  <section id="screen-game" hidden aria-label="Quiz">
+    <div class="hud">
+      <span class="count" id="hud-count"></span>
+      <span><span class="timer-text" id="timer-text"></span> <button class="quit" id="btn-quit" type="button">Beenden</button></span>
+    </div>
+    <div class="timer" id="timer" aria-hidden="true"><div class="timer-fill" id="timer-fill"></div></div>
+    <div class="board" id="board"></div>
+
+    <div class="qcard">
+      <div class="stripe" aria-hidden="true"></div>
+      <div class="qbody">
+        <p class="kw">Stichwort: <b id="kw"></b></p>
+        <h2 class="q" id="q"></h2>
+        <div class="answers" id="answers" role="group" aria-labelledby="q"></div>
+        <div class="fb" id="fb" hidden aria-live="polite">
+          <p class="verdict" id="verdict"></p>
+          <p class="expl" id="expl"></p>
+          <button class="go" id="btn-next" type="button">Weiter</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="screen-result" hidden aria-label="Ergebnis">
+    <h2 class="res-title" id="res-title"></h2>
+    <p class="lead" id="res-sub"></p>
+    <ol class="rank" id="rank"></ol>
+    <details id="review" hidden>
+      <summary id="review-sum"></summary>
+      <ul class="miss" id="miss"></ul>
+    </details>
+    <div class="row2">
+      <button class="go" id="btn-again" type="button">Nochmal spielen</button>
+      <button class="go alt" id="btn-setup" type="button">Einstellungen ändern</button>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+'use strict';
+
+var CATS = {
+  notruf:'Notruf & Verhalten',
+  brand:'Brandlehre',
+  technik:'Fahrzeuge & Geräte',
+  schlauch:'Schlauch & Technik',
+  ehilfe:'Erste Hilfe',
+  wissen:'Feuerwehrwissen'
+};
+
+/* a[0] ist immer die richtige Antwort. Die Reihenfolge wird beim Spielen gemischt. */
+var QUESTIONS = [
+  // Notruf & Verhalten
+  {c:'notruf',q:'Welche Notrufnummer wählst du für Feuerwehr und Rettungsdienst?',a:['112','110','115','116 117'],e:'Die 112 ist der europaweite Notruf für Feuerwehr und Rettungsdienst. Die 110 erreicht die Polizei.'},
+  {c:'notruf',q:'Was gehört NICHT zu den fünf W-Fragen beim Notruf?',a:['Wer hat es verursacht?','Wo ist es passiert?','Was ist passiert?','Wie viele Personen sind betroffen?'],e:'Die fünf W: Wo? Was? Wie viele Betroffene? Welche Art von Verletzungen? Warten auf Rückfragen. Wer schuld ist, spielt für den Notruf keine Rolle.'},
+  {c:'notruf',q:'Wann legst du nach einem Notruf auf?',a:['Wenn die Leitstelle das Gespräch beendet','Sobald du den Ort genannt hast','Nach 30 Sekunden','Sobald du Danke gesagt hast'],e:'Du wartest auf Rückfragen. Die Leitstelle entscheidet, wann alle wichtigen Angaben vorliegen.'},
+  {c:'notruf',q:'Was tust du bei einem Feuer im Haus zuerst?',a:['Ruhe bewahren, andere warnen und in Sicherheit gehen','Wertsachen aus der Wohnung holen','Das Feuer allein löschen, egal wie groß es ist','Fenster öffnen und abwarten'],e:'Menschenleben gehen vor. Danach rufst du die 112 an. Nur kleine Entstehungsbrände versuchst du zu löschen, und nur wenn du dich nicht in Gefahr bringst.'},
+  {c:'notruf',q:'Warum benutzt du bei Feuer im Gebäude nicht den Aufzug?',a:['Er kann ausfallen und dich im Rauch einsperren','Er ist zu langsam','Er darf nur von Feuerwehrleuten benutzt werden','Er fährt bei Feuer immer nach oben'],e:'Bei Feuer kann der Strom ausfallen und der Aufzug stecken bleiben. Nimm das Treppenhaus, solange es rauchfrei ist.'},
+  {c:'notruf',q:'Wo ist die Luft in einem verrauchten Raum am besten?',a:['Nah am Boden','Unter der Decke','In der Raummitte','Direkt am Fenster oben'],e:'Heißer Rauch steigt nach oben. Am Boden ist mehr Luft zum Atmen und die Sicht ist besser. Deshalb bleibst du bei Rauch tief.'},
+  {c:'notruf',q:'Warum schließt du beim Verlassen eines brennenden Raums die Tür?',a:['Damit sich Feuer und Rauch langsamer ausbreiten','Damit das Feuer mehr Sauerstoff bekommt','Damit der Rauch schneller abzieht','Damit die Feuerwehr nicht klingeln muss'],e:'Eine geschlossene Tür hält Rauch und Hitze eine Weile zurück und gibt dir und anderen mehr Zeit zur Flucht.'},
+  {c:'notruf',q:'Wie oft sollte ein Rauchmelder mindestens auf Funktion geprüft werden?',a:['Einmal im Jahr','Alle zehn Jahre','Nur wenn er piept','Nie, er prüft sich selbst'],e:'Teste ihn mindestens einmal im Jahr mit dem Prüfknopf. Meist wird ein Rauchmelder nach etwa zehn Jahren ausgetauscht.'},
+
+  // Brandlehre
+  {c:'brand',q:'Was braucht ein Feuer, damit es brennt?',a:['Brennbarer Stoff, Sauerstoff und Zündenergie','Wasser, Luft und Holz','Wind, Funken und Gas','Nur Hitze'],e:'Das ist das Verbrennungsdreieck. Fehlt eine der drei Seiten, geht das Feuer aus.'},
+  {c:'brand',q:'Was bewirkt eine Löschdecke auf einem kleinen Feuer?',a:['Sie nimmt dem Feuer den Sauerstoff','Sie kühlt das Feuer ab','Sie entfernt den brennbaren Stoff','Sie verdünnt die Flammen'],e:'Das Feuer erstickt, weil kein Sauerstoff mehr herankommt. Die Decke bleibt liegen, bis alles abgekühlt ist.'},
+  {c:'brand',q:'Welche Brandklasse steht für feste Stoffe wie Holz und Papier?',a:['Klasse A','Klasse B','Klasse C','Klasse D'],e:'A: feste Stoffe. B: flüssige Stoffe. C: Gase. D: Metalle. F: Speisefette und Speiseöle.'},
+  {c:'brand',q:'Welche Brandklasse steht für brennende Flüssigkeiten wie Benzin?',a:['Klasse B','Klasse A','Klasse C','Klasse D'],e:'Klasse B umfasst flüssige oder flüssig werdende Stoffe, zum Beispiel Benzin oder Öl.'},
+  {c:'brand',q:'Warum darfst du einen Fettbrand niemals mit Wasser löschen?',a:['Das Wasser verdampft schlagartig und schleudert brennendes Fett hoch','Wasser ist zu kalt für Fett','Das Wasser macht das Fett giftig','Das Feuer würde nur kurz kleiner werden'],e:'Es kommt zu einer Fettexplosion mit riesiger Stichflamme. Besser: Deckel oder Löschdecke auflegen und den Herd ausschalten.'},
+  {c:'brand',q:'Welche Brandklasse steht für brennende Gase wie Erdgas?',a:['Klasse C','Klasse A','Klasse B','Klasse F'],e:'Klasse C steht für Gase. Bei Gasbränden wird wenn möglich zuerst die Gaszufuhr gestoppt.'},
+  {c:'brand',q:'Was ist die wichtigste Löschwirkung von Wasser?',a:['Kühlen','Ersticken','Brennstoff wegtragen','Sauerstoff erzeugen'],e:'Wasser nimmt dem brennenden Material Wärme weg und kühlt es unter die Zündtemperatur.'},
+  {c:'brand',q:'Für welche Stoffe steht die Brandklasse D?',a:['Metalle, zum Beispiel Magnesium','Speisefette und Speiseöle','Feste Stoffe wie Holz','Gase wie Propan'],e:'Brennende Leichtmetalle brauchen spezielles Metallbrandpulver. Wasser kann hier gefährlich reagieren.'},
+
+  // Fahrzeuge & Geräte
+  {c:'technik',q:'Wofür steht die Abkürzung LF bei Feuerwehrfahrzeugen?',a:['Löschgruppenfahrzeug','Leiterfahrzeug','Leitstellenfahrzeug','Löschfunkwagen'],e:'Das LF ist das klassische Löschfahrzeug mit Pumpe, Wassertank und Platz für eine ganze Gruppe.'},
+  {c:'technik',q:'Was bedeutet die Abkürzung DLK?',a:['Drehleiter mit Korb','Doppelte Löschkraft','Dienstleitungskabel','Dach-Löschkran'],e:'Mit der Drehleiter mit Korb rettet die Feuerwehr Menschen aus großer Höhe und löscht von oben.'},
+  {c:'technik',q:'Was zeichnet ein Tanklöschfahrzeug (TLF) aus?',a:['Ein besonders großer Löschwassertank','Eine Drehleiter auf dem Dach','Ein Rettungsboot','Eine Kranvorrichtung'],e:'Das TLF bringt viel Wasser mit. Das hilft dort, wo es keinen Hydranten gibt, zum Beispiel bei Wald- und Flächenbränden.'},
+  {c:'technik',q:'Wofür steht die Abkürzung MTW?',a:['Mannschaftstransportwagen','Mehrzweck-Tank-Wagen','Mobiler Technikwagen','Maschinisten-Trainingswagen'],e:'Mit dem MTW kommen Einsatzkräfte oder die Jugendfeuerwehr zu Einsatz, Übung oder Wettkampf.'},
+  {c:'technik',q:'Wofür nutzt die Feuerwehr hydraulische Schere und Spreizer?',a:['Um eingeklemmte Personen nach Unfällen zu befreien','Um Bäume zu fällen','Um Schläuche zuzuschneiden','Um Absperrzäune aufzubauen'],e:'Das hydraulische Rettungsgerät schneidet und spreizt Fahrzeugteile, damit Eingeklemmte befreit werden können.'},
+  {c:'technik',q:'Welche zwei Hydrantenarten gibt es?',a:['Überflurhydrant und Unterflurhydrant','Hochhydrant und Tiefhydrant','Standhydrant und Kellerhydrant','Rothydrant und Gelbhydrant'],e:'Der Überflurhydrant steht sichtbar über dem Boden. Der Unterflurhydrant sitzt unter einer Abdeckung in der Straße. Ein Schild daneben zeigt, wo er liegt.'},
+  {c:'technik',q:'Wofür steht die Abkürzung ELW?',a:['Einsatzleitwagen','Eillöschwagen','Elektro-Lastwagen','Erster-Leiter-Wagen'],e:'Im ELW sitzt die Einsatzleitung. Hier laufen Informationen und Funk zusammen.'},
+  {c:'technik',q:'Was kann eine Wärmebildkamera?',a:['Wärmequellen sichtbar machen, auch im Rauch','Röntgenbilder durch Wände machen','Gefährliche Gase messen','Die Entfernung zum Hydranten anzeigen'],e:'Die Kamera zeigt Temperaturunterschiede. So findet man Personen und Glutnester, auch wenn man im Rauch nichts sieht. Durch Wände sieht sie nicht.'},
+
+  // Schlauch & Technik
+  {c:'schlauch',q:'Welche Kupplung nutzt die Feuerwehr in Deutschland für Schläuche?',a:['Storz-Kupplung','Gardena-Kupplung','Klemmkupplung','Schnappkupplung'],e:'Die Storz-Kupplung hat zwei gleiche Hälften. Sie werden mit einer Vierteldrehung verbunden.'},
+  {c:'schlauch',q:'Welchen Innendurchmesser hat ein B-Schlauch?',a:['75 mm','25 mm','42 mm','110 mm'],e:'Je weiter vorn der Buchstabe, desto dicker der Schlauch: A 110 mm, B 75 mm, C 42 mm, D 25 mm.'},
+  {c:'schlauch',q:'Welchen Innendurchmesser hat ein C-Schlauch?',a:['42 mm','25 mm','75 mm','110 mm'],e:'C-Schläuche sind handlich und leistungsstark. Sie werden am häufigsten für den Löschangriff genutzt.'},
+  {c:'schlauch',q:'Mit welchem Knoten verbindest du zwei Leinen gleicher Stärke?',a:['Kreuzknoten','Mastwurf','Palstek','Achterknoten'],e:'Der Kreuzknoten verbindet zwei Leinen gleicher Stärke. Für unterschiedlich dicke Leinen nimmt man besser den Schotstek.'},
+  {c:'schlauch',q:'Wozu dient das Strahlrohr?',a:['Es formt den Wasserstrahl und regelt die Wassermenge','Es saugt Wasser an','Es verbindet zwei Schläuche','Es misst den Wasserdruck'],e:'Am Strahlrohr öffnest und schließt du das Wasser und stellst zwischen Vollstrahl und Sprühstrahl um.'},
+  {c:'schlauch',q:'Wofür braucht man Saugschlauch und Saugkorb?',a:['Um Wasser aus Teich oder Bach anzusaugen','Um Rauch abzusaugen','Um Verletzte zu tragen','Um Hydranten zu spülen'],e:'Der Saugkorb hält groben Schmutz zurück. Die Pumpe saugt das Wasser an und gibt es unter Druck in die Schläuche.'},
+  {c:'schlauch',q:'Welches Teil bringt das Löschwasser im Fahrzeug auf Druck?',a:['Die Feuerlöschkreiselpumpe','Der Verteiler','Das Strahlrohr','Der Saugkorb'],e:'Die Kreiselpumpe wird vom Maschinisten bedient. Sie erzeugt den Druck, mit dem das Wasser durch die Schläuche strömt.'},
+  {c:'schlauch',q:'Was macht ein Verteiler in der Schlauchleitung?',a:['Er teilt eine Leitung auf mehrere Schläuche auf','Er erhöht den Wasserdruck','Er filtert das Wasser','Er trocknet die Schläuche'],e:'Am Verteiler wird zum Beispiel ein B-Schlauch auf mehrere C-Schläuche verteilt. Die Abgänge lassen sich einzeln auf- und zudrehen.'},
+
+  // Erste Hilfe
+  {c:'ehilfe',q:'Was kommt bei einem Unfall zuerst?',a:['Dich selbst schützen und die Stelle absichern','Fotos machen','Verletzte sofort wegtragen','Den Unfallverursacher suchen'],e:'Wenn du selbst verletzt wirst, kannst du nicht mehr helfen. Warnweste, Warndreieck und Abstand zum Verkehr gehören dazu. Danach Notruf und Erste Hilfe.'},
+  {c:'ehilfe',q:'Wann bringst du jemanden in die stabile Seitenlage?',a:['Wenn die Person bewusstlos ist, aber normal atmet','Wenn die Person Schmerzen hat','Wenn die Person nicht atmet','Wenn die Person friert'],e:'In der stabilen Seitenlage bleiben die Atemwege frei. Atmet die Person nicht normal, beginnst du stattdessen mit der Wiederbelebung.'},
+  {c:'ehilfe',q:'Wie prüfst du bei einer bewusstlosen Person die Atmung?',a:['Kopf überstrecken, hören, fühlen und den Brustkorb beobachten','Den Puls am Handgelenk suchen','Die Person schütteln und laut rufen','Ein Taschentuch vor den Mund halten'],e:'Der Kopf wird nackenwärts überstreckt, damit die Atemwege frei sind. Du schaust, hörst und fühlst bis zu zehn Sekunden lang.'},
+  {c:'ehilfe',q:'Wie schnell drückst du bei der Herzdruckmassage?',a:['100 bis 120 Mal pro Minute','30 Mal pro Minute','60 Mal pro Minute','Über 200 Mal pro Minute'],e:'Das sind etwa zwei Drückbewegungen pro Sekunde. Drücke fest in die Mitte des Brustkorbs.'},
+  {c:'ehilfe',q:'Wie ist bei Erwachsenen das Verhältnis von Herzdruckmassage zu Beatmung?',a:['30 : 2','2 : 30','10 : 10','5 : 1'],e:'30 Mal drücken, 2 Mal beatmen, dann wieder von vorn. Ein Defibrillator (AED) wird sofort eingesetzt, sobald er da ist.'},
+  {c:'ehilfe',q:'Wie versorgst du eine Verbrennung am Arm richtig?',a:['Mit kühlem bis lauwarmem, fließendem Wasser kühlen','Mit Eiswürfeln direkt kühlen','Mit Mehl bestreuen','Mit Butter einreiben'],e:'Eis kann die Haut zusätzlich schädigen, Mehl und Butter verschmutzen die Wunde. Danach keimfrei abdecken. Bei großen Verbrennungen sofort die 112 rufen.'},
+  {c:'ehilfe',q:'Was tust du bei einer stark blutenden Wunde am Arm?',a:['Einen Druckverband anlegen','Die Wunde offen lassen','Ein Pflaster aufkleben','Nur Eis auflegen'],e:'Schutzhandschuhe anziehen, ein Druckpolster auflegen und fest verbinden. Bei starker Blutung auch den Notruf wählen.'},
+  {c:'ehilfe',q:'Wie hilfst du bei Nasenbluten?',a:['Kopf leicht nach vorn, Nasenflügel zusammendrücken','Den Kopf weit in den Nacken legen','Flach hinlegen','Ein Taschentuch tief in die Nase stecken'],e:'Mit dem Kopf im Nacken liefe das Blut in den Rachen. Beuge dich nach vorn, drücke die Nase zu und lege einen kühlen Lappen in den Nacken.'},
+
+  // Feuerwehrwissen
+  {c:'wissen',q:'Wie viele Stufen hat die Jugendflamme?',a:['Drei','Zwei','Vier','Fünf'],e:'Die Jugendflamme gibt es in den Stufen 1 bis 3. Sie ist ein Abzeichen der Deutschen Jugendfeuerwehr.'},
+  {c:'wissen',q:'Wer ist der Schutzpatron der Feuerwehrleute?',a:['Der heilige Florian','Der heilige Nikolaus','Der heilige Martin','Der heilige Christophorus'],e:'Florian von Lorch gilt als Schutzpatron der Feuerwehrleute. Sein Gedenktag ist der 4. Mai.'},
+  {c:'wissen',q:'Wie heißt der Dachverband der Jugendfeuerwehren in Deutschland?',a:['Deutsche Jugendfeuerwehr','Bundesjugendwehr','Feuerwehr-Jugendring','Deutsche Löschjugend'],e:'Die Deutsche Jugendfeuerwehr (DJF) ist der Jugendverband im Deutschen Feuerwehrverband.'},
+  {c:'wissen',q:'Welcher Funkrufname gehört zur Feuerwehr?',a:['Florian','Rotkreuz','Akkon','Christoph'],e:'Florian steht für die Feuerwehr. Rotkreuz gehört zum DRK, Akkon zu den Johannitern und Christoph zur Luftrettung.'},
+  {c:'wissen',q:'Aus wie vielen Einsatzkräften besteht eine Löschgruppe?',a:['Neun','Sechs','Drei','Zwölf'],e:'Die Gruppe besteht aus dem Gruppenführer und acht weiteren Einsatzkräften. Die kleinere Staffel hat sechs.'},
+  {c:'wissen',q:'Wer bedient im Löschfahrzeug die Pumpe?',a:['Der Maschinist','Der Melder','Der Gruppenführer','Der Schlauchtruppführer'],e:'Der Maschinist fährt das Fahrzeug und bedient an der Einsatzstelle die Pumpe.'},
+  {c:'wissen',q:'Wofür steht die Abkürzung THL?',a:['Technische Hilfeleistung','Tragkraftspritzen-Lehrgang','Tank- und Hydrantenleitung','Tragbare Hochleiter'],e:'THL umfasst Einsätze wie Verkehrsunfälle, Sturmschäden oder umgestürzte Bäume, also mehr als nur Brände.'},
+  {c:'wissen',q:'Warum tragen Feuerwehrleute im Brandeinsatz ein Atemschutzgerät?',a:['Rauch und Brandgase sind giftig','Der Helm sitzt sonst schlecht','Wegen des Lärms','Um den Funk besser zu hören'],e:'Brandrauch enthält giftige Gase wie Kohlenmonoxid. Schon wenige Atemzüge können gefährlich sein. Geh deshalb nie in verrauchte Räume.'},
+
+  // Notruf & Verhalten (mehr)
+  {c:'notruf',q:'Was bedeutet das grüne Schild mit dem laufenden Männchen?',a:['Hier geht es zum Notausgang','Hier beginnt ein Spielplatz','Hier ist der Eingang für Gäste','Hier ist Rennen erlaubt'],e:'Grüne Rettungszeichen zeigen Fluchtwege und Notausgänge. Halte diese Wege immer frei.'},
+  {c:'notruf',q:'Welche Farbe haben Brandschutzzeichen, zum Beispiel für den Feuerlöscher?',a:['Rot','Grün','Blau','Gelb'],e:'Brandschutzzeichen sind rot mit weißem Symbol. Du findest sie an Feuerlöschern, Brandmeldern und Wandhydranten.'},
+  {c:'notruf',q:'Wohin gehst du, wenn ein Gebäude geräumt wird?',a:['Zum Sammelplatz','Zurück ins Gebäude, um etwas zu holen','Nach Hause, ohne Bescheid zu sagen','Hinter das Gebäude zum Zuschauen'],e:'Am Sammelplatz wird gezählt, ob alle draußen sind. Wer ohne Bescheid verschwindet, löst unnötige Suchaktionen aus.'},
+  {c:'notruf',q:'Deine Kleidung fängt Feuer. Was tust du?',a:['Nicht rennen, hinlegen und auf dem Boden rollen','Schnell wegrennen','Mit den Armen wedeln','Das Fenster aufreißen'],e:'Beim Rennen bekommen die Flammen mehr Sauerstoff. Rollen auf dem Boden oder eine Decke ersticken das Feuer.'},
+  {c:'notruf',q:'Du bist in einem Zimmer eingeschlossen und der Flur ist verraucht. Was tust du?',a:['Tür geschlossen lassen, Ritzen abdichten und am Fenster auf dich aufmerksam machen','Durch den Rauch ins Treppenhaus rennen','Aus dem Fenster springen','Dich unter dem Bett verstecken'],e:'Ist der Fluchtweg verraucht, ist es im Zimmer meist sicherer. Mach dich am Fenster bemerkbar und rufe die 112.'},
+  {c:'notruf',q:'Was ist die Leitstelle?',a:['Die Stelle, die Notrufe annimmt und Einsatzkräfte alarmiert','Der Raum, in dem die Fahrzeuge gewaschen werden','Das Lager für Löschmittel','Die Schule der Feuerwehr'],e:'Die Leitstelle nimmt den Notruf an, schickt die passenden Einsatzkräfte los und bleibt mit der Einsatzstelle in Verbindung.'},
+  {c:'notruf',q:'Was kostet ein Notruf über die 112?',a:['Nichts, er ist kostenlos','50 Cent pro Minute','Einen Euro pro Anruf','Er geht nur mit Guthaben'],e:'Der Notruf ist von jedem Telefon aus kostenlos. Ein Missbrauch, also ein Anruf ohne Notfall, ist aber strafbar.'},
+  {c:'notruf',q:'Was ist ein Entstehungsbrand?',a:['Ein Brand am Anfang, der sich noch mit einfachen Mitteln löschen lässt','Ein Brand, der absichtlich gelegt wurde','Ein Feuer, das nur Fahrzeuge betrifft','Ein Brand im Freien'],e:'Bei einem kleinen Entstehungsbrand helfen Feuerlöscher oder Löschdecke, solange du dich nicht in Gefahr bringst.'},
+
+  // Brandlehre (mehr)
+  {c:'brand',q:'Woran sterben die meisten Menschen bei Wohnungsbränden?',a:['An giftigem Rauch','An Verbrennungen','An einstürzenden Wänden','An Explosionen'],e:'Die meisten Brandopfer sterben an Rauchgasen, nicht an den Flammen. Schon wenige Atemzüge können bewusstlos machen.'},
+  {c:'brand',q:'Welches Gas im Brandrauch ist farb- und geruchlos und besonders gefährlich?',a:['Kohlenmonoxid','Wasserdampf','Sauerstoff','Löschschaum'],e:'Kohlenmonoxid (CO) kannst du weder sehen noch riechen. Es verdrängt im Blut den Sauerstoff.'},
+  {c:'brand',q:'Wohin richtest du den Strahl eines Feuerlöschers?',a:['Auf die Basis der Flammen','Auf die Rauchwolke','Oben in die Flammen','An die Zimmerdecke'],e:'Greife die Flammen an der Basis an, mit dem Wind im Rücken. Bei Flächenbränden arbeitest du dich von vorn nach hinten.'},
+  {c:'brand',q:'Welche Brandklasse steht für Speisefette und Speiseöle?',a:['Klasse F','Klasse A','Klasse C','Klasse D'],e:'Klasse F gilt für brennende Speisefette und Speiseöle, zum Beispiel in Fritteusen.'},
+  {c:'brand',q:'Wie wirkt Löschschaum hauptsächlich?',a:['Er deckt den Brandstoff ab und trennt ihn vom Sauerstoff','Er macht das Feuer heißer','Er verdampft sofort','Er saugt die Flammen an'],e:'Schaum legt sich wie eine Decke auf brennende Flüssigkeiten, erstickt die Flammen und kühlt zusätzlich.'},
+  {c:'brand',q:'Warum sind Spraydosen und Gasflaschen im Brandfall gefährlich?',a:['Hitze lässt den Druck steigen, sie können platzen','Sie schmelzen und tropfen','Sie ziehen Blitze an','Sie setzen Wasser frei'],e:'In der Hitze steigt der Druck. Spraydosen und Gasflaschen können platzen oder explodieren. Halte Abstand und sage der Feuerwehr, wo sie stehen.'},
+  {c:'brand',q:'Was ist bei einer Brandschutztür wichtig?',a:['Sie darf nicht mit einem Keil offen gehalten werden','Sie muss immer abgeschlossen sein','Sie darf nur von der Feuerwehr geöffnet werden','Sie muss bei Feuer aufgerissen werden'],e:'Brandschutztüren halten Feuer und Rauch eine Zeit lang auf. Das klappt nur, wenn sie geschlossen sind.'},
+  {c:'brand',q:'Um wie viel dehnt sich Wasser beim Verdampfen etwa aus?',a:['Etwa 1700-fach','Etwa 2-fach','Etwa 10-fach','Gar nicht'],e:'Aus einem Liter Wasser werden rund 1700 Liter Wasserdampf. Das kühlt stark. Deshalb gehen Einsatzkräfte im Gebäude vorsichtig mit Wasser um.'},
+
+  // Fahrzeuge & Geräte (mehr)
+  {c:'technik',q:'Wofür steht die Abkürzung RW?',a:['Rüstwagen','Rettungswagen','Rauchwagen','Rohrwagen'],e:'Der Rüstwagen bringt schweres Gerät zur technischen Hilfe mit, zum Beispiel Hebekissen, Seilwinde und Rettungsgerät.'},
+  {c:'technik',q:'Wofür steht die Abkürzung HLF?',a:['Hilfeleistungslöschfahrzeug','Hochleistungs-Leiterfahrzeug','Hydranten-Löschfahrzeug','Hilfs-Löschfahrrad'],e:'Das HLF verbindet ein Löschfahrzeug mit Geräten für technische Hilfe, etwa bei Verkehrsunfällen.'},
+  {c:'technik',q:'Was ist eine Tragkraftspritze?',a:['Eine tragbare Feuerlöschpumpe mit eigenem Motor','Ein Hochdruckreiniger für Fahrzeuge','Ein Handfeuerlöscher','Ein Schlauchwagen'],e:'Die Tragkraftspritze fördert Wasser auch dort, wo kein Fahrzeug hinkommt, zum Beispiel aus einem Bach.'},
+  {c:'technik',q:'Wozu dient ein Hebekissen?',a:['Um schwere Lasten anzuheben','Um Verletzte weich zu lagern','Um Schläuche zu schützen','Um Löschschaum zu erzeugen'],e:'Hebekissen werden unter eine Last gelegt und mit Luft gefüllt. So lassen sich Fahrzeuge oder Trümmer anheben.'},
+  {c:'technik',q:'Wofür nutzt die Feuerwehr einen Überdrucklüfter?',a:['Um Rauch aus einem Gebäude zu blasen','Um Wasser zu kühlen','Um Fahrzeuge zu trocknen','Um den Funk zu verstärken'],e:'Der Lüfter erzeugt Überdruck im Gebäude. So werden Rauch und Hitze durch eine Abluftöffnung nach draußen gedrückt.'},
+  {c:'technik',q:'Was bedeutet es, wenn ein Feuerwehrfahrzeug Blaulicht und Martinshorn einschaltet?',a:['Alle anderen müssen sofort freie Bahn schaffen','Die Ampel schaltet automatisch auf Grün','Alle dürfen schneller fahren','Das Fahrzeug darf überall ohne Rücksicht parken'],e:'Mit Blaulicht und Einsatzhorn hat die Feuerwehr Wegerecht. Trotzdem fahren Einsatzfahrer mit besonderer Vorsicht.'},
+  {c:'technik',q:'Wozu dient die Steckleiter?',a:['Als tragbare Leiter aus mehreren Teilen','Als Rettungsrutsche','Als Wassertank','Als Sitzbank im Fahrzeug'],e:'Die Steckleiter besteht aus mehreren Teilen, die zusammengesteckt werden. Sie dient zur Rettung und als Zugang zu Fenstern und Dächern.'},
+  {c:'technik',q:'Was ist ein Sprungretter?',a:['Ein Luftkissen, das einen Sprung aus der Höhe abfangen kann','Ein Gerät zum Anheben von Fahrzeugen','Eine Rettungsrutsche aus Metall','Eine Matte zum Aufwärmen'],e:'Der Sprungretter ist die letzte Möglichkeit, wenn es keinen anderen Rettungsweg gibt.'},
+
+  // Schlauch & Technik (mehr)
+  {c:'schlauch',q:'Mit welchem Knoten befestigst du eine Leine an einem Pfosten oder Geländer?',a:['Mastwurf','Kreuzknoten','Achterknoten','Schlaufenknoten'],e:'Der Mastwurf hält an Pfosten, Rohren und Geländern, solange die Leine unter Zug steht. Er lässt sich schnell binden und lösen.'},
+  {c:'schlauch',q:'Wofür nutzt man den Schotstek?',a:['Um zwei Leinen unterschiedlicher Stärke zu verbinden','Um eine Leine an einem Pfosten zu befestigen','Um eine feste Schlaufe zu knoten','Um Schläuche zu kuppeln'],e:'Der Schotstek verbindet auch Leinen mit verschiedener Dicke sicher miteinander.'},
+  {c:'schlauch',q:'Was zeigt das Manometer an der Pumpe?',a:['Den Wasserdruck','Die Wassermenge','Die Wassertemperatur','Den Füllstand des Tanks'],e:'Am Manometer liest der Maschinist den Druck ab, mit dem das Wasser in die Schläuche geschickt wird.'},
+  {c:'schlauch',q:'Was bedeutet das Kommando „Wasser halt!“?',a:['Die Wasserabgabe wird beendet','Das Wasser wird aufgedreht','Der Schlauch wird aufgerollt','Der Hydrant wird gesucht'],e:'Der Maschinist stellt dann das Wasser ab. Das Gegenstück ist „Wasser marsch!“.'},
+  {c:'schlauch',q:'Wozu dient ein Standrohr?',a:['Um Wasser aus einem Unterflurhydranten zu entnehmen','Um Rauch abzuleiten','Um Schläuche zu trocknen','Um Löschschaum zu mischen'],e:'Das Standrohr wird auf den Unterflurhydranten gesetzt. An den Abgängen schließt man dann die Schläuche an.'},
+  {c:'schlauch',q:'Was passiert mit den Schläuchen nach dem Einsatz?',a:['Sie werden gereinigt, geprüft und trocken gelagert','Sie werden nass aufgerollt und weggestellt','Sie werden sofort weggeworfen','Sie werden mit Farbe gekennzeichnet'],e:'So bleiben die Schläuche einsatzbereit. Beschädigte Schläuche werden aussortiert.'},
+  {c:'schlauch',q:'Wofür ist eine Blindkupplung da?',a:['Sie verschließt einen offenen Schlauchanschluss','Sie verbindet zwei Schläuche','Sie misst den Druck','Sie filtert das Wasser'],e:'Mit der Blindkupplung wird ein offener Abgang dicht verschlossen, zum Beispiel am Verteiler.'},
+  {c:'schlauch',q:'Wofür nutzt man den Sprühstrahl am Strahlrohr besonders?',a:['Zum Kühlen und als Schutz vor Hitze','Für die größte Wurfweite','Zum Ansaugen von Wasser','Zum Befüllen von Tanks'],e:'Der Sprühstrahl verteilt das Wasser in feine Tropfen. Er kühlt stark und schützt Einsatzkräfte vor Hitze. Der Vollstrahl reicht weiter.'},
+
+  // Erste Hilfe (mehr)
+  {c:'ehilfe',q:'Wie prüfst du, ob eine Person bei Bewusstsein ist?',a:['Laut ansprechen und vorsichtig an den Schultern rütteln','Kaltes Wasser ins Gesicht schütten','Fest ins Gesicht schlagen','Kneifen und anschreien'],e:'Reagiert die Person nicht, rufst du um Hilfe, öffnest die Atemwege und prüfst die Atmung.'},
+  {c:'ehilfe',q:'Was ist ein AED?',a:['Ein Defibrillator, der bei Herzstillstand helfen kann','Ein Blutdruckmessgerät','Ein Beatmungsbeutel','Ein Fieberthermometer'],e:'Der AED spricht mit dir und sagt dir, was zu tun ist. Er gibt nur einen Stromstoß ab, wenn es nötig ist.'},
+  {c:'ehilfe',q:'Wie versorgst du eine kleine, saubere Schnittwunde?',a:['Mit Pflaster oder Verband keimfrei abdecken','Mit Hausmitteln einreiben','Offen an der Luft lassen','Immer sofort nähen lassen'],e:'Wunden werden nicht mit Hausmitteln behandelt. Ein Pflaster oder steriler Verband schützt vor Keimen.'},
+  {c:'ehilfe',q:'Was ist bei Verdacht auf einen Knochenbruch richtig?',a:['Die Stelle ruhig halten und Hilfe holen','Den Knochen wieder einrenken','Das Körperteil kräftig bewegen','Heiße Umschläge machen'],e:'Die verletzte Stelle bleibt möglichst ruhig, so wie sie ist. Du polsterst sie, beruhigst die Person und rufst bei Bedarf die 112.'},
+  {c:'ehilfe',q:'Eine Wespe sticht jemanden in den Mund. Was tust du?',a:['Kühlen, zum Beispiel Eis lutschen lassen, und die 112 rufen','Abwarten','Salz essen lassen','Heißen Tee trinken lassen'],e:'Ein Stich im Mund oder Rachen kann die Atemwege zuschwellen lassen. Das ist ein Notfall.'},
+  {c:'ehilfe',q:'Wie hilfst du bei Unterkühlung?',a:['Aus der Kälte holen und langsam mit Decken wärmen','Mit heißem Wasser übergießen','Mit Schnee abreiben','Alkohol zu trinken geben'],e:'Wärme die Person langsam und schütze sie vor weiterem Wärmeverlust. Alkohol hilft nicht, er verschlechtert die Lage.'},
+  {c:'ehilfe',q:'Was ziehst du an, bevor du eine blutende Wunde versorgst?',a:['Einmalhandschuhe','Gartenhandschuhe','Wollhandschuhe','Nichts'],e:'Einmalhandschuhe schützen dich und die verletzte Person vor Krankheitserregern.'},
+  {c:'ehilfe',q:'Jemand verschluckt sich und kann nicht mehr husten. Was tust du?',a:['Bis zu fünf Schläge zwischen die Schulterblätter geben','Ein Glas Wasser zu trinken geben','Den Kopf in den Nacken legen','Abwarten, bis es von allein vorbeigeht'],e:'Hilft das nicht, folgen bis zu fünf Oberbauchstöße. Wähle dabei die 112.'},
+
+  // Feuerwehrwissen (mehr)
+  {c:'wissen',q:'Wofür steht die Abkürzung FF?',a:['Freiwillige Feuerwehr','Feuerfeste Fahrzeuge','Feuerwehr-Fahrschule','Flammenfreie Fläche'],e:'Die meisten Feuerwehren in Deutschland sind Freiwillige Feuerwehren. Ehrenamtliche helfen dort neben Schule und Beruf.'},
+  {c:'wissen',q:'Wie heißt die Feuerwehr, in der Einsatzkräfte hauptberuflich arbeiten?',a:['Berufsfeuerwehr','Freiwillige Feuerwehr','Pflichtfeuerwehr','Jugendfeuerwehr'],e:'Berufsfeuerwehren gibt es vor allem in größeren Städten. Dort arbeiten die Feuerwehrleute im Schichtdienst.'},
+  {c:'wissen',q:'Welche Aufgabe hat der Melder in der Löschgruppe?',a:['Er unterstützt den Gruppenführer und übermittelt Meldungen','Er bedient die Pumpe','Er führt den Angriffstrupp','Er fährt das Fahrzeug'],e:'Der Melder ist der Helfer des Gruppenführers. Er hält Verbindung, überbringt Meldungen und hilft bei der Erkundung.'},
+  {c:'wissen',q:'Welche vier Grundaufgaben hat die Feuerwehr?',a:['Retten, Löschen, Bergen, Schützen','Bauen, Löschen, Jagen, Streiten','Fahren, Funken, Löschen, Putzen','Wachen, Warten, Zählen, Löschen'],e:'Die Feuerwehr rettet Menschen und Tiere, löscht Brände, birgt Gegenstände und schützt Menschen und Umwelt vor Gefahren.'},
+  {c:'wissen',q:'Wie wird die Freiwillige Feuerwehr im Einsatzfall alarmiert?',a:['Per Funkmelder, Handy-App oder Sirene','Per Brief','Per Zeitungsanzeige','Per Postkarte'],e:'Die Leitstelle löst den Alarm aus. Die Einsatzkräfte erfahren es meist über Funkmelder oder App, teils auch über die Sirene.'},
+  {c:'wissen',q:'Was ist ein Pressluftatmer?',a:['Ein Atemschutzgerät mit Atemluft aus einer Flasche','Ein Kompressor für Autoreifen','Ein Lüfter zur Raumkühlung','Ein Funkgerät'],e:'Der Pressluftatmer versorgt Trupps mit Atemluft aus einer Druckluftflasche. Atemschutz dürfen nur ausgebildete Erwachsene tragen.'},
+  {c:'wissen',q:'Was ist die Leistungsspange?',a:['Die höchste Auszeichnung der Deutschen Jugendfeuerwehr','Ein Gürtel für Atemschutzgeräte','Ein Dienstgrad für Gruppenführer','Ein Schlüssel für Kupplungen'],e:'Dazu gehören zum Beispiel ein Löschangriff, Kugelstoßen, ein Staffellauf und Wissensfragen.'},
+  {c:'wissen',q:'Wer leitet und betreut die Jugendfeuerwehr vor Ort?',a:['Der Jugendwart oder die Jugendwartin','Der Bürgermeister','Der Maschinist','Der Hausmeister'],e:'Der Jugendwart oder die Jugendwartin plant Dienste, Übungen und Ausflüge gemeinsam mit den Betreuern.'}
+];
+
+function $(s){return document.querySelector(s);}
+function el(tag,cls,txt){var n=document.createElement(tag);if(cls)n.className=cls;if(txt!=null)n.textContent=txt;return n;}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+var KEY='feuerprobe-einstellungen';
+var DEF_NAMES=['Team Rot','Team Blau','Team Gelb','Team Grün'];
+var cfg={teams:1,names:['','','',''],cats:Object.keys(CATS),count:10,time:0};
+try{
+  var saved=JSON.parse(localStorage.getItem(KEY)||'null');
+  if(saved&&typeof saved==='object'){
+    if([1,2,3,4].indexOf(saved.teams)>-1)cfg.teams=saved.teams;
+    if(Array.isArray(saved.names))cfg.names=[0,1,2,3].map(function(i){return String(saved.names[i]||'').slice(0,24);});
+    if(Array.isArray(saved.cats)){var cc=saved.cats.filter(function(k){return CATS[k];});if(cc.length)cfg.cats=cc;}
+    if([10,20,30,50].indexOf(saved.count)>-1)cfg.count=saved.count;
+    if([0,20,30].indexOf(saved.time)>-1)cfg.time=saved.time;
+  }
+}catch(e){}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(cfg));}catch(e){}}
+
+var G=null;
+
+function show(name){
+  ['setup','game','result'].forEach(function(n){$('#screen-'+n).hidden=(n!==name);});
+  window.scrollTo(0,0);
+}
+
+/* ---------- Einstellungen ---------- */
+function seg(host,options,current,onPick){
+  host.replaceChildren();
+  options.forEach(function(o){
+    var b=el('button','seg-btn',o[1]);b.type='button';
+    b.setAttribute('aria-pressed',String(o[0]===current));
+    b.addEventListener('click',function(){onPick(o[0]);});
+    host.appendChild(b);
+  });
+}
+function poolSize(){return QUESTIONS.filter(function(q){return cfg.cats.indexOf(q.c)>-1;}).length;}
+function plannedCount(){
+  var n=Math.min(cfg.count,poolSize());
+  if(cfg.teams>1&&n>=cfg.teams)n-=n%cfg.teams;
+  return n;
+}
+function renderTeams(){
+  seg($('#seg-teams'),[[1,'Einzeln'],[2,'2 Teams'],[3,'3 Teams'],[4,'4 Teams']],cfg.teams,function(v){cfg.teams=v;persist();renderTeams();renderInfo();});
+  var host=$('#names');host.replaceChildren();
+  for(var i=0;i<cfg.teams;i++){(function(i){
+    var l=el('label',null,cfg.teams===1?'Dein Name':'Name von Team '+(i+1));
+    var inp=document.createElement('input');
+    inp.type='text';inp.id='name-'+i;inp.maxLength=24;inp.autocomplete='off';
+    inp.placeholder=cfg.teams===1?'Du':DEF_NAMES[i];
+    inp.value=cfg.names[i]||'';
+    inp.addEventListener('input',function(){cfg.names[i]=inp.value;persist();});
+    l.appendChild(inp);host.appendChild(l);
+  })(i);}
+}
+function renderCats(){
+  var host=$('#seg-cats');host.replaceChildren();
+  Object.keys(CATS).forEach(function(k){
+    var n=QUESTIONS.filter(function(q){return q.c===k;}).length;
+    var b=el('button','chip',CATS[k]);b.type='button';
+    b.style.setProperty('--cc','var(--c-'+k+')');
+    b.appendChild(el('small',null,String(n)));
+    b.setAttribute('aria-pressed',String(cfg.cats.indexOf(k)>-1));
+    b.addEventListener('click',function(){
+      var i=cfg.cats.indexOf(k);
+      if(i>-1){if(cfg.cats.length>1)cfg.cats.splice(i,1);}else cfg.cats.push(k);
+      persist();renderCats();renderInfo();
+    });
+    host.appendChild(b);
+  });
+}
+function renderCount(){seg($('#seg-count'),[[10,'10 Fragen'],[20,'20 Fragen'],[30,'30 Fragen'],[50,'50 Fragen']],cfg.count,function(v){cfg.count=v;persist();renderCount();renderInfo();});}
+function renderTime(){seg($('#seg-time'),[[0,'Aus'],[20,'20 Sekunden'],[30,'30 Sekunden']],cfg.time,function(v){cfg.time=v;persist();renderTime();});}
+function renderInfo(){
+  var p=poolSize(),n=plannedCount();
+  $('#poolinfo').textContent=p+' Fragen in diesen Stichworten. Gespielt werden '+n+(cfg.teams>1?', gleichmäßig auf die Teams verteilt.':'.');
+}
+function renderSetup(){renderTeams();renderCats();renderCount();renderTime();renderInfo();}
+
+/* ---------- Spiel ---------- */
+function start(){
+  var T=cfg.teams;
+  var teams=[];
+  for(var i=0;i<T;i++){
+    var nm=(cfg.names[i]||'').trim()||(T===1?'Du':DEF_NAMES[i]);
+    teams.push({name:nm,score:0,right:0});
+  }
+  var pool=shuffle(QUESTIONS.filter(function(q){return cfg.cats.indexOf(q.c)>-1;}));
+  var n=plannedCount();
+  G={teams:teams,qs:pool.slice(0,n),i:0,cur:0,locked:false,miss:[],timer:null,deadline:0,opts:[],quitArmed:null};
+  show('game');
+  renderQ();
+}
+function renderBoard(){
+  var host=$('#board');host.replaceChildren();
+  G.teams.forEach(function(t,i){
+    var d=el('div','team t'+(i%4)+(i===G.cur?' is-active':''));
+    d.appendChild(el('span','team-name',t.name));
+    d.appendChild(el('span','team-score',String(t.score)));
+    if(G.teams.length>1&&i===G.cur)d.appendChild(el('span','team-flag','am Zug'));
+    host.appendChild(d);
+  });
+}
+function renderQ(){
+  var q=G.qs[G.i];
+  G.locked=false;
+  G.cur=G.i%G.teams.length;
+  G.opts=shuffle(q.a.map(function(t,k){return {t:t,ok:k===0};}));
+  $('#hud-count').textContent='Einsatz '+(G.i+1)+' von '+G.qs.length;
+  $('#kw').textContent=CATS[q.c];
+  $('.qcard').style.setProperty('--cat','var(--c-'+q.c+')');
+  $('#q').textContent=q.q;
+  $('#fb').hidden=true;
+  renderBoard();
+  var host=$('#answers');host.replaceChildren();
+  G.opts.forEach(function(o,k){
+    var b=el('button','ans');b.type='button';
+    b.appendChild(el('span','ans-key','ABCD'.charAt(k)));
+    b.appendChild(el('span','ans-text',o.t));
+    var mk=el('span','ans-mark');mk.setAttribute('aria-hidden','true');b.appendChild(mk);
+    b.addEventListener('click',function(){pick(k);});
+    host.appendChild(b);
+  });
+  clearInterval(G.timer);
+  var timed=cfg.time>0;
+  $('#timer').hidden=!timed;$('#timer-text').hidden=!timed;
+  if(timed){
+    G.deadline=Date.now()+cfg.time*1000;
+    tick();
+    G.timer=setInterval(tick,100);
+  }
+  window.scrollTo(0,0);
+}
+function tick(){
+  var left=Math.max(0,(G.deadline-Date.now())/1000);
+  $('#timer-fill').style.width=(100*left/cfg.time)+'%';
+  var tt=$('#timer-text');
+  tt.textContent=Math.ceil(left)+' s';
+  tt.classList.toggle('low',left<=5);
+  if(left<=0){pick(-1);}
+}
+function pick(k){
+  if(G.locked)return;
+  G.locked=true;
+  clearInterval(G.timer);
+  var q=G.qs[G.i],team=G.teams[G.cur];
+  var ok=k>=0&&G.opts[k].ok;
+  var right=0;G.opts.forEach(function(o,j){if(o.ok)right=j;});
+  var pts=0;
+  if(ok){
+    var left=cfg.time?Math.max(0,(G.deadline-Date.now())/1000):0;
+    pts=10+(cfg.time?Math.round(5*left/cfg.time):0);
+    team.score+=pts;team.right++;
+  }else{
+    G.miss.push({q:q.q,a:q.a[0],team:team.name,c:q.c});
+  }
+  var btns=$('#answers').children;
+  for(var j=0;j<btns.length;j++){
+    var b=btns[j];b.setAttribute('aria-disabled','true');
+    var mk=b.querySelector('.ans-mark');
+    if(j===right){b.classList.add('is-right');mk.textContent='✓';}
+    else if(j===k){b.classList.add('is-wrong');mk.textContent='✕';}
+    else b.classList.add('is-dim');
+  }
+  var v=$('#verdict');
+  v.className='verdict '+(ok?'ok':'no');
+  v.textContent=ok?('Richtig! +'+pts+' Punkte'):(k<0?'Zeit abgelaufen.':'Leider falsch.');
+  $('#expl').textContent=q.e;
+  var last=G.i+1>=G.qs.length;
+  var T=G.teams.length;
+  $('#btn-next').textContent=last?'Ergebnis ansehen':(T>1?'Weiter: '+G.teams[(G.i+1)%T].name:'Nächste Frage');
+  renderBoard();
+  var fb=$('#fb');fb.hidden=false;
+  $('#btn-next').focus({preventScroll:true});
+  fb.scrollIntoView({block:'nearest'});
+}
+function next(){
+  if(!G.locked)return;
+  if(G.i+1>=G.qs.length){finish();return;}
+  G.i++;renderQ();
+}
+
+/* ---------- Ergebnis ---------- */
+function finish(){
+  clearInterval(G.timer);
+  show('result');
+  var total=G.qs.length,T=G.teams.length;
+  var sorted=G.teams.map(function(t,i){return {t:t,i:i};}).sort(function(a,b){return b.t.score-a.t.score||a.i-b.i;});
+  var top=sorted[0].t.score;
+  var winners=sorted.filter(function(x){return x.t.score===top;});
+  var title,sub;
+  if(T===1){
+    var r=G.teams[0].right,pct=total?r/total:0;
+    title=pct>=0.9?'Einsatzleitung':pct>=0.7?'Gruppenführung':pct>=0.5?'Truppführung':'Truppmitglied in Ausbildung';
+    sub=r+' von '+total+' Fragen richtig, '+G.teams[0].score+' Punkte.';
+  }else if(winners.length===1){
+    title='Sieg für '+winners[0].t.name;
+    sub=total+' Fragen gespielt, '+top+' Punkte vorn.';
+  }else{
+    title='Unentschieden';
+    sub=winners.map(function(w){return w.t.name;}).join(' und ')+' liegen mit '+top+' Punkten gleichauf.';
+  }
+  $('#res-title').textContent=title;
+  $('#res-sub').textContent=sub;
+  var ol=$('#rank');ol.replaceChildren();
+  var rank=0,prev=null;
+  sorted.forEach(function(x,idx){
+    if(x.t.score!==prev){rank=idx+1;prev=x.t.score;}
+    var li=el('li',(rank===1?'first ':'')+'t'+(x.i%4));
+    li.appendChild(el('span','rank-n',String(rank)));
+    var nm=el('span','rank-name',x.t.name);
+    var per=Math.ceil(total/T);
+    nm.appendChild(el('small',null,x.t.right+' richtig'+(T>1?' von '+per:' von '+total)));
+    li.appendChild(nm);
+    li.appendChild(el('span','rank-pts',String(x.t.score)));
+    ol.appendChild(li);
+  });
+  var rv=$('#review'),ul=$('#miss');ul.replaceChildren();
+  if(G.miss.length){
+    rv.hidden=false;rv.open=false;
+    $('#review-sum').textContent='Nochmal nachlesen ('+G.miss.length+' '+(G.miss.length===1?'Frage':'Fragen')+')';
+    G.miss.forEach(function(m){
+      var li=el('li');
+      li.appendChild(el('b',null,m.q));
+      li.appendChild(el('span',null,'Richtig: '+m.a+(T>1?' (Frage an '+m.team+')':'')));
+      ul.appendChild(li);
+    });
+  }else{
+    rv.hidden=true;
+  }
+}
+
+/* ---------- Bedienung ---------- */
+$('#btn-start').addEventListener('click',start);
+$('#btn-next').addEventListener('click',next);
+$('#btn-again').addEventListener('click',start);
+$('#btn-setup').addEventListener('click',function(){show('setup');});
+$('#btn-quit').addEventListener('click',function(){
+  var b=$('#btn-quit');
+  if(G.quitArmed){clearTimeout(G.quitArmed);G.quitArmed=null;clearInterval(G.timer);b.textContent='Beenden';show('setup');return;}
+  b.textContent='Wirklich beenden?';
+  G.quitArmed=setTimeout(function(){G.quitArmed=null;b.textContent='Beenden';},3000);
+});
+document.addEventListener('keydown',function(e){
+  if($('#screen-game').hidden||!G||e.ctrlKey||e.metaKey||e.altKey)return;
+  var k=e.key.toLowerCase();
+  var idx='1234'.indexOf(k);if(idx<0)idx='abcd'.indexOf(k);
+  if(idx>-1&&idx<G.opts.length&&!G.locked){e.preventDefault();pick(idx);}
+});
+
+renderSetup();
+})();
+</script>
+</body>
+</html>
