@@ -70,7 +70,7 @@ button,input{font:inherit;color:inherit}
 .tipbox{display:flex;align-items:flex-end;gap:10px;margin:14px 0 0}
 .tipbox .mascot{width:56px;flex:none}
 .bubble{position:relative;background:var(--surface);border:2px solid var(--ink);border-radius:12px;padding:8px 12px;font-weight:600;font-size:.95rem}
-.res-mascot{width:96px;margin:14px 0 0}
+.res-mascot{display:block;width:96px;margin:14px 0 0}
 @media (prefers-reduced-motion:reduce){.hero-mascot{animation:none}}
 h1{margin:14px 0 0;font-family:var(--f-display);font-weight:800;text-transform:uppercase;
   font-size:clamp(2.6rem,12.5vw,6rem);line-height:.88;letter-spacing:.01em}
@@ -205,7 +205,8 @@ summary{cursor:pointer;font-weight:600}
 .timer{height:14px;border-radius:7px}
 .timer-fill{background:linear-gradient(90deg,#22C55E,#F2B705 60%,#E5372A)}
 .rank li.first{background:linear-gradient(100deg,#FFE066,#F0DC00 60%,#FFB020);box-shadow:0 4px 0 rgba(0,0,0,.2)}
-.rank li.first .rank-n::after{content:" ★"}
+.rank li.first .rank-n{width:auto;white-space:nowrap}
+.rank li.first .rank-n::after{content:"★";margin-left:4px;font-size:1.2rem}
 .res-title{background:linear-gradient(90deg,#E5372A,#DB2777,#7E22CE,#1D4ED8);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .bubble{background:#FFF7CC;color:#14181D}
 .confetti{position:fixed;left:0;right:0;top:0;height:0;overflow:visible;pointer-events:none;z-index:20}
@@ -266,6 +267,26 @@ body::before{content:"";position:absolute;left:0;right:0;top:0;height:420px;poin
    radial-gradient(circle at 12% 40px,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 40% 90px,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 62% 30px,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 30% 160px,#fff 0 1px,transparent 2px),radial-gradient(circle at 75% 140px,#fff 0 1px,transparent 2px)}
   :root:not([data-theme="light"]) .pic{border-color:rgba(255,255,255,.1)}
 }
+/* ---------- Flammen-Wisch am Ende ---------- */
+.flame-wipe{position:fixed;inset:0;z-index:60;overflow:hidden;pointer-events:all}
+.fw-wall{position:absolute;left:0;right:0;top:100%;height:200vh;
+  animation:fwrise 2.5s cubic-bezier(.45,.05,.55,.95) forwards;
+  background:
+   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='170' viewBox='0 0 100 170'%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23FFE066'/%3E%3Cstop offset='1' stop-color='%23FF8A1F'/%3E%3C/linearGradient%3E%3Cpath d='M0 170V110 Q14 80 24 40 Q32 75 46 90 Q56 50 70 20 Q82 65 100 110 V170Z' fill='url(%23g)'/%3E%3C/svg%3E") repeat-x 0 0/90px 150px,
+   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='170' viewBox='0 0 100 170'%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23FF8A1F'/%3E%3Cstop offset='1' stop-color='%23E5372A'/%3E%3C/linearGradient%3E%3Cpath d='M0 170V90 Q14 60 24 20 Q32 55 46 70 Q56 30 70 0 Q82 45 100 90 V170Z' fill='url(%23g)'/%3E%3C/svg%3E") repeat-x 30px 0/130px 190px,
+   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='170' viewBox='0 0 100 170'%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23E5372A'/%3E%3Cstop offset='1' stop-color='%23E5372A'/%3E%3C/linearGradient%3E%3Cpath d='M0 170V90 Q14 60 24 20 Q32 55 46 70 Q56 30 70 0 Q82 45 100 90 V170Z' fill='url(%23g)'/%3E%3C/svg%3E") repeat-x 60px 0/170px 230px,
+   linear-gradient(180deg,transparent 0,transparent 225px,#E5372A 232px,#FF6A1A 45%,#FFB020 60%,#E5372A 80%,#7A0F14 95%,transparent 100%)}
+.fw-wall::before{content:"";position:absolute;left:0;right:0;top:-8px;height:230px;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='170' viewBox='0 0 100 170'%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23FFD23F'/%3E%3Cstop offset='1' stop-color='%23FF8A1F'/%3E%3C/linearGradient%3E%3Cpath d='M0 170V130 Q14 100 24 60 Q32 95 46 110 Q56 70 70 40 Q82 85 100 130 V170Z' fill='url(%23g)'/%3E%3C/svg%3E") repeat-x 0 0/70px 120px;animation:fwsway 1.1s linear infinite;opacity:.9}
+@keyframes fwrise{from{transform:translateY(0)}to{transform:translateY(-300vh)}}
+@keyframes fwsway{from{background-position-x:0}to{background-position-x:70px}}
+.res-in .res-title{animation:resPop .7s .15s cubic-bezier(.2,1.4,.4,1) both}
+.res-in .res-mascot{animation:resPop .7s cubic-bezier(.2,1.4,.4,1) both}
+.res-in .rank li{animation:resSlide .5s ease-out both}
+.res-in .rank li:nth-child(2){animation-delay:.1s}.res-in .rank li:nth-child(3){animation-delay:.2s}.res-in .rank li:nth-child(4){animation-delay:.3s}
+@keyframes resPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes resSlide{from{transform:translateX(-30px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.flame-wipe{display:none}.res-in *{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1080,6 +1101,7 @@ var G=null;
 
 function show(name){
   ['setup','game','result'].forEach(function(n){$('#screen-'+n).hidden=(n!==name);});
+  var pc=$('.pics');if(pc)pc.hidden=(name!=='setup');
   window.scrollTo(0,0);
 }
 
@@ -1343,8 +1365,22 @@ function next(){
 
 /* ---------- Ergebnis ---------- */
 function finish(){
+  if(G.finishing)return;
+  G.finishing=true;
+  clearInterval(G.timer);
+  var reduce=false;
+  try{reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);}catch(e){}
+  if(reduce){finishReal();return;}
+  var w=document.createElement('div');w.className='flame-wipe';w.setAttribute('aria-hidden','true');
+  w.innerHTML='<div class="fw-wall"></div>';
+  document.body.appendChild(w);
+  setTimeout(finishReal,1250);
+  setTimeout(function(){if(w.parentNode)w.parentNode.removeChild(w);},2700);
+}
+function finishReal(){
   clearInterval(G.timer);
   show('result');
+  var rs=$('#screen-result');rs.classList.remove('res-in');void rs.offsetWidth;rs.classList.add('res-in');
   var total=G.qs.length,T=G.teams.length;
   var sorted=G.teams.map(function(t,i){return {t:t,i:i};}).sort(function(a,b){return b.t.score-a.t.score||a.i-b.i;});
   var top=sorted[0].t.score;
