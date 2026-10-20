@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="Feuerprobe: Frage-Antwort-Spiel für die Jugendfeuerwehr mit über 200 Fragen, nach Altersklassen sortiert, für Einzelspieler oder Teams.">
+<meta name="description" content="Feuerprobe: Frage-Antwort-Spiel für die Jugendfeuerwehr mit über 500 Fragen und Rätselspiel, nach Altersklassen sortiert, für Einzelspieler oder Teams.">
 <title>Feuerprobe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -287,6 +287,107 @@ body::before{content:"";position:absolute;left:0;right:0;top:0;height:420px;poin
 @keyframes resPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes resSlide{from{transform:translateX(-30px);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){.flame-wipe{display:none}.res-in *{animation:none!important}}
+
+/* ---------- Rätselspiel ---------- */
+.menu-intro{margin:18px 0 0}
+.totals{display:inline-flex;align-items:center;gap:8px;margin:14px 0 0;padding:6px 16px;border-radius:999px;background:#FFF1B8;border:2px solid #F2B705;font-weight:800}
+.sec-title{margin:26px 0 4px;font-family:var(--f-display);font-weight:800;font-size:1.5rem;letter-spacing:.06em;text-transform:uppercase}
+.sec-sub{margin:0 0 10px;color:var(--muted);font-size:.95rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.pz{display:flex;flex-direction:column;gap:4px;width:100%;text-align:left;padding:12px 16px;border-radius:24px;border:2px solid color-mix(in srgb,var(--cc,#999) 55%,var(--surface));background:color-mix(in srgb,var(--cc,#999) 13%,var(--surface));cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.12);min-height:84px}
+.pz:active{transform:translateY(2px)}
+.pz-cat{align-self:flex-start;padding:1px 10px;border-radius:999px;background:var(--cc,#555);color:#fff;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.pz-title{font-weight:700;font-size:1.05rem;line-height:1.2}
+.stars{font-size:1.25rem;letter-spacing:2px;color:#CBD5E1;line-height:1}
+.stars .on{color:#F2B705;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.back{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px 0;margin-top:10px}
+.play-head{margin-top:6px}
+.play-head h2{margin:6px 0 0;font-family:var(--f-display);font-weight:800;font-size:clamp(1.8rem,7vw,2.6rem);line-height:1;text-transform:uppercase}
+.play-head p{margin:8px 0 0;max-width:60ch}
+.stage{margin-top:16px;padding:16px;border-radius:26px;background:var(--surface);border:3px solid var(--cc,var(--line));box-shadow:0 6px 0 color-mix(in srgb,var(--cc,#000) 70%,#000)}
+.mistakes{margin:10px 0 0;color:var(--muted);font-size:.9rem;font-weight:600}
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+
+.slots{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:s}
+.slots li{counter-increment:s;display:flex;align-items:center;gap:12px;min-height:54px;padding:6px 16px 6px 8px;border-radius:999px;border:3px dashed var(--line);color:var(--muted);font-weight:600}
+.slots li::before{content:counter(s);flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--line);color:var(--ink);font-family:var(--f-display);font-weight:800;font-size:1.3rem}
+.slots li.done{border-style:solid;border-color:var(--good);background:var(--good-soft);color:var(--ink)}
+.slots li.done::before{background:var(--good);color:#fff}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chipbtn{min-height:48px;padding:8px 18px;border-radius:999px;border:2px solid #9CA3AF;background:var(--surface);font-weight:600;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.12);text-align:left}
+.chipbtn:nth-child(5n+1){background:#FFE4E1}.chipbtn:nth-child(5n+2){background:#DDF3FF}.chipbtn:nth-child(5n+3){background:#FFF3B8}.chipbtn:nth-child(5n+4){background:#E7E1FF}.chipbtn:nth-child(5n){background:#DDF6E4}
+.chipbtn[disabled]{opacity:.35;cursor:default}
+.chipbtn.bad{background:var(--bad-soft);border-color:var(--bad)}
+.chipbtn,.chipbtn *{color:#14181D}
+
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.col{display:grid;gap:8px;align-content:start}
+.mbtn{min-height:56px;padding:8px 14px;border-radius:22px;border:3px solid #9CA3AF;background:var(--surface);font-weight:600;cursor:pointer;text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.12);color:#14181D;line-height:1.2}
+.mbtn.sel{border-color:#1D4ED8;background:#DCE8FF}
+.mbtn.m0{background:#FFD6D1;border-color:#E5372A}.mbtn.m1{background:#D2E6FF;border-color:#1D5FD1}.mbtn.m2{background:#FFEFA6;border-color:#D4A100}.mbtn.m3{background:#D3F2DC;border-color:#1A9A44}.mbtn.m4{background:#EBDCFF;border-color:#7E22CE}
+.mbtn.locked{cursor:default;box-shadow:none}
+
+.gcard{padding:24px 16px;border-radius:26px;background:#FFF7CC;border:3px solid #F2B705;text-align:center;font-family:var(--f-display);font-weight:800;font-size:clamp(1.5rem,6vw,2.1rem);line-height:1.1;color:#14181D}
+.gcount{margin:0 0 10px;font-weight:700;color:var(--muted);text-align:center}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:14px}
+.bin{min-height:64px;padding:10px 12px;border-radius:999px;border:0;font-weight:800;font-size:1.05rem;cursor:pointer;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.28)}
+.bin:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.28)}
+.bin.b0{background:#1D5FD1}.bin.b1{background:#E5372A}.bin.b2{background:#1A9A44}
+.flash-ok{animation:flashok .5s}
+@keyframes flashok{0%{box-shadow:0 0 0 0 rgba(26,154,68,.9)}100%{box-shadow:0 0 0 24px rgba(26,154,68,0)}}
+
+.hose-info{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;font-weight:700;flex-wrap:wrap}
+.hose-count{padding:4px 14px;border-radius:999px;background:#FFF1B8;border:2px solid #F2B705}
+.hose-count.full{background:var(--bad-soft);border-color:var(--bad)}
+.hgrid{position:relative;display:grid;gap:2px;background:#6BB86B;padding:2px;border-radius:18px;overflow:hidden}
+.hcell{position:relative;aspect-ratio:1;border:0;padding:0;background:#A7E08B;display:grid;place-items:center;cursor:pointer;min-width:0}
+.hcell:nth-child(even){background:#9CD981}
+.hcell svg{width:78%;height:78%;display:block;position:relative;z-index:2;pointer-events:none}
+.hcell.ok::after{content:"";position:absolute;inset:30%;border-radius:50%;background:rgba(255,255,255,.55);z-index:1}
+.hcell.water{background:#6EC1F5!important;cursor:not-allowed}
+.hcell.block{cursor:not-allowed}
+.hose-svg{position:absolute;inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);pointer-events:none;z-index:3}
+.hbtns{display:flex;gap:10px;margin-top:12px}
+.hbtns .chipbtn{flex:1;text-align:center}
+
+.res{margin-top:16px;padding:18px;border-radius:26px;background:linear-gradient(100deg,#FFE066,#F0DC00 60%,#FFB020);color:#14181D;box-shadow:0 5px 0 rgba(0,0,0,.2);animation:resPop .6s cubic-bezier(.2,1.4,.4,1) both}
+.res h3{margin:0;font-family:var(--f-display);font-weight:800;font-size:2rem;text-transform:uppercase;line-height:1}
+.res .stars{font-size:2.2rem;margin:8px 0}
+.res .stars .on{color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.res p{margin:6px 0 0}
+@keyframes resPop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.confetti{position:fixed;left:0;right:0;top:0;height:0;overflow:visible;pointer-events:none;z-index:20}
+.confetti i{position:absolute;top:-20px;width:10px;height:16px;border-radius:2px;animation:fall var(--d,2.4s) cubic-bezier(.3,.6,.5,1) forwards}
+@keyframes fall{to{transform:translate(var(--x,0),105vh) rotate(var(--r,540deg));opacity:.9}}
+@media (prefers-reduced-motion:reduce){.confetti{display:none}.shake,.flash-ok,.res{animation:none}}
+
+/* ---------- Spielart-Umschalter ---------- */
+.modes{display:flex;gap:8px;margin:16px 0 0}
+.mode{flex:1;min-height:52px;border-radius:999px;border:3px solid #9CA3AF;background:var(--surface);font-family:var(--f-display);font-weight:800;font-size:1.3rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.12);color:var(--ink)}
+.mode[aria-pressed="true"]{background:linear-gradient(180deg,#3B82F6,#1D4ED8);border-color:#14308F;color:#fff;box-shadow:0 4px 0 #14308F}
+.wrap.mode-puzzle .pics{display:none}
+/* ---------- Rätselspiel: weitere Arten ---------- */
+.clues{margin:0 0 12px;padding:0;list-style:none;display:grid;gap:8px;counter-reset:c}
+.clues li{counter-increment:c;display:flex;gap:10px;align-items:center;padding:8px 14px 8px 8px;border-radius:999px;background:#FFF7CC;border:2px solid #F2B705;font-weight:600;color:#14181D}
+.clues li::before{content:counter(c);flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#F2B705;font-family:var(--f-display);font-weight:800}
+.lueck{margin:0;font-size:1.15rem;line-height:2.4}
+.gap{display:inline-block;min-width:96px;text-align:center;padding:0 8px;margin:0 3px;border-bottom:3px dashed #9CA3AF;border-radius:8px;color:var(--muted)}
+.gap.cur{border-color:#1D4ED8;background:#DCE8FF;color:#14181D}
+.gap.done{border-bottom:3px solid var(--good);background:var(--good-soft);color:#14181D;font-weight:700}
+.memgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (min-width:520px){.memgrid{grid-template-columns:repeat(4,1fr)}}
+.mem{min-height:84px;padding:6px;border-radius:20px;border:3px solid #14308F;background:linear-gradient(135deg,#3B82F6,#8B5CF6);color:#fff;font-size:1.8rem;font-weight:800;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.2);hyphens:auto;overflow-wrap:anywhere;line-height:1.1}
+.mem.up{background:#FFF7CC;color:#14181D;font-size:.92rem;border-color:#F2B705}
+.mem.done{background:var(--good-soft);color:#14181D;font-size:.92rem;border-color:var(--good);cursor:default;box-shadow:none}
+.qt-info{padding:6px 14px;border-radius:999px;background:#FFF1B8;border:2px solid #F2B705;font-weight:700;font-size:.95rem;text-align:center}
+.qt-log{min-height:3.2em;margin:12px 0 0;padding:10px 14px;border-radius:18px;background:#E7F1FF;border:2px solid #9CC2FF;color:#14181D;font-weight:600}
+.qt-hand{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.qt-card{padding:6px 12px;border-radius:14px;border:2px solid var(--cc,#999);background:color-mix(in srgb,var(--cc,#999) 16%,#fff);color:#14181D;font-weight:700;font-size:.88rem}
+.qt-done{flex-basis:100%;margin-top:6px;color:var(--muted);font-size:.9rem;font-weight:600}
+.qt-ask{margin-top:12px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .qt-log{background:#1E2B4D;border-color:#3B5BA5;color:#EEF1F4}}
+
 </style>
 </head>
 <body>
@@ -332,6 +433,11 @@ body::before{content:"";position:absolute;left:0;right:0;top:0;height:420px;poin
   </symbol>
 </svg>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-fire" viewBox="0 0 100 120"><path d="M50 4c9 24 36 38 36 72 0 24-17 40-36 40S14 100 14 76c0-20 12-30 18-46 4 10 8 14 13 14-2-14-1-27 5-40z" fill="#E5372A"/><path d="M50 52c6 14 22 22 22 42 0 14-10 22-22 22S28 108 28 94c0-12 7-18 11-28 2 6 5 8 8 8-1-8-1-15 3-24z" fill="#FFD23F"/></symbol>
+  <symbol id="i-tree" viewBox="0 0 80 80"><rect x="35" y="48" width="10" height="26" rx="2" fill="#92602B"/><circle cx="40" cy="34" r="26" fill="#2FA85A"/><circle cx="28" cy="44" r="14" fill="#3BB868"/><circle cx="52" cy="44" r="14" fill="#3BB868"/></symbol>
+  <symbol id="i-car" viewBox="0 0 100 60"><rect x="6" y="22" width="88" height="26" rx="8" fill="#3B82F6"/><path d="M24 22l10-14h32l10 14z" fill="#60A5FA"/><circle cx="28" cy="50" r="9" fill="#2B2F36"/><circle cx="72" cy="50" r="9" fill="#2B2F36"/></symbol>
+</svg>
 <main class="wrap">
   <header class="hero">
     <div class="stripe" aria-hidden="true"></div>
@@ -352,6 +458,10 @@ body::before{content:"";position:absolute;left:0;right:0;top:0;height:420px;poin
     <svg class="hero-flames" hidden viewBox="0 0 100 120" aria-hidden="true"><path d="M50 4c9 24 36 38 36 72 0 24-17 40-36 40S14 100 14 76c0-20 12-30 18-46 4 10 8 14 13 14-2-14-1-27 5-40z" fill="#D7261E"/><path d="M50 52c6 14 22 22 22 42 0 14-10 22-22 22S28 108 28 94c0-12 7-18 11-28 2 6 5 8 8 8-1-8-1-15 3-24z" fill="#FFD23F"/></svg>
   </header>
 
+  <nav class="modes" aria-label="Spielart">
+    <button class="mode" type="button" data-mode="quiz" aria-pressed="true">Quiz</button>
+    <button class="mode" type="button" data-mode="puzzle" aria-pressed="false">Rätselspiel</button>
+  </nav>
   <section class="pics" aria-label="Bilder aus der Jugendfeuerwehr">
     <figure class="pic p1"><svg viewBox="0 0 120 70" aria-hidden="true"><use href="#i-truck"/></svg><figcaption>Löschfahrzeug</figcaption></figure>
     <figure class="pic p2"><svg viewBox="0 0 60 80" aria-hidden="true"><use href="#i-hydrant"/></svg><figcaption>Hydrant</figcaption></figure>
@@ -361,6 +471,7 @@ body::before{content:"";position:absolute;left:0;right:0;top:0;height:420px;poin
   </section>
 
   <!-- Einstellungen -->
+  <div id="mode-quiz">
   <section id="screen-setup" aria-label="Einstellungen">
     <p class="lead">Eine Person liest die Frage vor, das Team tippt die Antwort an. Das Handy kann reihum gehen oder am Beamer laufen.</p>
 
@@ -457,6 +568,26 @@ body::before{content:"";position:absolute;left:0;right:0;top:0;height:420px;poin
       <button class="go alt" id="btn-setup" type="button">Einstellungen ändern</button>
     </div>
   </section>
+  </div>
+  <div id="mode-puzzle" hidden>
+  <section id="screen-menu" aria-label="Rätsel auswählen">
+    <p class="lead menu-intro">Sortiere, ordne zu und verlege Schläuche. Sammle in jedem Rätsel bis zu drei Sterne: Je weniger Fehler, desto mehr Sterne.</p>
+    <p class="totals" id="totals"></p>
+    <div id="menu"></div>
+  </section>
+
+  <section id="screen-play" hidden aria-label="Rätsel">
+    <button class="back" id="btn-back" type="button">Zurück zur Übersicht</button>
+    <div class="play-head">
+      <span class="pz-cat" id="play-cat"></span>
+      <h2 id="play-title"></h2>
+      <p id="play-intro"></p>
+    </div>
+    <div class="stage" id="stage"></div>
+    <p class="mistakes" id="mistakes" aria-live="polite"></p>
+    <div id="play-res"></div>
+  </section>
+  </div>
 </main>
 
 <div class="scene" aria-hidden="true">
@@ -1451,6 +1582,793 @@ document.addEventListener('keydown',function(e){
 
 renderSetup();
 })();
+(function(){
+'use strict';
+function $(s,r){return (r||document).querySelector(s);}
+function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+var CAT={notruf:'Notruf',brand:'Brandlehre',schlauch:'Schlauch',ehilfe:'Erste Hilfe',klassen:'Brandklassen',brennbar:'Brennbare Stoffe',geraete:'Geräte',technik:'Fahrzeuge',schutz:'Schutzausrüstung',knoten:'Knoten',jf:'Jugendfeuerwehr',gefahr:'Gefahren'};
+var TYPES=[
+ {t:'order',title:'Reihenfolge sortieren',sub:'Tippe die Schritte in der richtigen Reihenfolge an.'},
+ {t:'match',title:'Zuordnen',sub:'Tippe links einen Begriff an und rechts den passenden Partner.'},
+ {t:'group',title:'In Gruppen sortieren',sub:'Ordne jede Karte der richtigen Gruppe zu.'},
+ {t:'tf',title:'Feuerwehrquiz: Wahr oder falsch',sub:'Stimmt die Aussage? Entscheide dich schnell.'},
+ {t:'who',title:'Feuerwehrquiz: Wer bin ich?',sub:'Errate mit möglichst wenig Hinweisen, wer oder was gemeint ist.'},
+ {t:'lueck',title:'Lückentexte',sub:'Tippe die passenden Wörter an und fülle die Lücken.'},
+ {t:'memory',title:'Memory',sub:'Decke zwei Karten auf und finde die passenden Paare.'},
+ {t:'quartett',title:'Feuerwehr-Quartett',sub:'Sammle Quartette gegen den Computer.'},
+ {t:'hose',title:'Schläuche verlegen',sub:'Lege eine Leitung vom Hydranten zum Brand, ohne Hindernisse und mit möglichst wenig Schläuchen.'}
+];
+
+var PUZZLES=[
+ /* Reihenfolge */
+ {id:'o-5w',type:'order',cat:'notruf',title:'Die 5 W-Fragen sortieren',intro:'In welcher Reihenfolge nennst du die fünf W-Fragen beim Notruf?',
+  items:['Wo ist es passiert?','Was ist passiert?','Wie viele Betroffene?','Welche Verletzungen?','Warten auf Rückfragen'],
+  note:'Merke dir: Wo, Was, Wie viele, Welche, Warten.'},
+ {id:'o-notruf',type:'order',cat:'notruf',title:'Notruf absetzen',intro:'Bring den Ablauf eines Notrufs in die richtige Reihenfolge.',
+  items:['112 wählen','Namen und Ort sagen','Schildern, was passiert ist','Auf Rückfragen warten','Auflegen, wenn die Leitstelle es sagt'],
+  note:'Erst wenn die Leitstelle das Gespräch beendet, legst du auf.'},
+ {id:'o-brand',type:'order',cat:'gefahr',title:'Feuer in der Wohnung',intro:'Was tust du, wenn es zu Hause brennt? Bringe die Schritte in die richtige Reihenfolge.',
+  items:['Andere warnen','Tür hinter dir schließen','Das Haus verlassen','Draußen Notruf 112 wählen','Auf die Feuerwehr warten und einweisen'],
+  note:'In Sicherheit bringen kommt vor dem Anruf. Und nie zurück ins brennende Haus.'},
+ {id:'o-hlw',type:'order',cat:'ehilfe',title:'Wiederbelebung',intro:'Bringe die Schritte bei einer Person ohne Reaktion in die richtige Reihenfolge.',
+  items:['Person ansprechen und anfassen','Laut um Hilfe rufen','Atmung prüfen','Notruf 112 wählen','Fest in der Mitte des Brustkorbs drücken'],
+  note:'Prüfen, rufen, drücken. Bei Unsicherheit lieber früh drücken als gar nichts tun.'},
+ {id:'o-seite',type:'order',cat:'ehilfe',title:'Stabile Seitenlage',intro:'Bringe die Handgriffe der stabilen Seitenlage in die richtige Reihenfolge.',
+  items:['Neben die Person knien','Nahen Arm nach oben legen','Fernen Arm auf die Brust legen und Knie anwinkeln','An Schulter und Knie zu dir drehen','Kopf überstrecken und Atmung kontrollieren'],
+  note:'Die Seitenlage hält die Atemwege frei, bis der Rettungsdienst kommt.'},
+ {id:'o-wasser',type:'order',cat:'schlauch',title:'Wasserversorgung herstellen',intro:'Wie kommt das Wasser vom Hydranten zum Strahlrohr?',
+  items:['Hydranten suchen','Standrohr einsetzen','Schlauchleitung auslegen und kuppeln','Strahlrohr anschließen','Wasser marsch'],
+  note:'Erst das Kommando „Wasser marsch“ gibt das Wasser in die Leitung frei.'},
+ {id:'o-groesse',type:'order',cat:'schlauch',title:'Schläuche sortieren',intro:'Sortiere die Druckschläuche vom dünnsten zum dicksten.',
+  items:['D-Schlauch, 25 mm','C-Schlauch, 42 mm','B-Schlauch, 75 mm','A-Schlauch, 110 mm'],
+  note:'Je größer der Buchstabe am Anfang des Alphabets, desto dicker der Schlauch.'},
+ {id:'o-einsatz',type:'order',cat:'technik',title:'Ablauf eines Einsatzes',intro:'Bringe die Phasen eines Feuerwehreinsatzes in die richtige Reihenfolge.',
+  items:['Alarm','Ausrücken','Erkunden','Einsatz durchführen','Einsatzbereitschaft wiederherstellen'],
+  note:'Nach dem Einsatz werden Geräte gereinigt und Fahrzeuge aufgefüllt.'},
+
+ /* Zuordnen */
+ {id:'m-klassen',type:'match',cat:'klassen',title:'Brandklassen zuordnen',intro:'Welche Brandklasse passt zu welchem Brennstoff?',
+  pairs:[['Holz und Papier','Klasse A'],['Benzin','Klasse B'],['Erdgas','Klasse C'],['Magnesium','Klasse D'],['Speiseöl und Fett','Klasse F']],
+  note:'A fest, B flüssig, C Gase, D Metalle, F Fette.'},
+ {id:'m-geraete',type:'match',cat:'geraete',title:'Geräte und ihr Zweck',intro:'Ordne jedem Gerät seine Aufgabe zu.',
+  pairs:[['Strahlrohr','gibt Wasser ab'],['Saugkorb','filtert Wasser aus dem Teich'],['Wärmebildkamera','findet Personen im Rauch'],['Rettungsspreizer','drückt Fahrzeugteile auseinander'],['Überdrucklüfter','bläst Rauch aus dem Haus']],
+  note:'Wer die Geräte kennt, findet sie im Einsatz schneller.'},
+ {id:'m-fahrzeug',type:'match',cat:'technik',title:'Fahrzeug-Abkürzungen',intro:'Welche Abkürzung steht für welches Fahrzeug?',
+  pairs:[['LF','Löschfahrzeug'],['DLK','Drehleiter mit Korb'],['ELW','Einsatzleitwagen'],['RW','Rüstwagen'],['MTF','Mannschaftstransportfahrzeug']],
+  note:'Die Abkürzungen können in deinem Bundesland leicht anders sein.'},
+ {id:'m-schutz',type:'match',cat:'schutz',title:'Schutzausrüstung',intro:'Was schützt welchen Körperteil?',
+  pairs:[['Helm','Kopf'],['Handschuhe','Hände'],['Stiefel','Füße'],['Schutzbrille','Augen'],['Gehörschutz','Ohren']],
+  note:'Persönliche Schutzausrüstung schützt dich nur, wenn du sie richtig trägst.'},
+ {id:'m-knoten',type:'match',cat:'knoten',title:'Knoten und ihr Einsatz',intro:'Welcher Knoten wird wofür benutzt?',
+  pairs:[['Mastwurf','Seil an Pfahl befestigen'],['Kreuzknoten','zwei gleich dicke Seile verbinden'],['Achterknoten','Stopper am Seilende'],['Palstek','feste Schlaufe'],['Schotstek','Seile unterschiedlicher Stärke verbinden']],
+  note:'Üben, üben, üben: Knoten müssen im Schlaf sitzen.'},
+ {id:'m-nummern',type:'match',cat:'notruf',title:'Wichtige Nummern',intro:'Welche Nummer ruft man wo an?',
+  pairs:[['112','Feuerwehr und Rettungsdienst'],['110','Polizei'],['116 117','ärztlicher Bereitschaftsdienst'],['116 111','Nummer gegen Kummer für Kinder']],
+  note:'Bei Lebensgefahr gilt immer: 112 wählen.'},
+ {id:'m-jf',type:'match',cat:'jf',title:'Jugendfeuerwehr-Wissen',intro:'Ordne die Begriffe aus der Jugendfeuerwehr zu.',
+  pairs:[['Jugendflamme','Abzeichen in drei Stufen'],['Leistungsspange','höchste Auszeichnung'],['Jugendwart','leitet die Jugendfeuerwehr'],['Jugendsprecher','vertritt die Jugendlichen'],['Gut Wehr','Feuerwehrgruß']],
+  note:'In der Jugendfeuerwehr lernst du Technik und Teamgeist.'},
+
+ /* Gruppen */
+ {id:'g-brennbar',type:'group',cat:'brennbar',title:'Brennbar oder nicht?',intro:'Brennt der Stoff oder nicht? Ordne jede Karte zu.',
+  bins:['brennbar','nicht brennbar'],
+  items:[['Holz',0],['Stein',1],['Papier',0],['Glas',1],['Benzin',0],['Sand',1],['Stroh',0],['Wasser',1]],
+  note:'Brennbare Stoffe brauchen Abstand zu Zündquellen.'},
+ {id:'g-schlauch',type:'group',cat:'schlauch',title:'Schläuche sortieren: Druck oder Saug',intro:'Gehört die Eigenschaft zum Druckschlauch oder zum Saugschlauch?',
+  bins:['Druckschlauch','Saugschlauch'],
+  items:[['wird flach aufgerollt',0],['ist rund und formstabil',1],['führt Wasser zum Strahlrohr',0],['wird am Saugkorb angeschlossen',1],['steht unter Wasserdruck',0],['saugt Wasser aus dem Teich',1]],
+  note:'Der Saugschlauch holt Wasser heran, der Druckschlauch bringt es zum Brand.'},
+ {id:'g-zeichen',type:'group',cat:'notruf',title:'Rot oder grün?',intro:'Brandschutzzeichen sind rot, Rettungszeichen grün. Ordne die Zeichen zu.',
+  bins:['rot: Brandschutz','grün: Rettungsweg'],
+  items:[['Feuerlöscher',0],['Notausgang',1],['Löschschlauch',0],['Erste Hilfe',1],['Brandmeldetaster',0],['Sammelplatz',1]],
+  note:'Rot steht für Feuer, Grün für Rettung und Flucht.'},
+ {id:'g-verbrennung',type:'group',cat:'ehilfe',title:'Verbrennung: richtig oder falsch?',intro:'Was ist bei einer Verbrennung richtig und was ist falsch?',
+  bins:['richtig','falsch'],
+  items:[['mit lauwarmem Wasser kühlen',0],['Butter auftragen',1],['bei großer Fläche Notruf wählen',0],['Blasen aufstechen',1],['sauber und locker abdecken',0],['Zahnpasta auftragen',1]],
+  note:'Hausmittel wie Butter oder Zahnpasta schaden der Wunde.'},
+ {id:'g-brandfall',type:'group',cat:'gefahr',title:'Im Brandfall: tun oder lassen?',intro:'Was tust du im Brandfall und was lässt du bleiben?',
+  bins:['tun','lassen'],
+  items:[['Tür hinter dir schließen',0],['Aufzug benutzen',1],['Notruf 112 wählen',0],['Sachen aus der Wohnung holen',1],['tief am Boden kriechen',0],['im Schrank verstecken',1]],
+  note:'Rauch ist tödlich. Hilfe holen und rausgehen sind das Wichtigste.'},
+
+ /* Schläuche verlegen */
+ {id:'h-1',type:'hose',cat:'schlauch',title:'Leitung 1: Der Anfang',intro:'Tippe die Felder neben dem Schlauchende an, um die Leitung vom Hydranten zum Brand zu legen. Tippe das Schlauchende noch einmal an, um es zurückzunehmen.',
+  grid:['H..T...','...T...','.......','.AA....','.....F.'],extra:3,
+  note:'Der kürzeste Weg spart Schläuche und Zeit.'},
+ {id:'h-2',type:'hose',cat:'schlauch',title:'Leitung 2: Am Teich',intro:'Um das Wasser herum und an den Autos vorbei: Lege die Leitung zum Brand.',
+  grid:['H.W....','..W.T..','..W....','..AW.T.','....W.F','.T.....'],extra:3,
+  note:'Schläuche nie über Hindernisse knicken oder quer über die Straße ziehen.'},
+ {id:'h-3',type:'hose',cat:'schlauch',title:'Leitung 3: Der Umweg',intro:'Der Brand liegt hinter einer Hecke aus Bäumen. Wie viele Schläuche brauchst du?',
+  grid:['H......','.TTTTT.','.T...T.','.T.F.T.','.T.TTT.','.......'],extra:4,
+  note:'Plane den Weg, bevor du Schläuche auslegst.'},
+ {id:'h-4',type:'hose',cat:'schlauch',title:'Leitung 4: Wenig Schläuche',intro:'Du hast nur wenige Schläuche dabei. Finde den kürzesten Weg.',
+  grid:['H..W...','.T.W.A.','...W...','.A...T.','..W....','..W...F'],extra:1,
+  note:'Gute Planung: Ein Schlauch mehr bedeutet oft zwei Minuten länger.'},
+ {id:'h-5',type:'hose',cat:'schlauch',title:'Leitung 5: Die Profi-Aufgabe',intro:'Viele Hindernisse und knappe Schläuche: Schaffst du den kürzesten Weg?',
+  grid:['H.T....','..TWW.T','.A..W..','.TT.WT.','....W..','.AT...F'],extra:0,
+  note:'Wenn du das ohne Fehler schaffst, bist du bereit für den Einsatz.'},
+
+ /* ===== Erweiterung ===== */
+ {id:'o-loescher',type:'order',cat:'klassen',title:'Feuerlöscher benutzen',intro:'Bringe die Schritte beim Löschen mit dem Feuerlöscher in die richtige Reihenfolge.',
+  items:['Feuerlöscher holen und Sicherung ziehen','Mit dem Wind im Rücken Abstand halten','Auf den Brandherd zielen','Hebel drücken und löschen','Brand beobachten und die Feuerwehr informieren'],
+  note:'Nur bei kleinen Entstehungsbränden löschen und nie in Gefahr begeben.'},
+ {id:'o-kette',type:'order',cat:'ehilfe',title:'Die Rettungskette',intro:'Bringe die Glieder der Rettungskette in die richtige Reihenfolge.',
+  items:['Notruf absetzen','Erste Hilfe leisten','Rettungsdienst übernimmt','Krankenhaus behandelt weiter'],
+  note:'Jedes Glied zählt. Du bist das erste Glied der Kette.'},
+ {id:'o-weg',type:'order',cat:'jf',title:'Der Weg in der Feuerwehr',intro:'Wie geht es in der Feuerwehr Schritt für Schritt weiter?',
+  items:['Kinderfeuerwehr','Jugendfeuerwehr','Grundausbildung (Truppmann)','Einsatzabteilung'],
+  note:'Das Alter der einzelnen Stufen ist je nach Bundesland verschieden.'},
+ {id:'o-brandwache',type:'order',cat:'gefahr',title:'Lagerfeuer richtig löschen',intro:'Wie löschst du ein Lagerfeuer sicher?',
+  items:['Nicht mehr nachlegen','Mit Wasser ablöschen','Glut mit Sand oder Erde abdecken','Prüfen, ob nichts mehr glimmt','Erst dann den Platz verlassen'],
+  note:'Glut kann Stunden später wieder aufflammen.'},
+
+ {id:'m-symbole',type:'match',cat:'brennbar',title:'Gefahrensymbole',intro:'Welches Symbol bedeutet was?',
+  pairs:[['Flamme','entzündbar'],['Totenkopf','giftig'],['Gasflasche','Gas unter Druck'],['explodierende Bombe','explosiv'],['Ausrufezeichen','Vorsicht, Gefahr']],
+  note:'Gefahrensymbole stehen auf Verpackungen und warnen dich.'},
+ {id:'m-ehilfe',type:'match',cat:'ehilfe',title:'Erste Hilfe: Was tun?',intro:'Was tust du bei welcher Verletzung?',
+  pairs:[['Nasenbluten','Kopf nach vorn, Nase zudrücken'],['Verbrennung','mit lauwarmem Wasser kühlen'],['Verdacht auf Knochenbruch','ruhig stellen, Notruf'],['bewusstlos, atmet','stabile Seitenlage'],['starke Blutung','Druck auf die Wunde']],
+  note:'Bei allem Unklaren hilft der Notruf 112.'},
+ {id:'m-loeschmittel',type:'match',cat:'klassen',title:'Löschmittel',intro:'Welches Löschmittel kann was?',
+  pairs:[['Wasser','kühlt feste Stoffe'],['Schaum','erstickt und kühlt'],['Kohlendioxid','hinterlässt keine Rückstände'],['Löschdecke','erstickt kleine Brände'],['Sand','deckt den Brandherd ab']],
+  note:'Das richtige Löschmittel hängt von der Brandklasse ab.'},
+ {id:'m-schlauchteile',type:'match',cat:'schlauch',title:'Schlauchteile',intro:'Welches Teil macht was?',
+  pairs:[['Kupplung','verbindet Schläuche'],['Strahlrohr','gibt Wasser ab'],['Verteiler','teilt eine Leitung auf'],['Saugkorb','hält Schmutz zurück'],['Standrohr','Anschluss am Unterflurhydranten']],
+  note:'Wer jeden Teil kennt, baut die Leitung schneller auf.'},
+
+ {id:'g-wasser',type:'group',cat:'klassen',title:'Mit Wasser löschen?',intro:'Darf man diesen Brand mit Wasser löschen?',
+  bins:['ja, geeignet','nein, gefährlich'],
+  items:[['brennendes Holz',0],['brennendes Papier',0],['brennendes Speiseöl',1],['brennendes Benzin',1],['Stroh',0],['brennendes Metall',1]],
+  note:'Wasser kühlt feste Stoffe gut, bei Fett, Öl und Metall ist es gefährlich.'},
+ {id:'g-bffw',type:'group',cat:'jf',title:'Berufs- oder Freiwillige Feuerwehr?',intro:'Welche Eigenschaft passt zu welcher Feuerwehr?',
+  bins:['Berufsfeuerwehr','Freiwillige Feuerwehr'],
+  items:[['hauptberuflich',0],['ehrenamtlich',1],['Schichtdienst auf der Wache',0],['Alarm per Funkmelder oder App',1],['vor allem in großen Städten',0],['gibt es in fast jedem Dorf',1]],
+  note:'Beide arbeiten Hand in Hand. Die Jugendfeuerwehr gehört meist zur Freiwilligen Feuerwehr.'},
+ {id:'g-gefahr',type:'group',cat:'gefahr',title:'Wo lauert die Gefahr?',intro:'Wo kommt die Gefahr vor: im Wald, im Haus oder am Wasser?',
+  bins:['Wald','Haus','Wasser'],
+  items:[['Lagerfeuer bei Trockenheit',0],['Kerze am Adventskranz',1],['dünnes Eis',2],['Funkenflug',0],['Fettbrand in der Küche',1],['starke Strömung',2]],
+  note:'Wer die Gefahren kennt, kann sie vermeiden.'},
+
+ {id:'t-feuerwehr',type:'tf',cat:'jf',title:'Feuerwehr-Blitzquiz',intro:'Stimmt die Aussage oder nicht? Entscheide dich schnell.',
+  bins:['wahr','falsch'],
+  items:[['Die 112 gilt in der ganzen EU.',0],['Die Feuerwehr löscht nur Brände.',1],['Der heilige Florian ist der Schutzpatron der Feuerwehr.',0],['Ein Notruf über die 112 kostet Geld.',1],['Feuerwehrfahrzeuge sind meistens grün.',1],['In der Jugendfeuerwehr fährst du zu echten Einsätzen mit.',1],['Die Jugendflamme gibt es in drei Stufen.',0],['Die Leitstelle nimmt Notrufe an.',0],['Die Freiwillige Feuerwehr arbeitet ehrenamtlich.',0],['Ein Hydrant liefert Löschwasser.',0]],
+  note:'Gut gemacht? Dann ab zum nächsten Feuerwehrquiz.'},
+ {id:'t-brand',type:'tf',cat:'brand',title:'Brandschutz: wahr oder falsch',intro:'Was stimmt beim Brandschutz?',
+  bins:['wahr','falsch'],
+  items:[['Wasser ist gut für einen Fettbrand.',1],['Ein Feuer braucht Sauerstoff.',0],['Rauch ist besonders gefährlich.',0],['Im Brandfall fährt man mit dem Aufzug.',1],['Rauchmelder können Leben retten.',0],['Den Feuerlöscher richtet man auf die Flammenspitzen.',1],['Eine Löschdecke erstickt kleine Brände.',0],['Kerzen dürfen unbeaufsichtigt brennen.',1],['Mit brennender Kleidung rennt man los.',1],['Bei brennender Kleidung hilft Hinlegen und Rollen.',0]],
+  note:'Brandschutz fängt mit Vorsicht an.'},
+ {id:'t-ehilfe',type:'tf',cat:'ehilfe',title:'Erste Hilfe: wahr oder falsch',intro:'Was stimmt bei der Ersten Hilfe?',
+  bins:['wahr','falsch'],
+  items:[['Verbrennungen kühlt man mit lauwarmem Wasser.',0],['Butter hilft bei Verbrennungen.',1],['Bei Nasenbluten legt man den Kopf in den Nacken.',1],['Wer bewusstlos ist und atmet, kommt in die stabile Seitenlage.',0],['Bei der Herzdruckmassage drückt man in der Mitte des Brustkorbs.',0],['Bei starker Blutung wartet man erst ab.',1],['Ein Verbandkasten gehört ins Auto.',0],['Bei einem Unfall beachtet man zuerst den Eigenschutz.',0],['Bei Verdacht auf Knochenbruch läuft man herum.',1],['Bei Atemstillstand ruft man die 110.',1]],
+  note:'Erste Hilfe kann jeder lernen.'},
+ {id:'t-technik',type:'tf',cat:'technik',title:'Fahrzeuge und Geräte: wahr oder falsch',intro:'Wie gut kennst du die Technik der Feuerwehr?',
+  bins:['wahr','falsch'],
+  items:[['Die Drehleiter erreicht hohe Stockwerke.',0],['Ein Saugschlauch ist flach und weich.',1],['Mit der Wärmebildkamera sieht man Wärmequellen.',0],['Der Maschinist bedient die Pumpe.',0],['Ein C-Schlauch ist dicker als ein B-Schlauch.',1],['Das Strahlrohr gibt das Wasser ab.',0],['Ein Rüstwagen transportiert Geräte für technische Hilfe.',0],['Die Feuerwehr setzt nie Hubschrauber ein.',1],['Ein Standrohr wird am Unterflurhydranten angeschlossen.',0],['Das Blaulicht darf jeder im Auto benutzen.',1]],
+  note:'Technik muss man kennen, um sie sicher zu bedienen.'},
+
+ {id:'w-geraete',type:'who',cat:'geraete',title:'Wer bin ich? Geräte',intro:'Erraten, welches Gerät gemeint ist. Je weniger Hinweise du brauchst, desto besser.',
+  riddles:[
+   {a:'Hydrant',o:['Strahlrohr','Wärmebildkamera','Leine'],c:['Ich stecke in der Straße oder ragt aus dem Boden.','Die Feuerwehr schließt Schläuche an mich an.','Ich liefere Löschwasser aus dem Wassernetz.']},
+   {a:'Strahlrohr',o:['Saugkorb','Verteiler','Standrohr'],c:['Ich sitze am Ende der Schlauchleitung.','Du hältst mich mit beiden Händen fest.','Aus mir kommt der Wasserstrahl.']},
+   {a:'Wärmebildkamera',o:['Funkgerät','Schutzbrille','Hebekissen'],c:['Ich zeige Dinge, die man mit bloßem Auge nicht sieht.','Ich helfe, Personen im Rauch zu finden.','Ich mache Wärme sichtbar.']},
+   {a:'Saugkorb',o:['Strahlrohr','Kupplung','Löschdecke'],c:['Ich hänge im Wasser eines Teichs.','Ich halte groben Schmutz zurück.','An mir hängt der Saugschlauch.']},
+   {a:'Feuerpatsche',o:['Leine','Axt','Schlauchkorb'],c:['Ich sehe aus wie ein Schläger mit Gummilappen.','Ich werde im Wald und auf Wiesen eingesetzt.','Mit mir schlägt man kleine Flammen aus.']}],
+  note:'Gut erkannt! Die Geräte brauchst du auch bei Übungen.'},
+ {id:'w-fahrzeuge',type:'who',cat:'technik',title:'Wer bin ich? Fahrzeuge',intro:'Welches Fahrzeug der Feuerwehr ist gemeint?',
+  riddles:[
+   {a:'Drehleiter',o:['Löschfahrzeug','Rettungswagen','Rüstwagen'],c:['Ich habe eine sehr lange Leiter.','Ich erreiche hohe Stockwerke.','Mein Kürzel ist oft DLK.']},
+   {a:'Löschfahrzeug',o:['Drehleiter','Einsatzleitwagen','Rüstwagen'],c:['Ich habe Wasser, Pumpe und Schläuche an Bord.','Ich fahre mit einer ganzen Gruppe.','Mein Kürzel ist LF.']},
+   {a:'Einsatzleitwagen',o:['Rüstwagen','Löschfahrzeug','Mannschaftstransportfahrzeug'],c:['Ich bin ein Büro auf Rädern.','In mir sitzt die Einsatzleitung.','Mein Kürzel ist ELW.']},
+   {a:'Rüstwagen',o:['Löschfahrzeug','Drehleiter','Mannschaftstransportfahrzeug'],c:['Ich transportiere viele schwere Geräte.','Ich komme oft bei Verkehrsunfällen.','Ich habe Schere, Spreizer und Hebekissen dabei.']},
+   {a:'Mannschaftstransportfahrzeug',o:['Einsatzleitwagen','Tanklöschfahrzeug','Rüstwagen'],c:['Ich bin wie ein Bus für die Feuerwehr.','Ich bringe Einsatzkräfte oder die Jugendfeuerwehr zum Ziel.','Mein Kürzel ist MTF.']}],
+  note:'Die Kürzel können bei euch leicht abweichen.'},
+ {id:'w-begriffe',type:'who',cat:'jf',title:'Wer bin ich? Personen und Begriffe',intro:'Wer oder was ist gemeint?',
+  riddles:[
+   {a:'Jugendwart',o:['Maschinist','Einsatzleiter','Melder'],c:['Ich bin erwachsen und leite eine Gruppe.','Ich plane Übungen und Ausflüge.','Ich betreue die Jugendfeuerwehr.']},
+   {a:'Maschinist',o:['Melder','Jugendsprecher','Gruppenführer'],c:['Ich sitze vorn im Fahrzeug.','Ich fahre das Fahrzeug.','An der Einsatzstelle bediene ich die Pumpe.']},
+   {a:'Leitstelle',o:['Gerätehaus','Wache','Rathaus'],c:['Bei mir geht dein Notruf ein.','Ich alarmiere Feuerwehr und Rettungsdienst.','Ich bin die Zentrale für Hilfe.']},
+   {a:'Jugendflamme',o:['Leistungsspange','Helm','Dienstgrad'],c:['Ich bin ein Abzeichen.','Man erwirbt mich durch Üben und Lernen.','Ich habe drei Stufen.']},
+   {a:'Florian',o:['Nikolaus','Martin','Christophorus'],c:['Ich bin ein Heiliger.','Mein Gedenktag ist der 4. Mai.','Ich bin der Schutzpatron der Feuerwehr.']}],
+  note:'Wenn du alle erkannt hast, kennst du die Feuerwehr gut.'},
+
+ {id:'l-notruf',type:'lueck',cat:'notruf',title:'Lückentext: Der Notruf',intro:'Fülle die Lücken im Text, indem du die richtigen Wörter antippst.',
+  text:'Bei einem Notruf wähle ich die {}. Ich sage zuerst, {} es passiert ist. Dann erkläre ich, {} passiert ist. Ich nenne, wie viele {} es gibt, und warte auf {}.',
+  answers:['112','wo','was','Verletzte','Rückfragen'],extra:['110','Schuld'],
+  note:'Wo, Was, Wie viele, Welche, Warten.'},
+ {id:'l-brand',type:'lueck',cat:'brand',title:'Lückentext: Das Feuer',intro:'Fülle die Lücken im Text.',
+  text:'Ein Feuer braucht {}, {} und Wärme. Fehlt eines davon, geht das Feuer {}. Wasser {} das Feuer, eine Löschdecke {} es.',
+  answers:['Brennstoff','Sauerstoff','aus','kühlt','erstickt'],extra:['Wind','wächst'],
+  note:'Brennstoff, Sauerstoff und Wärme bilden das Verbrennungsdreieck.'},
+ {id:'l-jf',type:'lueck',cat:'jf',title:'Lückentext: Jugendfeuerwehr',intro:'Fülle die Lücken im Text.',
+  text:'In der Jugendfeuerwehr lerne ich {} und {}. Bei echten {} fahre ich noch nicht mit. Das Abzeichen heißt {}.',
+  answers:['Teamarbeit','Technik','Einsätzen','Jugendflamme'],extra:['Kochen','Leistungsspange'],
+  note:'Teamgeist ist in der Feuerwehr das Wichtigste.'},
+ {id:'l-ehilfe',type:'lueck',cat:'ehilfe',title:'Lückentext: Erste Hilfe',intro:'Fülle die Lücken im Text.',
+  text:'Bei einer Verbrennung kühle ich mit {} Wasser. Bei starker Blutung drücke ich fest auf die {}. Wer nicht normal atmet, braucht eine {}.',
+  answers:['lauwarmem','Wunde','Herzdruckmassage'],extra:['heißem','Butter'],
+  note:'Erste Hilfe rettet Leben.'},
+ {id:'l-schlauch',type:'lueck',cat:'schlauch',title:'Lückentext: Schläuche',intro:'Fülle die Lücken im Text.',
+  text:'Der {} bringt Wasser zum Strahlrohr. Der {} holt Wasser aus dem Teich. Schläuche werden mit {} verbunden.',
+  answers:['Druckschlauch','Saugschlauch','Kupplungen'],extra:['Knoten','Leitern'],
+  note:'Druck bringt, Saug holt.'},
+
+ {id:'mem-fahrzeug',type:'memory',cat:'technik',title:'Memory: Fahrzeuge',intro:'Decke zwei Karten auf und finde die Paare.',
+  pairs:[['LF','Löschfahrzeug'],['DLK','Drehleiter'],['ELW','Einsatzleitwagen'],['RW','Rüstwagen'],['MTF','Mannschafts-transport'],['TLF','Tanklösch-fahrzeug']],
+  note:'Merke dir die Kürzel.'},
+ {id:'mem-schutz',type:'memory',cat:'schutz',title:'Memory: Schutzausrüstung',intro:'Was schützt was? Finde die Paare.',
+  pairs:[['Helm','Kopf'],['Handschuhe','Hände'],['Stiefel','Füße'],['Schutzbrille','Augen'],['Gehörschutz','Ohren'],['Warnweste','Sichtbarkeit']],
+  note:'Schutzausrüstung schützt nur, wenn du sie trägst.'},
+ {id:'mem-klassen',type:'memory',cat:'klassen',title:'Memory: Brandklassen',intro:'Finde die Paare aus Stoff und Brandklasse.',
+  pairs:[['Holz','Klasse A'],['Benzin','Klasse B'],['Erdgas','Klasse C'],['Magnesium','Klasse D'],['Speiseöl','Klasse F']],
+  note:'A fest, B flüssig, C Gase, D Metalle, F Fette.'},
+
+ {id:'h-6',type:'hose',cat:'schlauch',title:'Leitung 6: Die Wasserwand',intro:'Ein Kanal teilt das Gelände. Finde die Lücke.',
+  grid:['H.W..T.','.TW.AT.','.AW....','..W.TWF','.TW.AW.','.......'],extra:2,
+  note:'Manchmal ist der Umweg der einzige Weg.'},
+ {id:'h-7',type:'hose',cat:'schlauch',title:'Leitung 7: Das Labyrinth',intro:'Lege die Leitung durch das Labyrinth aus Bäumen und Autos.',
+  grid:['H.A....','.TWT.A.','.....T.','.TW.W.F','..A.W..','.T...T.'],extra:1,
+  note:'Vorausschauen spart Schläuche.'},
+ {id:'h-8',type:'hose',cat:'schlauch',title:'Leitung 8: Der Meister',intro:'Viele Hindernisse, wenige Reserven. Schaffst du den kürzesten Weg?',
+  grid:['H.T.W..','.AT.W.T','..T...A','.TWWW..','..A.T.F','T.....T'],extra:0,
+  note:'Wer das schafft, ist ein echter Schlauchprofi.'},
+ {id:'q-1',type:'quartett',cat:'jf',title:'Feuerwehr-Quartett',intro:'Sammle Vierergruppen: Frage den Computer nach Karten, die dir zu einer Gruppe fehlen. Wer die meisten Quartette hat, gewinnt.',
+  note:'Gut gespielt! Die Karten zeigen typische Dinge aus der Feuerwehr.'}
+];
+
+PUZZLES=PUZZLES.map(function(p,i){return {p:p,i:i};}).sort(function(a,b){
+  var T=TYPES.map(function(x){return x.t;});
+  return T.indexOf(a.p.type)-T.indexOf(b.p.type)||a.i-b.i;}).map(function(x){return x.p;});
+
+/* ---------- Speicher ---------- */
+var KEY='feuerprobe-raetsel-1',saved={};
+try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){saved={};}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(saved));}catch(e){}}
+
+function starsHtml(n,total){
+  total=total||3;var s=el('span','stars');s.setAttribute('aria-label',n+' von '+total+' Sternen');
+  for(var i=0;i<total;i++){var c=el('span',i<n?'on':'','★');s.appendChild(c);}
+  return s;
+}
+
+/* ---------- Konfetti ---------- */
+function confetti(n){
+  try{
+    if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    var box=el('div','confetti');box.setAttribute('aria-hidden','true');
+    var cols=['#E5372A','#1D5FD1','#F2B705','#1A9A44','#DB2777','#7E22CE','#F97316'];
+    for(var i=0;i<n;i++){
+      var s=document.createElement('i');
+      s.style.left=(Math.random()*100)+'%';s.style.background=cols[i%cols.length];
+      s.style.setProperty('--x',(Math.random()*160-80)+'px');s.style.setProperty('--r',(Math.random()*900-450)+'deg');
+      s.style.setProperty('--d',(1.8+Math.random()*1.6)+'s');s.style.animationDelay=(Math.random()*.4)+'s';
+      box.appendChild(s);
+    }
+    document.body.appendChild(box);
+    setTimeout(function(){if(box.parentNode)box.parentNode.removeChild(box);},4200);
+  }catch(e){}
+}
+function shake(node){node.classList.remove('shake');void node.offsetWidth;node.classList.add('shake');}
+
+/* ---------- Menü ---------- */
+function renderMenu(){
+  var host=$('#menu');host.replaceChildren();
+  var got=0,max=PUZZLES.length*3;
+  PUZZLES.forEach(function(p){got+=saved[p.id]||0;});
+  $('#totals').textContent='★ '+got+' von '+max+' Sternen';
+  TYPES.forEach(function(ty){
+    host.appendChild(el('h2','sec-title',ty.title));
+    host.appendChild(el('p','sec-sub',ty.sub));
+    var cards=el('div','cards');
+    PUZZLES.filter(function(p){return p.type===ty.t;}).forEach(function(p){
+      var b=el('button','pz');b.type='button';
+      b.style.setProperty('--cc','var(--c-'+(CAT_COLOR[p.cat]||p.cat)+')');
+      b.appendChild(el('span','pz-cat',CAT[p.cat]||p.cat));
+      b.appendChild(el('span','pz-title',p.title));
+      b.appendChild(starsHtml(saved[p.id]||0));
+      b.addEventListener('click',function(){open(p.id);});
+      cards.appendChild(b);
+    });
+    host.appendChild(cards);
+  });
+}
+var CAT_COLOR={gefahr:'gefahr'};
+
+/* ---------- Spiel ---------- */
+var cur=null,mistakes=0;
+function show(name){
+  $('#screen-menu').hidden=(name!=='menu');
+  $('#screen-play').hidden=(name!=='play');
+  window.scrollTo(0,0);
+}
+function setMistakes(){$('#mistakes').textContent=mistakes?('Fehler: '+mistakes):'';}
+function open(id){
+  var p=PUZZLES.filter(function(x){return x.id===id;})[0];if(!p)return;
+  cur=p;mistakes=0;setMistakes();
+  show('play');
+  $('#play-cat').textContent=CAT[p.cat]||p.cat;
+  $('#play-cat').style.background='var(--c-'+p.cat+')';
+  $('#play-title').textContent=p.title;
+  $('#play-intro').textContent=p.intro;
+  $('#play-res').replaceChildren();
+  var st=$('#stage');st.replaceChildren();
+  st.style.setProperty('--cc','var(--c-'+p.cat+')');
+  ({order:buildOrder,match:buildMatch,group:buildGroup,tf:buildGroup,who:buildWho,lueck:buildLueck,memory:buildMemory,quartett:buildQuartett,hose:buildHose})[p.type](p,st);
+}
+function starsFor(m){return m===0?3:(m<=2?2:1);}
+function finish(stars,extra){
+  var p=cur;
+  if((saved[p.id]||0)<stars){saved[p.id]=stars;persist();}
+  confetti(stars>=3?100:60);
+  var res=$('#play-res');res.replaceChildren();
+  var box=el('div','res');
+  box.appendChild(el('h3',null,stars===3?'Perfekt!':(stars===2?'Sehr gut!':'Geschafft!')));
+  box.appendChild(starsHtml(stars));
+  if(extra)box.appendChild(el('p',null,extra));
+  if(p.note)box.appendChild(el('p',null,p.note));
+  var row=el('div','hbtns');
+  var again=el('button','chipbtn','Nochmal');again.type='button';again.addEventListener('click',function(){open(p.id);});
+  var idx=PUZZLES.indexOf(p),nxt=PUZZLES[idx+1];
+  var next=el('button','chipbtn',nxt?'Nächstes Rätsel':'Übersicht');next.type='button';
+  next.addEventListener('click',function(){if(nxt)open(nxt.id);else{renderMenu();show('menu');}});
+  row.appendChild(again);row.appendChild(next);box.appendChild(row);
+  res.appendChild(box);
+  box.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
+
+/* Wer bin ich? */
+function buildWho(p,st){
+  var R=p.riddles,i=0,shown=1,extra=0;
+  var count=el('p','gcount');
+  var clues=el('ol','clues');
+  var more=el('button','chipbtn','Nächster Hinweis');more.type='button';
+  var opts=el('div','pool');
+  st.appendChild(count);st.appendChild(clues);st.appendChild(more);st.appendChild(opts);
+  function show(){
+    var r=R[i];
+    count.textContent='Rätsel '+(i+1)+' von '+R.length;
+    clues.replaceChildren();
+    for(var k=0;k<shown;k++){clues.appendChild(el('li',null,r.c[k]));}
+    more.hidden=(shown>=r.c.length);
+    opts.replaceChildren();
+    shuffle([r.a].concat(r.o)).forEach(function(t){
+      var b=el('button','chipbtn',t);b.type='button';
+      b.addEventListener('click',function(){
+        if(b.disabled)return;
+        if(t===r.a){
+          i++;shown=1;
+          if(i>=R.length){
+            count.textContent='Alle erraten!';clues.replaceChildren();opts.replaceChildren();more.hidden=true;
+            var pen=mistakes+extra;
+            finish(pen<=3?3:(pen<=7?2:1),'Falsche Antworten: '+mistakes+', zusätzliche Hinweise: '+extra+'.');
+          }else show();
+        }else{
+          mistakes++;setMistakes();shake(b);b.disabled=true;b.classList.add('bad');
+        }
+      });
+      opts.appendChild(b);
+    });
+  }
+  more.addEventListener('click',function(){
+    if(shown<R[i].c.length){shown++;extra++;show2();}
+  });
+  function show2(){
+    var r=R[i];clues.replaceChildren();
+    for(var k=0;k<shown;k++){clues.appendChild(el('li',null,r.c[k]));}
+    more.hidden=(shown>=r.c.length);
+  }
+  show();
+}
+
+/* Lückentext */
+function buildLueck(p,st){
+  var parts=p.text.split('{}'),pos=0;
+  var para=el('p','lueck'),gaps=[];
+  parts.forEach(function(t,k){
+    para.appendChild(document.createTextNode(t));
+    if(k<parts.length-1){var g=el('span','gap','…');gaps.push(g);para.appendChild(g);}
+  });
+  gaps[0].classList.add('cur');
+  st.appendChild(para);
+  var bank=el('div','pool');
+  shuffle(p.answers.concat(p.extra||[])).forEach(function(w){
+    var b=el('button','chipbtn',w);b.type='button';
+    b.addEventListener('click',function(){
+      if(b.disabled)return;
+      if(w===p.answers[pos]){
+        gaps[pos].textContent=w;gaps[pos].classList.remove('cur');gaps[pos].classList.add('done');
+        b.disabled=true;pos++;
+        if(pos>=gaps.length)finish(starsFor(mistakes),mistakes?('Fehler: '+mistakes):'Ohne einen Fehler!');
+        else gaps[pos].classList.add('cur');
+      }else{mistakes++;setMistakes();shake(b);}
+    });
+    bank.appendChild(b);
+  });
+  st.appendChild(bank);
+}
+
+/* Memory */
+function buildMemory(p,st){
+  var cards=[];
+  p.pairs.forEach(function(pr,i){cards.push({t:pr[0],i:i});cards.push({t:pr[1],i:i});});
+  cards=shuffle(cards);
+  var info=el('p','gcount','Züge: 0');
+  var grid=el('div','memgrid');
+  var first=null,lock=false,moves=0,found=0;
+  cards.forEach(function(c){
+    var b=el('button','mem','?');b.type='button';b.setAttribute('aria-label','Karte');
+    b.addEventListener('click',function(){
+      if(lock||b.classList.contains('up')||b.classList.contains('done'))return;
+      b.classList.add('up');b.textContent=c.t;
+      if(!first){first={b:b,c:c};return;}
+      moves++;info.textContent='Züge: '+moves;
+      if(first.c.i===c.i){
+        first.b.classList.remove('up');b.classList.remove('up');
+        first.b.classList.add('done');b.classList.add('done');first=null;found++;
+        if(found===p.pairs.length){
+          var n=p.pairs.length;
+          finish(moves<=n+3?3:(moves<=n*2?2:1),'Du hast '+moves+' Züge gebraucht.');
+        }
+      }else{
+        lock=true;var a=first;first=null;
+        setTimeout(function(){a.b.classList.remove('up');a.b.textContent='?';b.classList.remove('up');b.textContent='?';lock=false;},900);
+      }
+    });
+    grid.appendChild(b);
+  });
+  st.appendChild(info);st.appendChild(grid);
+}
+
+/* Quartett (gegen den Computer) */
+var QGROUPS=[
+ {n:'Fahrzeuge',c:'technik',cards:['Löschfahrzeug (LF)','Drehleiter (DLK)','Einsatzleitwagen (ELW)','Rüstwagen (RW)']},
+ {n:'Schutzkleidung',c:'schutz',cards:['Helm','Schutzjacke','Handschuhe','Stiefel']},
+ {n:'Schlauchteile',c:'schlauch',cards:['Strahlrohr','Kupplung','Verteiler','Saugkorb']},
+ {n:'Brandklassen',c:'klassen',cards:['Klasse A: Holz','Klasse B: Benzin','Klasse C: Gas','Klasse D: Metall']},
+ {n:'Knoten',c:'knoten',cards:['Mastwurf','Kreuzknoten','Achterknoten','Palstek']},
+ {n:'Löschmittel',c:'brand',cards:['Wasser','Schaum','Pulver','Kohlendioxid']},
+ {n:'Erste Hilfe',c:'ehilfe',cards:['Pflaster','Verbandpäckchen','Rettungsdecke','Einmalhandschuhe']},
+ {n:'Gefahrensymbole',c:'brennbar',cards:['Flamme','Totenkopf','Gasflasche','Explosion']}
+];
+function buildQuartett(p,st){
+  var all=[];
+  QGROUPS.forEach(function(g,gi){g.cards.forEach(function(t,ci){all.push({g:gi,c:ci,t:t});});});
+  all=shuffle(all);
+  var me=all.splice(0,6),cpu=all.splice(0,6),pile=all;
+  var meQ=[],cpuQ=[],busy=false,lastAsked={};
+  var info=el('div','qt-info'),log=el('p','qt-log');log.setAttribute('aria-live','polite');
+  var hand=el('div','qt-hand'),ask=el('div','qt-ask');
+  st.appendChild(info);st.appendChild(log);st.appendChild(hand);st.appendChild(ask);
+  function key(c){return c.g+':'+c.c;}
+  function has(h,g,c){return h.some(function(x){return x.g===g&&x.c===c;});}
+  function count(h,g){return h.filter(function(x){return x.g===g;}).length;}
+  function lay(h,q,who){
+    for(var g=0;g<QGROUPS.length;g++){
+      if(count(h,g)===4){
+        for(var i=h.length-1;i>=0;i--)if(h[i].g===g)h.splice(i,1);
+        q.push(g);say((who==='me'?'Du legst':'Der Computer legt')+' das Quartett „'+QGROUPS[g].n+'“ ab.');
+      }
+    }
+  }
+  function say(t){log.textContent=t;}
+  function draw(h){if(pile.length){h.push(pile.pop());return true;}return false;}
+  function render(){
+    info.textContent='Du: '+meQ.length+' Quartette · Computer: '+cpuQ.length+' · Stapel: '+pile.length+' Karten';
+    hand.replaceChildren();
+    me.slice().sort(function(a,b){return a.g-b.g||a.c-b.c;}).forEach(function(c){
+      var d=el('span','qt-card',c.t);d.style.setProperty('--cc','var(--c-'+QGROUPS[c.g].c+')');
+      d.title=QGROUPS[c.g].n;hand.appendChild(d);
+    });
+    if(!me.length)hand.appendChild(el('span','gcount','Du hast keine Karten auf der Hand.'));
+    if(meQ.length){
+      var q=el('div','qt-done','Deine Quartette: '+meQ.map(function(g){return QGROUPS[g].n;}).join(', '));hand.appendChild(q);
+    }
+  }
+  function over(){return meQ.length+cpuQ.length>=QGROUPS.length||(!me.length&&!cpu.length&&!pile.length);}
+  function end(){
+    ask.replaceChildren();render();
+    var a=meQ.length,b=cpuQ.length;
+    var stars=a>b?3:(a===b?2:1);
+    say(a>b?'Du hast gewonnen!':(a===b?'Unentschieden!':'Der Computer hat gewonnen.'));
+    finish(stars,'Du: '+a+' Quartette, Computer: '+b+'.');
+  }
+  function ensure(h){if(!h.length&&pile.length)draw(h);}
+  /* Mein Zug */
+  function myTurn(){
+    ensure(me);render();ask.replaceChildren();
+    if(over()){end();return;}
+    if(!me.length){say('Du hast keine Karten. Der Computer ist dran.');setTimeout(cpuTurn,900);return;}
+    var groups=[];for(var g=0;g<QGROUPS.length;g++)if(count(me,g)>0)groups.push(g);
+    ask.appendChild(el('p','gcount','Du bist dran: Wähle eine Gruppe, zu der du eine Karte besitzt.'));
+    var row=el('div','pool');
+    groups.forEach(function(g){
+      var b=el('button','chipbtn',QGROUPS[g].n+' ('+count(me,g)+'/4)');b.type='button';
+      b.style.borderColor='var(--c-'+QGROUPS[g].c+')';
+      b.addEventListener('click',function(){pickCard(g);});
+      row.appendChild(b);
+    });
+    ask.appendChild(row);
+  }
+  function pickCard(g){
+    ask.replaceChildren();
+    ask.appendChild(el('p','gcount','Welche Karte aus „'+QGROUPS[g].n+'“ fragst du den Computer?'));
+    var row=el('div','pool');
+    QGROUPS[g].cards.forEach(function(t,c){
+      if(has(me,g,c))return;
+      var b=el('button','chipbtn',t);b.type='button';
+      b.addEventListener('click',function(){doAsk(g,c);});
+      row.appendChild(b);
+    });
+    var back=el('button','chipbtn','Zurück');back.type='button';back.addEventListener('click',myTurn);
+    row.appendChild(back);ask.appendChild(row);
+  }
+  function doAsk(g,c){
+    ask.replaceChildren();
+    lastAsked[g]=true;
+    var i=-1;cpu.forEach(function(x,k){if(x.g===g&&x.c===c)i=k;});
+    if(i>=0){
+      me.push(cpu.splice(i,1)[0]);
+      say('Du fragst nach „'+QGROUPS[g].cards[c]+'“. Der Computer hat sie! Du darfst noch einmal fragen.');
+      lay(me,meQ,'me');render();
+      if(over()){end();return;}
+      setTimeout(myTurn,1100);
+    }else{
+      var got=draw(me),hit=got&&me[me.length-1].g===g&&me[me.length-1].c===c;
+      say('Du fragst nach „'+QGROUPS[g].cards[c]+'“. Der Computer hat sie nicht. '+(got?(hit?'Du ziehst genau diese Karte und darfst noch einmal.':'Du ziehst eine Karte vom Stapel.'):'Der Stapel ist leer.'));
+      lay(me,meQ,'me');render();
+      if(over()){end();return;}
+      setTimeout(hit?myTurn:cpuTurn,1400);
+    }
+  }
+  /* Zug des Computers */
+  var known={};
+  function cpuTurn(){
+    ensure(cpu);render();
+    if(over()){end();return;}
+    if(!cpu.length){say('Der Computer hat keine Karten. Du bist wieder dran.');setTimeout(myTurn,900);return;}
+    var best=-1,bestScore=-1;
+    for(var g=0;g<QGROUPS.length;g++){
+      var n=count(cpu,g);if(!n)continue;
+      var s=n+(lastAsked[g]?1.5:0)+Math.random()*.5;
+      if(s>bestScore){bestScore=s;best=g;}
+    }
+    var missing=[];QGROUPS[best].cards.forEach(function(t,c){if(!has(cpu,best,c))missing.push(c);});
+    var c=missing[Math.floor(Math.random()*missing.length)];
+    var i=-1;me.forEach(function(x,k){if(x.g===best&&x.c===c)i=k;});
+    if(i>=0){
+      cpu.push(me.splice(i,1)[0]);
+      say('Der Computer fragt dich nach „'+QGROUPS[best].cards[c]+'“. Du hattest sie und gibst sie ab. Er fragt weiter.');
+      lay(cpu,cpuQ,'cpu');render();
+      if(over()){end();return;}
+      setTimeout(cpuTurn,1500);
+    }else{
+      var got=draw(cpu);
+      var hit=got&&cpu[cpu.length-1].g===best&&cpu[cpu.length-1].c===c;
+      say('Der Computer fragt dich nach „'+QGROUPS[best].cards[c]+'“. Du hast sie nicht. '+(hit?'Er zieht genau diese Karte und fragt weiter.':'Er zieht vom Stapel. Du bist dran.'));
+      lay(cpu,cpuQ,'cpu');render();
+      if(over()){end();return;}
+      setTimeout(hit?cpuTurn:myTurn,1500);
+    }
+  }
+  say('Das Spiel beginnt. Du fängst an.');
+  lay(me,meQ,'me');lay(cpu,cpuQ,'cpu');
+  myTurn();
+}
+
+/* Reihenfolge */
+function buildOrder(p,st){
+  var n=p.items.length,pos=0;
+  var slots=el('ol','slots');
+  var lis=p.items.map(function(){var li=el('li',null,'…');slots.appendChild(li);return li;});
+  st.appendChild(slots);
+  var pool=el('div','pool');
+  var order=shuffle(p.items),tries=0;
+  while(tries++<10&&order.every(function(x,i){return x===p.items[i];}))order=shuffle(p.items);
+  order.forEach(function(t){
+    var b=el('button','chipbtn',t);b.type='button';
+    b.addEventListener('click',function(){
+      if(b.disabled)return;
+      if(t===p.items[pos]){
+        lis[pos].textContent=t;lis[pos].classList.add('done');
+        b.disabled=true;pos++;
+        if(pos===n)finish(starsFor(mistakes),mistakes?('Fehler: '+mistakes):'Ohne einen Fehler!');
+      }else{
+        mistakes++;setMistakes();shake(b);b.classList.add('bad');
+        setTimeout(function(){b.classList.remove('bad');},500);
+      }
+    });
+    pool.appendChild(b);
+  });
+  st.appendChild(pool);
+}
+
+/* Zuordnen */
+function buildMatch(p,st){
+  var wrap=el('div','match');
+  var left=el('div','col'),right=el('div','col');
+  var sel=null,done=0,color=0;
+  var L=shuffle(p.pairs.map(function(x,i){return {t:x[0],i:i};}));
+  var R=shuffle(p.pairs.map(function(x,i){return {t:x[1],i:i};}));
+  var lb=[],rb=[];
+  function mk(o,side){
+    var b=el('button','mbtn',o.t);b.type='button';b.dataset.i=o.i;
+    (side==='l'?lb:rb).push(b);
+    b.addEventListener('click',function(){
+      if(b.classList.contains('locked'))return;
+      if(side==='l'){
+        lb.forEach(function(x){x.classList.remove('sel');});
+        if(sel===b){sel=null;return;}
+        sel=b;b.classList.add('sel');
+      }else{
+        if(!sel){shake(b);return;}
+        if(sel.dataset.i===b.dataset.i){
+          var c='m'+(color++%5);
+          [sel,b].forEach(function(x){x.classList.remove('sel');x.classList.add('locked',c);});
+          sel=null;done++;
+          if(done===p.pairs.length)finish(starsFor(mistakes),mistakes?('Fehler: '+mistakes):'Ohne einen Fehler!');
+        }else{
+          mistakes++;setMistakes();shake(sel);shake(b);
+          sel.classList.remove('sel');sel=null;
+        }
+      }
+    });
+    return b;
+  }
+  L.forEach(function(o){left.appendChild(mk(o,'l'));});
+  R.forEach(function(o){right.appendChild(mk(o,'r'));});
+  wrap.appendChild(left);wrap.appendChild(right);st.appendChild(wrap);
+}
+
+/* Gruppen */
+function buildGroup(p,st){
+  var q=shuffle(p.items),i=0;
+  var count=el('p','gcount');
+  var card=el('div','gcard');
+  var bins=el('div','bins');
+  p.bins.forEach(function(name,k){
+    var b=el('button','bin b'+k,name);b.type='button';
+    b.addEventListener('click',function(){
+      if(i>=q.length)return;
+      if(q[i][1]===k){
+        card.classList.remove('flash-ok');void card.offsetWidth;card.classList.add('flash-ok');
+        i++;
+        if(i>=q.length){
+          card.textContent='Alle Karten sortiert!';count.textContent='';bins.style.display='none';
+          finish(starsFor(mistakes),mistakes?('Fehler: '+mistakes):'Ohne einen Fehler!');
+        }else upd();
+      }else{
+        mistakes++;setMistakes();shake(card);
+      }
+    });
+    bins.appendChild(b);
+  });
+  function upd(){count.textContent='Karte '+(i+1)+' von '+q.length;card.textContent=q[i][0];}
+  st.appendChild(count);st.appendChild(card);st.appendChild(bins);
+  upd();
+}
+
+/* Schläuche verlegen */
+function buildHose(p,st){
+  var rows=p.grid.length,cols=p.grid[0].length,start=null,goal=null;
+  p.grid.forEach(function(r,y){for(var x=0;x<cols;x++){var c=r.charAt(x);if(c==='H')start=[x,y];if(c==='F')goal=[x,y];}});
+  function blocked(x,y){var c=p.grid[y].charAt(x);return c==='T'||c==='A'||c==='W';}
+  /* kürzester Weg per BFS */
+  var dist={},qq=[[start[0],start[1]]];dist[start[0]+','+start[1]]=0;
+  while(qq.length){
+    var c=qq.shift(),d=dist[c[0]+','+c[1]];
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(v){
+      var x=c[0]+v[0],y=c[1]+v[1];
+      if(x<0||y<0||x>=cols||y>=rows||blocked(x,y)||dist[x+','+y]!==undefined)return;
+      dist[x+','+y]=d+1;qq.push([x,y]);
+    });
+  }
+  var best=dist[goal[0]+','+goal[1]];
+  var limit=best+(p.extra||0);
+  var path=[start.slice()];
+  var info=el('div','hose-info');
+  var count=el('span','hose-count');
+  info.appendChild(count);
+  info.appendChild(el('span',null,'Vorrat: '+limit+' Schläuche'));
+  st.appendChild(info);
+  var grid=el('div','hgrid');grid.style.gridTemplateColumns='repeat('+cols+',1fr)';
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.createElementNS(NS,'svg');svg.setAttribute('class','hose-svg');svg.setAttribute('viewBox','0 0 '+(cols*100)+' '+(rows*100));svg.setAttribute('preserveAspectRatio','none');
+  var cells={};
+  for(var y=0;y<rows;y++)for(var x=0;x<cols;x++){(function(x,y){
+    var ch=p.grid[y].charAt(x);
+    var b=el('button','hcell');b.type='button';b.setAttribute('aria-label','Feld '+(x+1)+', '+(y+1));
+    var icon=null;
+    if(ch==='H')icon='i-hydrant';else if(ch==='F')icon='i-fire';else if(ch==='T')icon='i-tree';else if(ch==='A')icon='i-car';
+    if(ch==='W')b.classList.add('water','block');
+    if(ch==='T'||ch==='A')b.classList.add('block');
+    if(icon){
+      var s=document.createElementNS(NS,'svg');s.setAttribute('viewBox',ch==='H'?'0 0 60 80':ch==='F'?'0 0 100 120':ch==='A'?'0 0 100 60':'0 0 80 80');
+      var u=document.createElementNS(NS,'use');u.setAttributeNS('http://www.w3.org/1999/xlink','href','#'+icon);u.setAttribute('href','#'+icon);
+      s.appendChild(u);b.appendChild(s);
+    }
+    b.addEventListener('click',function(){tap(x,y,b);});
+    cells[x+','+y]=b;grid.appendChild(b);
+  })(x,y);}
+  grid.appendChild(svg);
+  st.appendChild(grid);
+  var btns=el('div','hbtns');
+  var undo=el('button','chipbtn','Schlauch zurück');undo.type='button';
+  var reset=el('button','chipbtn','Neu beginnen');reset.type='button';
+  btns.appendChild(undo);btns.appendChild(reset);st.appendChild(btns);
+  var finished=false;
+  function idxOf(x,y){for(var i=0;i<path.length;i++)if(path[i][0]===x&&path[i][1]===y)return i;return -1;}
+  function draw(){
+    var used=path.length-1;
+    count.textContent='Verlegt: '+used+' von '+limit;
+    count.classList.toggle('full',used>=limit&&!finished);
+    var pts=path.map(function(c){return (c[0]*100+50)+','+(c[1]*100+50);}).join(' ');
+    svg.replaceChildren();
+    if(path.length>1){
+      [['#7A0F14',34],['#E5372A',26],['#FFD23F',6]].forEach(function(l,k){
+        var pl=document.createElementNS(NS,'polyline');pl.setAttribute('points',pts);pl.setAttribute('fill','none');
+        pl.setAttribute('stroke',l[0]);pl.setAttribute('stroke-width',l[1]);pl.setAttribute('stroke-linecap','round');pl.setAttribute('stroke-linejoin','round');
+        if(k===2)pl.setAttribute('stroke-dasharray','2 16');
+        svg.appendChild(pl);
+      });
+    }
+    var head=path[path.length-1];
+    Object.keys(cells).forEach(function(k){
+      var parts=k.split(','),x=+parts[0],y=+parts[1],b=cells[k];
+      var adj=Math.abs(x-head[0])+Math.abs(y-head[1])===1;
+      b.classList.toggle('ok',!finished&&adj&&!blocked(x,y)&&idxOf(x,y)<0&&used<limit);
+    });
+  }
+  function tap(x,y,b){
+    if(finished)return;
+    var i=idxOf(x,y);
+    if(i>=0){
+      if(i===path.length-1&&i>0)path.pop();
+      else path.length=i+1;
+      draw();return;
+    }
+    var head=path[path.length-1];
+    if(Math.abs(x-head[0])+Math.abs(y-head[1])!==1||blocked(x,y)){shake(b);return;}
+    if(path.length-1>=limit){shake(count);return;}
+    path.push([x,y]);
+    draw();
+    if(x===goal[0]&&y===goal[1]){
+      finished=true;draw();
+      var used=path.length-1;
+      mistakes=used-best;
+      var stars=used===best?3:(used<=best+1?2:1);
+      finish(stars,'Du hast '+used+' Schläuche verlegt. Der kürzeste Weg braucht '+best+'.');
+      $('#mistakes').textContent='';
+    }
+  }
+  undo.addEventListener('click',function(){if(!finished&&path.length>1){path.pop();draw();}});
+  reset.addEventListener('click',function(){if(!finished){path=[start.slice()];draw();}});
+  draw();
+}
+
+$('#btn-back').addEventListener('click',function(){renderMenu();show('menu');});
+renderMenu();
+})();
+
+(function(){
+'use strict';
+var wrap=document.querySelector('.wrap'),btns=document.querySelectorAll('.mode');
+function setMode(m){
+  var game=document.getElementById('screen-game');
+  if(m==='puzzle'&&game&&!game.hidden){
+    var nav=document.querySelector('.modes');nav.classList.remove('shake');void nav.offsetWidth;nav.classList.add('shake');
+    return;
+  }
+  document.getElementById('mode-quiz').hidden=(m!=='quiz');
+  document.getElementById('mode-puzzle').hidden=(m!=='puzzle');
+  wrap.classList.toggle('mode-puzzle',m==='puzzle');
+  Array.prototype.forEach.call(btns,function(b){b.setAttribute('aria-pressed',b.getAttribute('data-mode')===m?'true':'false');});
+  var sub=document.querySelector('.hero .sub');if(sub)sub.textContent=(m==='puzzle'?'Das Rätselspiel':'Das große Quiz');
+  window.scrollTo(0,0);
+}
+Array.prototype.forEach.call(btns,function(b){b.addEventListener('click',function(){setMode(b.getAttribute('data-mode'));});});
+})();
+
 </script>
 </body>
 </html>
