@@ -1598,7 +1598,7 @@ var TYPES=[
  {t:'lueck',title:'Lückentexte',sub:'Tippe die passenden Wörter an und fülle die Lücken.'},
  {t:'memory',title:'Memory',sub:'Decke zwei Karten auf und finde die passenden Paare.'},
  {t:'quartett',title:'Feuerwehr-Quartett',sub:'Sammle Quartette gegen den Computer.'},
- {t:'hose',title:'Schläuche verlegen',sub:'Lege eine Leitung vom Hydranten zum Brand, ohne Hindernisse und mit möglichst wenig Schläuchen.'}
+ {t:'hose',title:'Schläuche verlegen',sub:'Vier Schwierigkeitsstufen. Bei jedem Start entsteht eine neue Karte: Lege die Leitung vom Hydranten zum Brand.'}
 ];
 
 var PUZZLES=[
@@ -1673,22 +1673,15 @@ var PUZZLES=[
   items:[['Tür hinter dir schließen',0],['Aufzug benutzen',1],['Notruf 112 wählen',0],['Sachen aus der Wohnung holen',1],['tief am Boden kriechen',0],['im Schrank verstecken',1]],
   note:'Rauch ist tödlich. Hilfe holen und rausgehen sind das Wichtigste.'},
 
- /* Schläuche verlegen */
- {id:'h-1',type:'hose',cat:'schlauch',title:'Leitung 1: Der Anfang',intro:'Tippe die Felder neben dem Schlauchende an, um die Leitung vom Hydranten zum Brand zu legen. Tippe das Schlauchende noch einmal an, um es zurückzunehmen.',
-  grid:['H..T...','...T...','.......','.AA....','.....F.'],extra:3,
-  note:'Der kürzeste Weg spart Schläuche und Zeit.'},
- {id:'h-2',type:'hose',cat:'schlauch',title:'Leitung 2: Am Teich',intro:'Um das Wasser herum und an den Autos vorbei: Lege die Leitung zum Brand.',
-  grid:['H.W....','..W.T..','..W....','..AW.T.','....W.F','.T.....'],extra:3,
-  note:'Schläuche nie über Hindernisse knicken oder quer über die Straße ziehen.'},
- {id:'h-3',type:'hose',cat:'schlauch',title:'Leitung 3: Der Umweg',intro:'Der Brand liegt hinter einer Hecke aus Bäumen. Wie viele Schläuche brauchst du?',
-  grid:['H......','.TTTTT.','.T...T.','.T.F.T.','.T.TTT.','.......'],extra:4,
-  note:'Plane den Weg, bevor du Schläuche auslegst.'},
- {id:'h-4',type:'hose',cat:'schlauch',title:'Leitung 4: Wenig Schläuche',intro:'Du hast nur wenige Schläuche dabei. Finde den kürzesten Weg.',
-  grid:['H..W...','.T.W.A.','...W...','.A...T.','..W....','..W...F'],extra:1,
-  note:'Gute Planung: Ein Schlauch mehr bedeutet oft zwei Minuten länger.'},
- {id:'h-5',type:'hose',cat:'schlauch',title:'Leitung 5: Die Profi-Aufgabe',intro:'Viele Hindernisse und knappe Schläuche: Schaffst du den kürzesten Weg?',
-  grid:['H.T....','..TWW.T','.A..W..','.TT.WT.','....W..','.AT...F'],extra:0,
-  note:'Wenn du das ohne Fehler schaffst, bist du bereit für den Einsatz.'},
+ /* Schläuche verlegen: Karten werden bei jedem Start neu erzeugt */
+ {id:'h-leicht',type:'hose',cat:'schlauch',title:'Leicht: Kleine Wiese',intro:'Tippe die Felder neben dem Schlauchende an, um die Leitung vom Hydranten zum Brand zu legen. Tippe das Schlauchende noch einmal an, um es zurückzunehmen. Die Karte ist bei jedem Start neu.',
+  gen:{cols:5,rows:6,dens:.14,extra:4,detour:0},note:'Der kürzeste Weg spart Schläuche und Zeit.'},
+ {id:'h-mittel',type:'hose',cat:'schlauch',title:'Mittel: Am Teich',intro:'Um Wasser, Bäume und Autos herum: Lege die Leitung zum Brand. Bei jedem Start gibt es eine neue Karte.',
+  gen:{cols:6,rows:7,dens:.24,extra:2,detour:2},note:'Plane den Weg, bevor du Schläuche auslegst.'},
+ {id:'h-schwer',type:'hose',cat:'schlauch',title:'Schwer: Das Labyrinth',intro:'Viele Hindernisse und nur wenige Reserveschläuche. Die Karte ist bei jedem Start neu.',
+  gen:{cols:7,rows:8,dens:.32,extra:1,detour:4},note:'Ein Schlauch mehr bedeutet oft zwei Minuten länger.'},
+ {id:'h-profi',type:'hose',cat:'schlauch',title:'Profi: Der Meister',intro:'Viele Hindernisse und kein einziger Schlauch zu viel: Nur der kürzeste Weg reicht.',
+  gen:{cols:8,rows:9,dens:.36,extra:0,detour:6},note:'Wenn du das schaffst, bist du bereit für den Einsatz.'},
 
  /* ===== Erweiterung ===== */
  {id:'o-loescher',type:'order',cat:'klassen',title:'Feuerlöscher benutzen',intro:'Bringe die Schritte beim Löschen mit dem Feuerlöscher in die richtige Reihenfolge.',
@@ -1803,15 +1796,6 @@ var PUZZLES=[
   pairs:[['Holz','Klasse A'],['Benzin','Klasse B'],['Erdgas','Klasse C'],['Magnesium','Klasse D'],['Speiseöl','Klasse F']],
   note:'A fest, B flüssig, C Gase, D Metalle, F Fette.'},
 
- {id:'h-6',type:'hose',cat:'schlauch',title:'Leitung 6: Die Wasserwand',intro:'Ein Kanal teilt das Gelände. Finde die Lücke.',
-  grid:['H.W..T.','.TW.AT.','.AW....','..W.TWF','.TW.AW.','.......'],extra:2,
-  note:'Manchmal ist der Umweg der einzige Weg.'},
- {id:'h-7',type:'hose',cat:'schlauch',title:'Leitung 7: Das Labyrinth',intro:'Lege die Leitung durch das Labyrinth aus Bäumen und Autos.',
-  grid:['H.A....','.TWT.A.','.....T.','.TW.W.F','..A.W..','.T...T.'],extra:1,
-  note:'Vorausschauen spart Schläuche.'},
- {id:'h-8',type:'hose',cat:'schlauch',title:'Leitung 8: Der Meister',intro:'Viele Hindernisse, wenige Reserven. Schaffst du den kürzesten Weg?',
-  grid:['H.T.W..','.AT.W.T','..T...A','.TWWW..','..A.T.F','T.....T'],extra:0,
-  note:'Wer das schafft, ist ein echter Schlauchprofi.'},
  {id:'q-1',type:'quartett',cat:'jf',title:'Feuerwehr-Quartett',intro:'Sammle Vierergruppen: Frage den Computer nach Karten, die dir zu einer Gruppe fehlen. Wer die meisten Quartette hat, gewinnt.',
   note:'Gut gespielt! Die Karten zeigen typische Dinge aus der Feuerwehr.'}
 ];
@@ -1874,6 +1858,48 @@ function renderMenu(){
 }
 var CAT_COLOR={gefahr:'gefahr'};
 
+
+/* Zufallskarten für "Schläuche verlegen" */
+function hoseBest(g,cols,rows){
+  var sx,sy,fx,fy;
+  g.forEach(function(r,y){for(var x=0;x<cols;x++){var c=r.charAt(x);if(c==='H'){sx=x;sy=y;}if(c==='F'){fx=x;fy=y;}}});
+  var dist={},q=[[sx,sy]];dist[sx+','+sy]=0;
+  while(q.length){var c=q.shift(),d=dist[c[0]+','+c[1]];
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(v){var x=c[0]+v[0],y=c[1]+v[1];
+      if(x<0||y<0||x>=cols||y>=rows||'TAW'.indexOf(g[y].charAt(x))>-1||dist[x+','+y]!==undefined)return;
+      dist[x+','+y]=d+1;q.push([x,y]);});}
+  var b=dist[fx+','+fy];return b===undefined?-1:b;
+}
+function genHose(o){
+  var cols=o.cols,rows=o.rows,tries=0,best=null;
+  function rnd(n){return Math.floor(Math.random()*n);}
+  while(tries++<400){
+    var m=[];for(var y=0;y<rows;y++){m.push([]);for(var x=0;x<cols;x++)m[y].push('.');}
+    var sx=rnd(2),sy=rnd(rows),fx=cols-1-rnd(2),fy=rnd(rows);
+    if(Math.random()<.5){sy=rnd(2);fy=rows-1-rnd(2);sx=rnd(cols);fx=rnd(cols);}
+    if(Math.abs(sx-fx)+Math.abs(sy-fy)<Math.floor((cols+rows)*.6))continue;
+    var n=Math.round(cols*rows*o.dens),k=0,guard=0;
+    while(k<n&&guard++<500){
+      var x=rnd(cols),y=rnd(rows);
+      if((x===sx&&y===sy)||(x===fx&&y===fy)||m[y][x]!=='.')continue;
+      var r=Math.random();
+      if(r<.4){/* Wasser als kurzer Kanal */
+        var len=2+rnd(2),hor=Math.random()<.5;
+        for(var i=0;i<len;i++){var xx=x+(hor?i:0),yy=y+(hor?0:i);
+          if(xx<cols&&yy<rows&&m[yy][xx]==='.'&&!(xx===sx&&yy===sy)&&!(xx===fx&&yy===fy)){m[yy][xx]='W';k++;}}
+      }else{m[y][x]=r<.75?'T':'A';k++;}
+    }
+    m[sy][sx]='H';m[fy][fx]='F';
+    var g=m.map(function(r){return r.join('');});
+    var b=hoseBest(g,cols,rows);
+    if(b<0)continue;
+    var detour=b-(Math.abs(sx-fx)+Math.abs(sy-fy));
+    if(detour>=o.detour){return g;}
+    if(!best||detour>best.d)best={g:g,d:detour};
+  }
+  return best?best.g:null;
+}
+
 /* ---------- Spiel ---------- */
 var cur=null,mistakes=0;
 function show(name){
@@ -1884,6 +1910,7 @@ function show(name){
 function setMistakes(){$('#mistakes').textContent=mistakes?('Fehler: '+mistakes):'';}
 function open(id){
   var p=PUZZLES.filter(function(x){return x.id===id;})[0];if(!p)return;
+  if(p.gen){var gg=genHose(p.gen);if(gg)p.grid=gg;}
   cur=p;mistakes=0;setMistakes();
   show('play');
   $('#play-cat').textContent=CAT[p.cat]||p.cat;
@@ -1907,7 +1934,7 @@ function finish(stars,extra){
   if(extra)box.appendChild(el('p',null,extra));
   if(p.note)box.appendChild(el('p',null,p.note));
   var row=el('div','hbtns');
-  var again=el('button','chipbtn','Nochmal');again.type='button';again.addEventListener('click',function(){open(p.id);});
+  var again=el('button','chipbtn',p.gen?'Neue Karte':'Nochmal');again.type='button';again.addEventListener('click',function(){open(p.id);});
   var idx=PUZZLES.indexOf(p),nxt=PUZZLES[idx+1];
   var next=el('button','chipbtn',nxt?'Nächstes Rätsel':'Übersicht');next.type='button';
   next.addEventListener('click',function(){if(nxt)open(nxt.id);else{renderMenu();show('menu');}});
