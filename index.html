@@ -1584,6 +1584,23 @@ function renderSetup(){renderTeams();renderAge();renderCats();renderCount();rend
 var SEEN_KEY='feuerprobe-gesehen';
 function loadSeen(){try{var a=JSON.parse(localStorage.getItem(SEEN_KEY)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
 function saveSeen(a){try{localStorage.setItem(SEEN_KEY,JSON.stringify(a));}catch(e){}}
+/* Jugendwarte: Themen kreuz und quer mischen, damit nie lange dasselbe Thema hintereinander kommt */
+var JW_TOPIC=null;
+function jwTopic(q){
+  if(!JW_TOPIC){JW_TOPIC={};var n=0;QUESTIONS.forEach(function(x){if(x.c==='jw'){JW_TOPIC[x.q]=Math.floor(n/16);n++;}});}
+  return JW_TOPIC[q.q];
+}
+function mixTopics(list){
+  var b={},keys=[],out=[];
+  list.forEach(function(q){var s=jwTopic(q);if(!b[s]){b[s]=[];keys.push(s);}b[s].push(q);});
+  var prev=null;
+  while(out.length<list.length){
+    var order=shuffle(keys);
+    if(prev!==null&&order.length>1&&order[0]===prev){var x=order.shift();order.push(x);}
+    order.forEach(function(s){if(b[s].length){out.push(b[s].shift());prev=s;}});
+  }
+  return out;
+}
 function pickQuestions(n){
   var seen=loadSeen();
   var groups={};
@@ -1593,6 +1610,7 @@ function pickQuestions(n){
     var fresh=groups[k].filter(function(q){return seen.indexOf(q.q)<0;});
     var old=groups[k].filter(function(q){return seen.indexOf(q.q)>-1;});
     groups[k]=fresh.concat(old);
+    if(k==='jw')groups[k]=mixTopics(groups[k]);
   });
   var out=[];
   while(out.length<n){
