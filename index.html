@@ -388,6 +388,30 @@ body::before{content:"";position:absolute;left:0;right:0;top:0;height:420px;poin
 .qt-ask{margin-top:12px}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .qt-log{background:#1E2B4D;border-color:#3B5BA5;color:#EEF1F4}}
 
+
+.pz-list{display:grid;gap:8px}
+.pzq{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 12px;text-align:left;border:3px solid var(--line);border-radius:22px;background:var(--surface);cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.10);color:var(--ink);font:inherit}
+.pzq-n{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--line);font-family:var(--f-display);font-weight:800;font-size:1.25rem;color:var(--ink)}
+.pzq.is-set{border-color:#1D5FD1;background:#DCE8FF;color:#14181D}
+.pzq.is-set .pzq-n{background:#1D5FD1;color:#fff}
+.pzq.is-sol{cursor:default;border-color:var(--good);background:var(--good-soft);color:#14181D}
+.pzq.is-sol .pzq-n{background:var(--good);color:#fff}
+.pz-match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pz-match.is-sol{grid-template-columns:1fr}
+.pz-col{display:grid;gap:8px;align-content:start}
+.pzm{min-height:56px;padding:8px 12px;border-radius:22px;border:3px solid #9CA3AF;background:#3A4250;color:#fff;font:inherit;font-weight:600;cursor:pointer;text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.25);line-height:1.2;overflow-wrap:anywhere}
+.pzm.is-sel{border-color:#FFD23F;background:#1D4ED8}
+.pzm.is-bad{border-color:#FF8A80;background:#B3261E;animation:pzshake .3s}
+.pzm.is-done{cursor:default;box-shadow:none}
+.pzm.is-done.c0,.pzm-sol.c0{background:#B3261E;border-color:#FF8A80}
+.pzm.is-done.c1,.pzm-sol.c1{background:#1D4FB8;border-color:#8AB4FF}
+.pzm.is-done.c2,.pzm-sol.c2{background:#8A6500;border-color:#FFD54F}
+.pzm.is-done.c3,.pzm-sol.c3{background:#1B7A3A;border-color:#7FE0A0}
+.pzm.is-done.c4,.pzm-sol.c4{background:#6B21A8;border-color:#D2A8FF}
+.pzm-sol{padding:10px 14px;border-radius:18px;border:3px solid;color:#fff;line-height:1.3}
+.pzm-sol strong{margin-right:4px}
+@keyframes pzshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.pzm.is-bad{animation:none}}
 </style>
 </head>
 <body>
@@ -1487,7 +1511,50 @@ var QUESTIONS = [
   {c:'jw',g:3,q:'Welche Kennzeichnung haben Gefahrgutfahrzeuge vorn und hinten?',a:['Orange Warntafeln','Blaue Warntafeln','Grüne Warntafeln','Gelbe Warntafeln mit Totenkopf'],e:'Orangefarbene Warntafeln sind bei bestimmten Gefahrguttransporten vorgeschrieben. Mit Zahlenkombination zeigen sie Gefahr und Stoff an.'},
   {c:'jw',g:3,q:'Was zeigt die Raute mit Flamme (Gefahrzettel Klasse 3) an?',a:['Entzündbare flüssige Stoffe','Giftige Stoffe','Radioaktive Stoffe','Ätzende Stoffe'],e:'Der rote Gefahrzettel mit Flamme kennzeichnet Klasse 3, zum Beispiel Benzin und Diesel.'},
   {c:'jw',g:3,q:'Was zeigt das gelb-schwarze Strahlensymbol an?',a:['Radioaktive Stoffe der Klasse 7','Biologische Gefahren','Entzündbare Gase','Ätzende Stoffe'],e:'Gelb-weiße Gefahrzettel mit Strahlensymbol kennzeichnen radioaktives Material.'},
-  {c:'jw',g:3,q:'Was gehört zu einem Feuerwehrhelm nach Norm? (zwei Antworten)',a:['Schutz vor herabfallenden Gegenständen','Hitzebeständigkeit und Flammhemmung','Eingebaute Heizung','Radioempfang'],k:2,e:'Feuerwehrhelme schützen vor Stößen, Hitze, Funken und Wasser. Ein Kinnriemen sichert den Sitz.'}
+  {c:'jw',g:3,q:'Was gehört zu einem Feuerwehrhelm nach Norm? (zwei Antworten)',a:['Schutz vor herabfallenden Gegenständen','Hitzebeständigkeit und Flammhemmung','Eingebaute Heizung','Radioempfang'],k:2,e:'Feuerwehrhelme schützen vor Stößen, Hitze, Funken und Wasser. Ein Kinnriemen sichert den Sitz.'},
+  // Jugendwarte: Rätsel (kommen zwischen den Fragen)
+  {c:'jw',g:3,r:'order',q:'Löschangriff mit Verteiler: Bringe die Schritte in die richtige Reihenfolge.',a:['Pumpe an der Wasserentnahmestelle in Stellung bringen','B-Leitung zum Verteiler verlegen','C-Leitungen vom Verteiler zum Brandobjekt legen','Wasser marsch: Leitung füllen und Druck einstellen','Strahlrohr öffnen und Brand bekämpfen'],e:'Zuerst die Wasserversorgung herstellen, dann die Leitungen legen und erst zum Schluss Wasser abgeben und angreifen.'},
+  {c:'jw',g:3,r:'order',q:'Wasserentnahme aus einem Teich: Ordne die Schritte.',a:['Pumpe in Stellung bringen','Saugschläuche kuppeln und Saugkorb anschließen','Saugleitung ins Wasser legen, Saugkorb einlegen','Pumpe entlüften und ansaugen','Druckleitung füllen und Druck einstellen'],e:'Erst die Saugleitung aufbauen und dicht kuppeln, dann entlüften. Ohne Entlüftung fördert die Kreiselpumpe kein Wasser.'},
+  {c:'jw',g:3,r:'order',q:'Wiederbelebung bei einer bewusstlosen Person: Wie lautet die Reihenfolge?',a:['Ansprechen und Reaktion prüfen','Atemwege freimachen, Kopf überstrecken','Atmung prüfen (höchstens 10 Sekunden)','Notruf 112 absetzen','30 Mal Herzdruckmassage, dann 2 Beatmungen'],e:'Ohne normale Atmung wird sofort der Notruf abgesetzt und mit der Herzdruckmassage begonnen. Drücken und Beatmen im Wechsel 30:2.'},
+  {c:'jw',g:3,r:'order',q:'Bringe die GAMS-Regel in die richtige Reihenfolge.',a:['Gefahr erkennen','Absperren','Menschenrettung durchführen','Spezialkräfte anfordern'],e:'GAMS: Gefahr erkennen, Absperren, Menschenrettung, Spezialkräfte anfordern.'},
+  {c:'jw',g:3,r:'order',q:'Der Führungsvorgang läuft in festen Schritten. Ordne sie.',a:['Lage feststellen (Erkundung)','Planung: Entschluss fassen','Befehl geben','Ausführung kontrollieren'],e:'Der Führungsvorgang ist ein Kreislauf: Nach der Kontrolle beginnt bei veränderter Lage die Erkundung von vorn.'},
+  {c:'jw',g:3,r:'order',q:'Ein Raumbrand entwickelt sich in Phasen. Bringe sie in die richtige Reihenfolge.',a:['Zündung und Entstehungsbrand','Entwicklungsbrand mit Rauchschicht','Flashover oder Rauchgasdurchzündung','Vollbrand','Abklingphase'],e:'Zwischen Entwicklungsbrand und Vollbrand liegt die gefährliche Phase der Durchzündung.'},
+  {c:'jw',g:3,r:'order',q:'Der Einsatzbefehl hat einen festen Aufbau. Wie lautet die Reihenfolge?',a:['Einheit','Auftrag','Mittel','Ziel','Weg'],e:'Merke: Einheit, Auftrag, Mittel, Ziel, Weg. So weiß jeder, wer was womit wohin tun soll.'},
+  {c:'jw',g:3,r:'order',q:'Technische Hilfe nach einem Verkehrsunfall: Ordne die Schritte.',a:['Einsatzstelle absichern','Lage erkunden und Brandschutz sicherstellen','Fahrzeug stabilisieren, Batterie abklemmen','Zugang zum Patienten schaffen','Technische Rettung durchführen'],e:'Absicherung geht vor Rettung. Erst wenn das Fahrzeug sicher steht, werden Schere und Spreizer eingesetzt.'},
+  {c:'jw',g:3,r:'order',q:'Rettung einer Person aus dem Eis: Wie gehst du vor?',a:['Notruf absetzen, Ruhe bewahren','Rettungsmittel bereitstellen (Leiter, Rettungsbrett, Wurfleine)','Retter sichern und kriechend vorgehen','Person ans Eis ziehen und an Land bringen','Warm einpacken und dem Rettungsdienst übergeben'],e:'Eigensicherung zuerst: Das Gewicht verteilen und mit Leine oder Brett arbeiten. Unterkühlte Personen vorsichtig behandeln.'},
+  {c:'jw',g:3,r:'order',q:'Sandsackdeich: Ordne die Arbeitsschritte.',a:['Verlauf des Deichs festlegen','Untergrund freiräumen','Säcke zu zwei Dritteln füllen','Säcke versetzt wie Mauerwerk legen und andrücken'],e:'Versetzte Lagen und nur teilweise gefüllte Säcke machen den Deich dichter und stabiler.'},
+  {c:'jw',g:3,r:'match',q:'Ordne den Fahrzeugen ihre Bezeichnung zu. Höchstens ein Fehler ist erlaubt.',a:['ELW|Einsatzleitwagen','RW|Rüstwagen','DLK|Drehleiter mit Korb','TLF|Tanklöschfahrzeug','MTW|Mannschaftstransportwagen','LF|Löschgruppenfahrzeug'],e:'Fahrzeugabkürzungen sollte man sicher kennen, damit Alarmmeldungen sofort verstanden werden.'},
+  {c:'jw',g:3,r:'match',q:'Ordne die Gefahrgutklassen zu. Höchstens ein Fehler ist erlaubt.',a:['Klasse 1|Explosive Stoffe','Klasse 2|Gase','Klasse 3|Entzündbare Flüssigkeiten','Klasse 6.1|Giftige Stoffe','Klasse 7|Radioaktive Stoffe','Klasse 8|Ätzende Stoffe'],e:'Die Klassennummer steht unten auf dem Gefahrzettel und hilft bei der ersten Einschätzung.'},
+  {c:'jw',g:3,r:'match',q:'Strahlung und Schutzprinzipien: Was passt zusammen? Höchstens ein Fehler.',a:['Alphastrahlung|Schon von Papier gestoppt','Betastrahlung|Von Aluminiumblech abgeschirmt','Gammastrahlung|Nur von Blei oder dicken Betonwänden gebremst','Abstand|Die Dosis sinkt stark mit der Entfernung','Zeit|Kurze Aufenthaltsdauer verringert die Dosis','Abschirmung|Material zwischen Quelle und Person'],e:'Bei Strahlung gelten Abstand, Zeit und Abschirmung. Gammastrahlung ist am durchdringendsten.'},
+  {c:'jw',g:3,r:'match',q:'Gefahrnummer: Was bedeutet die erste Ziffer? Höchstens ein Fehler.',a:['2|Gas','3|Entzündbarer flüssiger Stoff','4|Entzündbarer fester Stoff','5|Brandfördernder Stoff (oxidierend)','6|Giftiger Stoff','8|Ätzender Stoff'],e:'Die erste Ziffer der Gefahrnummer beschreibt die Hauptgefahr, eine doppelte Ziffer verstärkt sie.'},
+  {c:'jw',g:3,r:'match',q:'Digitalfunk-Status: Ordne Nummer und Bedeutung zu. Höchstens ein Fehler.',a:['1|Einsatzbereit über Funk','2|Einsatzbereit auf der Wache','3|Einsatz übernommen','4|An der Einsatzstelle angekommen','5|Sprechwunsch','6|Nicht einsatzbereit'],e:'Statusmeldungen halten den Funkverkehr kurz und geben der Leitstelle ein klares Lagebild.'},
+  {c:'jw',g:3,r:'match',q:'Schläuche und Kupplungen: Was passt zusammen? Höchstens ein Fehler.',a:['A-Schlauch|110 mm, meist als Saugschlauch','B-Schlauch|75 mm, Leitung zum Verteiler','C-Schlauch|42 mm, Angriffsleitung','D-Schlauch|25 mm, kleine Wasserabgabe','Storz-Kupplung|Viertel Drehung zum Verbinden'],e:'Alle Schläuche sind mit Storz-Kupplungen genormt und lassen sich daher untereinander verbinden.'},
+  {c:'jw',g:3,r:'match',q:'Brandklassen und Beispiele. Höchstens ein Fehler ist erlaubt.',a:['Brandklasse A|Holz und Papier','Brandklasse B|Benzin und Lack','Brandklasse C|Propan und Methan','Brandklasse D|Magnesium und Aluminium','Brandklasse F|Frittierfett und Speiseöl'],e:'Die Klassen A bis D und F beschreiben, welcher Stoff brennt. Danach richtet sich das Löschmittel.'},
+  {c:'jw',g:3,r:'match',q:'Schaumarten und Begriffe. Höchstens ein Fehler.',a:['Schwerschaum|Verschäumungszahl bis 20','Mittelschaum|Verschäumungszahl 20 bis 200','Leichtschaum|Verschäumungszahl über 200','Zumischer|Mischt Schaummittel ins Wasser'],e:'Je mehr Luft im Schaum steckt, desto höher die Verschäumungszahl und desto leichter ist er.'},
+  {c:'jw',g:3,r:'match',q:'Knoten und ihr Einsatz. Höchstens ein Fehler.',a:['Mastwurf|Leine an Pfosten oder Rohr festmachen','Kreuzknoten|Zwei gleich dicke Leinen verbinden','Schotenstek|Zwei unterschiedlich dicke Leinen verbinden','Palstek|Feste Schlinge, die sich nicht zuzieht','Achterknoten|Stopper am Leinenende'],e:'Der richtige Knoten spart Zeit und verhindert Unfälle, weil er hält und sich dennoch lösen lässt.'},
+  {c:'jw',g:3,r:'match',q:'Vorschriften der Feuerwehr: Ordne Nummer und Thema zu. Höchstens ein Fehler.',a:['FwDV 1|Grundtätigkeiten im Lösch- und Hilfeleistungseinsatz','FwDV 3|Einheiten im Lösch- und Hilfeleistungseinsatz','FwDV 7|Atemschutz','FwDV 100|Führung und Leitung im Einsatz','DGUV Vorschrift 49|Unfallverhütung bei Feuerwehren'],e:'Die Feuerwehr-Dienstvorschriften sorgen für einheitliches Vorgehen in ganz Deutschland.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Ein Hohlstrahlrohr braucht 5 bar. Die Leitung hat 2 bar Reibungsverlust, das Strahlrohr liegt 20 m höher als die Pumpe. Welcher Pumpendruck ist nötig?',a:['9 bar','7 bar','12 bar','27 bar'],e:'5 bar Strahlrohr + 2 bar Reibung + 2 bar für 20 m Höhe (je 10 m ein bar) = 9 bar.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Strahlrohrdruck 5 bar, Reibungsverlust 3 bar, das Strahlrohr liegt 10 m tiefer als die Pumpe. Welcher Pumpendruck genügt?',a:['7 bar','9 bar','8 bar','3 bar'],e:'5 + 3 − 1 = 7 bar, denn bergab gewinnt man 1 bar pro 10 m Höhenunterschied.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Eine Pressluftflasche fasst 6 Liter bei 300 bar, ein Träger verbraucht 40 Liter Luft pro Minute. Wie lange reicht der Luftvorrat rechnerisch?',a:['45 Minuten','30 Minuten','60 Minuten','18 Minuten'],e:'6 l × 300 bar = 1800 l Luft. 1800 l geteilt durch 40 l/min = 45 Minuten. Im Einsatz ist die Reserve dabei wichtiger als die Gesamtzeit.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Aus einem Liter Wasser entstehen etwa 1700 Liter Dampf. Wie viel Dampf entsteht aus 3 Litern?',a:['Etwa 5100 Liter','Etwa 1700 Liter','Etwa 3400 Liter','Etwa 17 000 Liter'],e:'3 × 1700 = 5100 Liter. Darum ist Dampf in engen Räumen eine reale Gefahr für Einsatzkräfte.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Ein TLF hat 3000 Liter Wasser im Tank. Ein C-Rohr gibt 150 Liter pro Minute ab. Wie lange reicht das Wasser?',a:['20 Minuten','15 Minuten','30 Minuten','45 Minuten'],e:'3000 l geteilt durch 150 l/min = 20 Minuten. Nachschub muss rechtzeitig organisiert werden.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Eine TS 8/8 fördert 800 Liter pro Minute. Wie lange dauert es, 6400 Liter zu fördern?',a:['8 Minuten','6 Minuten','10 Minuten','12 Minuten'],e:'6400 geteilt durch 800 ergibt 8 Minuten.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Zwischen Wasserentnahmestelle und Brandobjekt liegen 360 Meter. Ein B-Schlauch ist 20 Meter lang. Wie viele B-Schläuche braucht man mindestens?',a:['18 Schläuche','16 Schläuche','20 Schläuche','36 Schläuche'],e:'360 m geteilt durch 20 m = 18 Schläuche. In der Praxis plant man noch Reserve ein.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Der Hydrant liegt 25 Meter tiefer als das Brandobjekt. Wie viel Druck geht dadurch in der Leitung verloren?',a:['2,5 bar','25 bar','0,25 bar','5 bar'],e:'Pro 10 m Höhe gehen rund 1 bar verloren, bei 25 m also 2,5 bar.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Zwischen Blitz und Donner vergehen 9 Sekunden. Wie weit ist das Gewitter ungefähr entfernt?',a:['Etwa 3 Kilometer','Etwa 9 Kilometer','Etwa 1 Kilometer','Etwa 27 Kilometer'],e:'Der Schall braucht etwa 3 Sekunden pro Kilometer. 9 Sekunden bedeuten also rund 3 Kilometer.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Zwei C-Rohre geben je 100 Liter pro Minute ab und laufen 30 Minuten. Wie viel Wasser wird benötigt?',a:['6000 Liter','3000 Liter','600 Liter','12 000 Liter'],e:'2 × 100 l/min × 30 min = 6000 Liter.'},
+  {c:'jw',g:3,r:'calc',q:'Rechenrätsel: Eine Gruppe (1/8/9) und eine Staffel (1/5/6) rücken gemeinsam aus. Wie viele Einsatzkräfte sind das insgesamt?',a:['15 Einsatzkräfte','14 Einsatzkräfte','16 Einsatzkräfte','13 Einsatzkräfte'],e:'9 + 6 = 15 Einsatzkräfte, darunter ein Gruppenführer und ein Staffelführer.'},
+  {c:'jw',g:3,r:'who',q:'Wer oder was bin ich? Ich bin orange und trage zwei Zahlen. Oben steht die Gefahr, unten der Stoff. Ich hänge vorn und hinten an Gefahrgut-Lkw.',a:['Die Warntafel','Das Hydrantenschild','Die Rettungskarte','Der Fahrzeugschein'],e:'Die orange Warntafel zeigt oben die Gefahrnummer und unten die UN-Nummer des Stoffes.'},
+  {c:'jw',g:3,r:'who',q:'Wer oder was bin ich? Ich sauge mit Unterdruck, brauche vorher aber eine Entlüftung. Ohne Wasser darf ich nicht lange laufen.',a:['Die Feuerlöschkreiselpumpe','Der Verteiler','Das Hohlstrahlrohr','Der Zumischer'],e:'Die Kreiselpumpe ist nicht selbstansaugend und braucht Wasser zur Kühlung der Dichtungen.'},
+  {c:'jw',g:3,r:'who',q:'Wer oder was bin ich? Ich bin die niedrigste Temperatur, bei der über einer Flüssigkeit ein zündfähiges Dampf-Luft-Gemisch entsteht.',a:['Der Flammpunkt','Die Zündtemperatur','Der Siedepunkt','Die Verbrennungswärme'],e:'Am Flammpunkt reicht eine Zündquelle zur Entzündung. Die Zündtemperatur dagegen entzündet das Gemisch von selbst.'},
+  {c:'jw',g:3,r:'who',q:'Wer oder was bin ich? Ich entstehe, wenn frische Luft in einen heißen, sauerstoffarmen Raum strömt und unverbrannte Gase explosionsartig zünden.',a:['Der Backdraft','Der Flashover','Der Rollover','Das Glutnest'],e:'Beim Backdraft sorgt die geöffnete Tür für die Sauerstoffzufuhr. Beim Flashover zünden dagegen alle Oberflächen durch Strahlung.'},
+  {c:'jw',g:3,r:'who',q:'Wer oder was bin ich? Ich verhindere, dass Wasser aus der Feuerwehrleitung ins Trinkwassernetz zurückfließt.',a:['Der Systemtrenner','Das Standrohr','Der Verteiler','Das Sammelstück'],e:'Der Systemtrenner schützt das Trinkwasser und gehört an jede Entnahme direkt am Trinkwassernetz.'},
+  {c:'jw',g:3,r:'who',q:'Wer oder was bin ich? Ich bin eine Merkregel für die ersten Maßnahmen bei Gefahrstoffen: Gefahr erkennen, Absperren, Menschenrettung, Spezialkräfte anfordern.',a:['Die GAMS-Regel','Die FwDV 7','Die Gefahrenmatrix','Der Führungsvorgang'],e:'Die GAMS-Regel hilft in den ersten Minuten, wenn Gefahrstoffe im Spiel sind.'},
+  {c:'jw',g:3,r:'find',q:'Fehlersuche: Ein Trupp reißt die Tür zu einem verrauchten Raum weit auf, um besser zu sehen. Was ist der Fehler?',a:['Frischluft kann Backdraft oder Rauchgasdurchzündung auslösen','Die Tür war zu leicht','Das Licht war zu hell','Es entsteht zu viel Lärm'],e:'Türen zu verrauchten Räumen werden nur kontrolliert geöffnet: in Deckung, Strahlrohr bereit, möglichst nur einen Spalt.'},
+  {c:'jw',g:3,r:'find',q:'Fehlersuche: Der Maschinist schließt den Hydranten ruckartig. Was ist daran falsch?',a:['Es kann ein Druckstoß entstehen, der Leitung und Armaturen beschädigt','Es wird zu viel Wasser gespart','Der Hydrant wird zu kalt','Es dauert zu lange'],e:'Hydranten und Strahlrohre werden immer langsam geöffnet und geschlossen, um Druckstöße zu vermeiden.'},
+  {c:'jw',g:3,r:'find',q:'Fehlersuche: Bei einer Übung soll eine brennende Fettpfanne mit Wasser gelöscht werden. Was ist der Fehler?',a:['Das Wasser verdampft schlagartig und schleudert brennendes Fett hoch','Wasser ist zu kalt','Die Pfanne wird sauber','Das Fett löst sich im Wasser'],e:'Fettbrände löscht man mit Deckel, Löschdecke oder Fettbrandlöscher, niemals mit Wasser.'},
+  {c:'jw',g:3,r:'find',q:'Fehlersuche: Ein Stromerzeuger läuft zum Schutz vor Regen in einer geschlossenen Garage. Was ist falsch?',a:['Die Abgase mit Kohlenmonoxid können die Garage füllen und vergiften','Er wird zu laut','Er verbraucht zu wenig Benzin','Er wird zu warm für den Boden'],e:'Aggregate gehören ins Freie oder werden mit Abgasschlauch ins Freie betrieben. Kohlenmonoxid ist geruchlos und lebensgefährlich.'},
+  {c:'jw',g:3,r:'find',q:'Fehlersuche: Ein Truppführer lässt seinen Trupp so lange vorgehen, bis das Warnsignal der Flasche ertönt. Was stimmt nicht?',a:['Das Warnsignal ist nur die letzte Reserve, der Rückzug beginnt früher','Das Signal ist zu leise','Der Trupp ist zu schnell','Der Truppführer trägt kein Funkgerät'],e:'Der Rückzug wird so geplant, dass das Warnsignal nicht erreicht wird. Es ist ein Notsignal, kein Planungswert.'}
 ];
 
 function $(s){return document.querySelector(s);}
@@ -1587,7 +1654,7 @@ function saveSeen(a){try{localStorage.setItem(SEEN_KEY,JSON.stringify(a));}catch
 /* Jugendwarte: Themen kreuz und quer mischen, damit nie lange dasselbe Thema hintereinander kommt */
 var JW_TOPIC=null;
 function jwTopic(q){
-  if(!JW_TOPIC){JW_TOPIC={};var n=0;QUESTIONS.forEach(function(x){if(x.c==='jw'){JW_TOPIC[x.q]=Math.floor(n/16);n++;}});}
+  if(!JW_TOPIC){JW_TOPIC={};var n=0;QUESTIONS.forEach(function(x){if(x.c==='jw'&&!x.r){JW_TOPIC[x.q]=Math.floor(n/16);n++;}});}
   return JW_TOPIC[q.q];
 }
 function mixTopics(list){
@@ -1601,6 +1668,28 @@ function mixTopics(list){
   }
   return out;
 }
+/* Rätsel zwischendurch: nach jeweils 2 bis 4 Fragen kommt eins */
+function weavePuzzles(norm,puz){
+  var out=[],pi=0,gap=1+Math.floor(Math.random()*3);
+  puz=shuffleKeep(puz);
+  norm.forEach(function(q){
+    out.push(q);gap--;
+    if(gap<=0&&pi<puz.length){out.push(puz[pi++]);gap=2+Math.floor(Math.random()*3);}
+  });
+  while(pi<puz.length)out.push(puz[pi++]);
+  return out;
+}
+/* Rätselarten abwechseln, neue zuerst: Reihenfolge der Liste bleibt, nur gleiche Art nicht direkt nacheinander */
+function shuffleKeep(puz){
+  var rest=puz.slice(),out=[],last=null;
+  while(rest.length){
+    var idx=-1;
+    for(var i=0;i<rest.length;i++){if(rest[i].r!==last){idx=i;break;}}
+    if(idx<0)idx=0;
+    last=rest[idx].r;out.push(rest.splice(idx,1)[0]);
+  }
+  return out;
+}
 function pickQuestions(n){
   var seen=loadSeen();
   var groups={};
@@ -1610,7 +1699,7 @@ function pickQuestions(n){
     var fresh=groups[k].filter(function(q){return seen.indexOf(q.q)<0;});
     var old=groups[k].filter(function(q){return seen.indexOf(q.q)>-1;});
     groups[k]=fresh.concat(old);
-    if(k==='jw')groups[k]=mixTopics(groups[k]);
+    if(k==='jw')groups[k]=weavePuzzles(mixTopics(groups[k].filter(function(q){return !q.r;})),groups[k].filter(function(q){return q.r;}));
   });
   var out=[];
   while(out.length<n){
@@ -1649,6 +1738,98 @@ function renderBoard(){
     host.appendChild(d);
   });
 }
+var RLAB={order:'Reihenfolge-Rätsel',match:'Zuordnungs-Rätsel',calc:'Rechenrätsel',who:'Wer bin ich?',find:'Fehlersuche'};
+function buildPuzzleQ(q,host){
+  G.puzzle=q.r;G.pzErr=0;
+  var hint=$('#multi-hint'),chk=$('#btn-check');
+  hint.hidden=false;
+  if(q.r==='order'){
+    hint.textContent='Tippe die Schritte in der richtigen Reihenfolge an. Tippe einen Schritt noch einmal an, um ihn zurückzunehmen.';
+    chk.hidden=false;chk.disabled=true;chk.textContent='Reihenfolge prüfen';
+    var items=shuffle(q.a.map(function(t,i){return {t:t,i:i};}));
+    var guard=0;while(guard++<10&&items.every(function(o,k){return o.i===k;}))items=shuffle(items);
+    var seq=[];
+    var list=el('div','pz-list');host.appendChild(list);
+    var draw=function(){
+      list.replaceChildren();
+      items.forEach(function(o){
+        var pos=seq.indexOf(o);
+        var b=el('button','pzq'+(pos>-1?' is-set':''));b.type='button';
+        b.appendChild(el('span','pzq-n',pos>-1?String(pos+1):''));
+        b.appendChild(el('span','ans-text',o.t));
+        b.addEventListener('click',function(){
+          if(G.locked)return;
+          var at=seq.indexOf(o);
+          if(at>-1)seq.splice(at,1);else seq.push(o);
+          draw();chk.disabled=seq.length!==items.length;
+        });
+        list.appendChild(b);
+      });
+    };
+    draw();
+    G.pzCheck=function(){
+      var ok=seq.length===items.length&&seq.every(function(o,k){return o.i===k;});
+      pick(ok?1:0);
+    };
+    G.pzReveal=function(ok){
+      list.replaceChildren();
+      q.a.forEach(function(t,k){
+        var b=el('div','pzq is-sol'+(ok?' is-ok':''));
+        b.appendChild(el('span','pzq-n',String(k+1)));
+        b.appendChild(el('span','ans-text',t));
+        list.appendChild(b);
+      });
+    };
+  }else{
+    hint.textContent='Tippe links einen Begriff und rechts den passenden Partner an. Höchstens ein Fehler ist erlaubt.';
+    chk.hidden=true;
+    var pairs=q.a.map(function(s,i){var x=s.split('|');return {l:x[0],r:x[1],i:i};});
+    var wrap=el('div','pz-match');
+    var lc=el('div','pz-col'),rc=el('div','pz-col');
+    wrap.appendChild(lc);wrap.appendChild(rc);host.appendChild(wrap);
+    var sel=null,done=0,cols=0,lbs=[];
+    shuffle(pairs).forEach(function(pr){
+      var b=el('button','pzm',pr.l);b.type='button';b.dataset.i=pr.i;lbs.push(b);
+      b.addEventListener('click',function(){
+        if(G.locked||b.classList.contains('is-done'))return;
+        lbs.forEach(function(x){x.classList.remove('is-sel');});
+        if(sel===b){sel=null;return;}
+        sel=b;b.classList.add('is-sel');
+      });
+      lc.appendChild(b);
+    });
+    shuffle(pairs).forEach(function(pr){
+      var b=el('button','pzm',pr.r);b.type='button';b.dataset.i=pr.i;
+      b.addEventListener('click',function(){
+        if(G.locked||b.classList.contains('is-done'))return;
+        if(!sel){b.classList.add('is-bad');setTimeout(function(){b.classList.remove('is-bad');},350);return;}
+        if(sel.dataset.i===b.dataset.i){
+          var c='c'+(cols++%5);
+          [sel,b].forEach(function(x){x.classList.remove('is-sel');x.classList.add('is-done',c);});
+          sel=null;done++;
+          if(done===pairs.length)pick(G.pzErr<=1?1:0);
+        }else{
+          G.pzErr++;
+          [sel,b].forEach(function(x){x.classList.add('is-bad');setTimeout(function(){x.classList.remove('is-bad');},350);});
+          sel.classList.remove('is-sel');sel=null;
+          if(G.pzErr>1){pick(0);}
+        }
+      });
+      rc.appendChild(b);
+    });
+    G.pzReveal=function(ok){
+      wrap.replaceChildren();
+      q.a.forEach(function(s,k){
+        var x=s.split('|');
+        var row=el('div','pzm-sol c'+(k%5));
+        row.appendChild(el('strong',null,x[0]));
+        row.appendChild(el('span',null,' = '+x[1]));
+        wrap.appendChild(row);
+      });
+      wrap.classList.add('is-sol');
+    };
+  }
+}
 function renderQ(){
   var q=G.qs[G.i];
   G.locked=false;
@@ -1661,9 +1842,10 @@ function renderQ(){
     tries++;
   }while(tries<8&&right===G.lastRight);
   G.lastRight=right;
-  G.multi=G.kq>1;G.sel=[];
+  G.multi=G.kq>1;G.sel=[];G.puzzle=null;G.pzCheck=null;G.pzReveal=null;
+  if(q.r==='order'||q.r==='match'){G.opts=[];G.multi=false;}
   $('#hud-count').textContent='Einsatz '+(G.i+1)+' von '+G.qs.length;
-  $('#kw').textContent=CATS[q.c];
+  $('#kw').textContent=CATS[q.c]+(q.r?' · '+RLAB[q.r]:'');
   $('.qcard').style.setProperty('--cat','var(--c-'+q.c+')');
   $('#q').textContent=q.q;
   $('#fb').hidden=true;
@@ -1672,7 +1854,8 @@ function renderQ(){
   hint.hidden=!G.multi;chk.hidden=!G.multi;chk.disabled=true;
   if(G.multi)hint.textContent='Mehrere Antworten sind richtig: wähle '+G.kq+'.';
   var host=$('#answers');host.replaceChildren();
-  G.opts.forEach(function(o,k){
+  chk.textContent='Antworten prüfen';
+  if(q.r==='order'||q.r==='match'){buildPuzzleQ(q,host);}else G.opts.forEach(function(o,k){
     var b=el('button','ans');b.type='button';
     b.appendChild(el('span','ans-key','ABCD'.charAt(k)));
     b.appendChild(el('span','ans-text',o.t));
@@ -1739,7 +1922,8 @@ function pick(k){
   clearInterval(G.timer);
   var q=G.qs[G.i],team=G.teams[G.cur];
   var ok,right=0;
-  if(G.multi){
+  if(G.puzzle){ok=(k===1);}
+  else if(G.multi){
     var nrOk=G.opts.filter(function(o){return o.ok;}).length;
     var selOk=G.sel.filter(function(j){return G.opts[j].ok;}).length;
     ok=k!==-1&&G.sel.length===nrOk&&selOk===nrOk;
@@ -1754,10 +1938,11 @@ function pick(k){
     team.score+=pts;team.right++;
     confetti(24);
   }else{
-    G.miss.push({q:q.q,a:q.a.slice(0,q.k||1).join(' / '),team:team.name,c:q.c});
+    G.miss.push({q:q.q,a:(q.r==='order'?q.a.join(' → '):(q.r==='match'?q.a.map(function(s){return s.replace('|',' = ');}).join('; '):q.a.slice(0,q.k||1).join(' / '))),team:team.name,c:q.c});
   }
   $('#btn-check').hidden=true;
-  var btns=$('#answers').children;
+  var btns=G.puzzle?[]:$('#answers').children;
+  if(G.puzzle&&G.pzReveal)G.pzReveal(ok);
   for(var j=0;j<btns.length;j++){
     var b=btns[j];b.setAttribute('aria-disabled','true');
     var mk=b.querySelector('.ans-mark');
@@ -1871,7 +2056,7 @@ $('#btn-quit').addEventListener('click',function(){
   b.textContent='Wirklich beenden?';
   G.quitArmed=setTimeout(function(){G.quitArmed=null;b.textContent='Beenden';},3000);
 });
-$('#btn-check').addEventListener('click',function(){if(G&&G.multi&&!G.locked&&G.sel.length)pick(-2);});
+$('#btn-check').addEventListener('click',function(){if(G&&G.puzzle&&!G.locked&&G.pzCheck){G.pzCheck();return;}if(G&&G.multi&&!G.locked&&G.sel.length)pick(-2);});
 document.addEventListener('keydown',function(e){
   if($('#screen-game').hidden||!G||e.ctrlKey||e.metaKey||e.altKey)return;
   var k=e.key.toLowerCase();
